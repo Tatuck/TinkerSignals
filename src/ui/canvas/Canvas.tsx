@@ -11,6 +11,7 @@ import { useCallback, useEffect, type DragEvent } from 'react';
 import { BlockNode } from '../nodes/BlockNode';
 import { useStore } from '../store';
 import { CableEdge } from './CableEdge';
+import { LessonPanel } from '../lessons/LessonPanel';
 
 const nodeTypes = { block: BlockNode };
 const edgeTypes = { cable: CableEdge };
@@ -72,6 +73,7 @@ export function Canvas() {
         <Background id="coarse" variant={BackgroundVariant.Lines} gap={50} color="var(--grid)" />
         <Controls showInteractive={false} />
       </ReactFlow>
+      <LessonPanel />
     </div>
   );
 }

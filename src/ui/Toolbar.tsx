@@ -6,7 +6,7 @@ import { useStore, type BlockNode, type CableEdge } from './store';
 
 const NO_ERRORS: never[] = [];
 
-export function Toolbar() {
+export function Toolbar({ onHome }: { onHome(): void }) {
   const running = useStore((s) => s.running);
   const totalMs = useStore((s) => s.results?.totalMs);
   const graphErrors = useStore((s) => s.results?.graphErrors) ?? NO_ERRORS;
@@ -59,6 +59,9 @@ export function Toolbar() {
       </div>
 
       <nav className="toolbar-actions">
+        <button className="btn btn-quiet" onClick={onHome}>
+          Inicio y lecciones
+        </button>
         <label className="examples">
           <span className="sr-only">{t('toolbar.examples')}</span>
           <select

@@ -7,6 +7,7 @@ import { registry } from '../registry';
 import { useStore } from '../store';
 import { categoryColor } from '../theme';
 import { ParamControl } from './ParamControl';
+import { useLessonTarget } from '../lessons/LessonPanel';
 
 const PLOT_W = 292;
 
@@ -46,6 +47,7 @@ function NodeInspector({ id }: { id: string }) {
   const setParam = useStore((s) => s.setParam);
   const removeNode = useStore((s) => s.removeNode);
   const duplicateNode = useStore((s) => s.duplicateNode);
+  const target = useLessonTarget();
   const def = node && registry.get(node.data.blockType);
   if (!node || !def) return <Welcome />;
 
@@ -94,6 +96,7 @@ function NodeInspector({ id }: { id: string }) {
               spec={spec}
               value={node.data.params[name] ?? spec.default}
               onChange={(v) => setParam(id, name, v)}
+              highlighted={target.node === id && target.param === name}
             />
           ))}
         </section>

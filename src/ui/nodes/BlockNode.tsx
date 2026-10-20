@@ -9,6 +9,7 @@ import { registry } from '../registry';
 import { useStore, type BlockNode as BlockNodeType } from '../store';
 import { categoryColor, portColor } from '../theme';
 import { ErrorBoundary } from '../ErrorBoundary';
+import { useLessonTarget } from '../lessons/LessonPanel';
 import { AssetWidget } from './AssetWidget';
 import { LibraryLoader } from './LibraryLoader';
 import { OutputControls } from './OutputControls';
@@ -24,6 +25,7 @@ const PLOT_H = 60;
 export const BlockNode = memo(function BlockNode({ id, data, selected }: NodeProps<BlockNodeType>) {
   const def = registry.get(data.blockType);
   const result = useStore((s) => s.results?.nodes[id]);
+  const isTarget = useLessonTarget().node === id;
   if (!def) return <div className="node node-unknown">{data.blockType}</div>;
 
   const text = blockText(def.id);
@@ -40,7 +42,7 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
 
   return (
     <div
-      className={`node status-${status}${selected ? ' is-selected' : ''}`}
+      className={`node status-${status}${selected ? ' is-selected' : ''}${isTarget ? ' is-target' : ''}`}
       style={{ '--cat': color } as CSSProperties}
     >
       <header className="node-head">

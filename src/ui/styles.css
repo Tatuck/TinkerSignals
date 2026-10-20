@@ -19,6 +19,10 @@
   --ok: #2e9e68;
   --warn: #d98b00;
 
+  --cat-entrada: #2e9e68;
+  --cat-voz: #c2255c;
+  --cat-salida: #1f2a44;
+
   --font-display: 'Bricolage Grotesque', 'Atkinson Hyperlegible', system-ui, sans-serif;
   --font-body: 'Atkinson Hyperlegible', system-ui, sans-serif;
   --font-bits: 'JetBrains Mono', ui-monospace, monospace;
@@ -1101,4 +1105,280 @@ select {
 }
 .packet-overhead {
   background: var(--ink-3);
+}
+
+/* ─── Portada ────────────────────────────────────────────────────────────── */
+
+.home {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow-y: auto;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid-fine) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-fine) 1px, transparent 1px),
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 10px 10px, 10px 10px, 50px 50px, 50px 50px;
+  outline: none;
+}
+.home-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 20px 24px 48px;
+}
+.home-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.home-brand {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: center;
+  padding: 48px 0 40px;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(44px, 7vw, 84px);
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  margin: 0 0 22px;
+}
+.hero-text > p {
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  max-width: 34em;
+  margin: 0;
+}
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 26px 0 14px;
+}
+.btn-large {
+  padding: 11px 18px;
+  font-size: 15.5px;
+  border-radius: 10px;
+}
+.hero-note {
+  font-size: 13.5px !important;
+  color: var(--ink-3) !important;
+}
+.hero-patch {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 10px 18px rgba(31, 42, 68, 0.18));
+}
+.hero-mod-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  fill: #fff;
+}
+.hero-cable {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+.hero-cable-signal {
+  stroke: var(--signal);
+}
+.hero-cable-bits {
+  stroke: var(--bits);
+  stroke-dasharray: 2 9;
+  animation: bits-flow 0.9s linear infinite;
+}
+.hero-jack {
+  fill: #fff;
+  stroke: var(--signal);
+  stroke-width: 4;
+}
+.hero-jack-bits {
+  stroke: var(--bits);
+}
+
+.home-section {
+  padding: 28px 0 8px;
+}
+.home-section h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: -0.03em;
+  margin: 0 0 4px;
+}
+.home-lead {
+  color: var(--ink-2);
+  margin: 0 0 18px;
+}
+
+.lesson-cards,
+.example-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+.lesson-card,
+.example-card {
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 16px;
+  border-radius: var(--radius-module);
+  border: 1.5px solid var(--line);
+  background: var(--panel);
+  cursor: pointer;
+  transition: border-color 0.12s, transform 0.12s;
+}
+.lesson-card:hover,
+.example-card:hover {
+  border-color: var(--ink-3);
+  transform: translateY(-2px);
+}
+.lesson-card strong,
+.example-card strong {
+  font-family: var(--font-display);
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.lesson-card span,
+.example-card span {
+  color: var(--ink-2);
+  font-size: 14px;
+}
+.lesson-card small {
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+.lesson-num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 30px !important;
+  line-height: 1;
+  color: var(--signal) !important;
+}
+.thumb {
+  width: 100%;
+  height: auto;
+  background: var(--panel-2);
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+.home-footer {
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid var(--grid);
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+@media (max-width: 760px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding-top: 28px;
+  }
+}
+
+/* ─── Lección en curso ───────────────────────────────────────────────────── */
+
+.lesson {
+  position: absolute;
+  left: 60px;
+  bottom: 16px;
+  z-index: 6;
+  width: min(420px, calc(100% - 76px));
+  background: var(--panel);
+  border-radius: var(--radius-module);
+  border: 2px solid var(--ink);
+  box-shadow: var(--shadow-module);
+  padding: 14px 16px 12px;
+}
+.lesson header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.lesson-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 15px;
+}
+.lesson-progress {
+  display: flex;
+  gap: 4px;
+}
+.lesson-progress i {
+  width: 16px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--line);
+}
+.lesson-progress i.is-done {
+  background: var(--ink-3);
+}
+.lesson-progress i.is-current {
+  background: var(--signal);
+}
+.lesson > p {
+  margin: 10px 0 0;
+  font-size: 14.5px;
+}
+.lesson-task {
+  font-weight: 700;
+  color: var(--signal);
+}
+.lesson-task.is-done {
+  color: var(--ok);
+}
+.lesson footer {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+.lesson .spacer {
+  flex: 1;
+}
+
+.node.is-target {
+  animation: target-pulse 1.4s ease-in-out infinite;
+}
+@keyframes target-pulse {
+  50% {
+    box-shadow: 0 0 0 7px color-mix(in srgb, var(--signal) 35%, transparent), var(--shadow-module);
+  }
+}
+.param.is-target {
+  outline: 2px solid var(--signal);
+  outline-offset: 6px;
+  border-radius: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .node.is-target,
+  .hero-cable-bits {
+    animation: none;
+  }
+  .node.is-target {
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--signal) 35%, transparent);
+  }
 }

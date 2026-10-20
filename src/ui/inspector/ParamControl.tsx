@@ -9,12 +9,14 @@ export function ParamControl({
   spec,
   value,
   onChange,
+  highlighted,
 }: {
   blockId: string;
   name: string;
   spec: ParamSpec;
   value: ParamValue;
   onChange(v: ParamValue): void;
+  highlighted?: boolean;
 }) {
   const text = blockText(blockId);
   const label = text.params?.[name]?.label ?? name;
@@ -33,7 +35,7 @@ export function ParamControl({
       return step ? Math.round(raw / step) * step : raw;
     };
     return (
-      <div className="param">
+      <div className={`param${highlighted ? ' is-target' : ''}`}>
         <label htmlFor={id}>
           {label}
           <output>
@@ -56,7 +58,7 @@ export function ParamControl({
 
   if (spec.type === 'boolean') {
     return (
-      <div className="param param-inline">
+      <div className={`param param-inline${highlighted ? ' is-target' : ''}`}>
         <label htmlFor={id}>{label}</label>
         <input
           id={id}
@@ -72,7 +74,7 @@ export function ParamControl({
 
   const optionLabel = (o: string) => text.options?.[name]?.[o] ?? o;
   return (
-    <div className="param">
+    <div className={`param${highlighted ? ' is-target' : ''}`}>
       <label htmlFor={id}>{label}</label>
       {spec.options.length <= 3 ? (
         <div className="segmented" role="radiogroup" aria-labelledby={id} id={id}>

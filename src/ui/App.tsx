@@ -1,7 +1,8 @@
 import { ReactFlowProvider } from '@xyflow/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Canvas } from './canvas/Canvas';
 import { ErrorBoundary } from './ErrorBoundary';
+import { HOME_SEEN_KEY, Home } from './home/Home';
 import { examples, instantiate } from './examples';
 import { Inspector } from './inspector/Inspector';
 import { Palette } from './palette/Palette';
@@ -25,7 +26,25 @@ function restore() {
   useStore.getState().load(g.nodes, g.edges);
 }
 
+function firstVisit(): boolean {
+  try {
+    return !localStorage.getItem(HOME_SEEN_KEY);
+  } catch {
+    return true;
+  }
+}
+
 export function App() {
+  const [home, setHome] = useState(firstVisit);
+  const closeHome = () => {
+    setHome(false);
+    try {
+      localStorage.setItem(HOME_SEEN_KEY, '1');
+    } catch {
+      /* sin almacenamiento */
+    }
+  };
+
   useEffect(() => {
     restore();
     let timer: ReturnType<typeof setTimeout>;
@@ -50,7 +69,7 @@ export function App() {
   return (
     <ReactFlowProvider>
       <div className="app">
-        <Toolbar />
+        <Toolbar onHome={() => setHome(true)} />
         <ErrorBoundary label="la paleta">
           <Palette />
         </ErrorBoundary>
@@ -61,6 +80,7 @@ export function App() {
           <Inspector />
         </ErrorBoundary>
       </div>
+      {home && <Home onClose={closeHome} />}
     </ReactFlowProvider>
   );
 }
