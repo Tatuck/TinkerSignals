@@ -12,9 +12,10 @@ import { BlockNode } from '../nodes/BlockNode';
 import { useStore } from '../store';
 import { CableEdge } from './CableEdge';
 import { LessonPanel } from '../lessons/LessonPanel';
+import { openInterior } from '../interior/openInterior';
 
-const nodeTypes = { block: BlockNode };
-const edgeTypes = { cable: CableEdge };
+export const nodeTypes = { block: BlockNode };
+export const edgeTypes = { cable: CableEdge };
 export const DRAG_MIME = 'application/x-tinkersignals-block';
 
 export function Canvas() {
@@ -60,6 +61,7 @@ export function Canvas() {
         onConnect={onConnect}
         isValidConnection={(c: Connection | Edge) => isValid(c)}
         onNodeClick={(_, n) => select({ kind: 'node', id: n.id })}
+        onNodeDoubleClick={(_, n) => void openInterior(n.id)}
         onEdgeClick={(_, e) => select({ kind: 'edge', id: e.id })}
         onPaneClick={() => select(null)}
         defaultEdgeOptions={{ type: 'cable' }}

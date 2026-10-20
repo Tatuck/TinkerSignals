@@ -8,6 +8,7 @@ import { useGraphStore } from '../store';
 import { categoryColor } from '../theme';
 import { ParamControl } from './ParamControl';
 import { useLessonTarget } from '../lessons/LessonPanel';
+import { openInterior } from '../interior/openInterior';
 
 const PLOT_W = 292;
 
@@ -50,6 +51,7 @@ function NodeInspector({ id }: { id: string }) {
   const removeNode = useS((s) => s.removeNode);
   const duplicateNode = useS((s) => s.duplicateNode);
   const target = useLessonTarget();
+  const scope = useS((s) => s.scope);
   const def = node && registry.get(node.data.blockType);
   if (!node || !def) return <Welcome />;
 
@@ -172,6 +174,11 @@ function NodeInspector({ id }: { id: string }) {
       )}
 
       <footer className="insp-actions">
+        {def.interior && scope === 'main' && (
+          <button className="btn btn-primary" onClick={() => void openInterior(id)}>
+            Ver por dentro
+          </button>
+        )}
         <button className="btn" onClick={() => duplicateNode(id)}>
           {t('inspector.duplicate')}
         </button>

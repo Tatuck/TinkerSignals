@@ -3,6 +3,7 @@
   "summary": "Escalones finos cerca de cero y anchos en los extremos (ley μ o A).",
   "details": "Equivale a comprimir la amplitud con una curva logarítmica, cuantizar de forma uniforme y expandir. El error deja de ser constante y pasa a ser proporcional a la amplitud: la SNR se mantiene parecida tanto si hablas alto como bajo. Por eso la telefonía usa 8 bits no uniformes en lugar de 12 o 13 uniformes.",
   "tryThis": "Pon este bloque y un Cuantizador uniforme con los mismos bits, alimentados con una voz baja (amplitud 0,1). Compara las SNR.",
+  "interior": "Un cuantizador no uniforme es un compresor logarítmico, un cuantizador uniforme normal y un expansor que deshace la curva.",
   "concepts": [
     "Cuantización no uniforme",
     "Ley μ",

@@ -3,16 +3,43 @@
   "summary": "Divide el audio en 32 bandas y gasta bits solo donde el oído notaría el ruido.",
   "details": "Es un códec perceptual: no intenta copiar la forma de onda, sino que el error quede por debajo de lo que podemos oír. Un modelo psicoacústico analiza cada trama de 384 muestras con una FFT, localiza los tonos y el ruido que enmascaran a sus vecinos en frecuencia y calcula el umbral de enmascaramiento (en color en la gráfica, sobre el espectro en gris). Lo que queda por debajo de ese umbral no se oye. Después reparte los bits disponibles entre las 32 subbandas para que el ruido de cuantización quede escondido bajo el umbral en todas. Las bandas que no hacen falta no reciben ningún bit. Así se consigue calidad casi transparente a 192 kbps en vez de los 768 kbps de un PCM a 48 kHz.",
   "tryThis": "Con música, baja de 192 a 64 kbps y luego desactiva el modelo psicoacústico: con los mismos bits, el reparto «a ciegas» suena peor aunque la SNR pueda salir parecida.",
-  "concepts": ["Codificación perceptual", "Enmascaramiento", "Bandas críticas (Bark)", "Asignación de bits", "MPEG-1 Audio"],
-  "ports": { "in": "Audio", "out": "Bits" },
+  "interior": "El banco de filtros reparte el audio en 32 subbandas; en paralelo, el modelo psicoacústico calcula cuánto ruido se puede esconder en cada una; la asignación de bits cuantiza cada subbanda con lo justo, y el banco de síntesis reconstruye lo que oirá el decodificador.",
+  "concepts": [
+    "Codificación perceptual",
+    "Enmascaramiento",
+    "Bandas críticas (Bark)",
+    "Asignación de bits",
+    "MPEG-1 Audio"
+  ],
+  "ports": {
+    "in": "Audio",
+    "out": "Bits"
+  },
   "params": {
-    "bitrate": { "label": "Tasa objetivo", "help": "Kilobits por segundo. MPEG-1 Layer I suele ir de 192 a 384." },
-    "psychoacoustic": { "label": "Modelo psicoacústico", "help": "Sin él, los bits se reparten solo según la energía de cada banda." }
+    "bitrate": {
+      "label": "Tasa objetivo",
+      "help": "Kilobits por segundo. MPEG-1 Layer I suele ir de 192 a 384."
+    },
+    "psychoacoustic": {
+      "label": "Modelo psicoacústico",
+      "help": "Sin él, los bits se reparten solo según la energía de cada banda."
+    }
   },
   "options": {
-    "bitrate": { "32": "32 kbps", "64": "64 kbps", "96": "96 kbps", "128": "128 kbps", "192": "192 kbps", "256": "256 kbps", "384": "384 kbps" }
+    "bitrate": {
+      "32": "32 kbps",
+      "64": "64 kbps",
+      "96": "96 kbps",
+      "128": "128 kbps",
+      "192": "192 kbps",
+      "256": "256 kbps",
+      "384": "384 kbps"
+    }
   },
-  "metrics": { "bandsUsed": "Bandas con bits", "frames": "Tramas" },
+  "metrics": {
+    "bandsUsed": "Bandas con bits",
+    "frames": "Tramas"
+  },
   "plots": {
     "masking": "Espectro (gris) y umbral de enmascaramiento (color)",
     "allocation": "Bits por muestra en cada subbanda (media)"

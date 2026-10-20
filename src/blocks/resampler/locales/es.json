@@ -3,6 +3,7 @@
   "summary": "Toma muestras a la frecuencia que elijas. Antes filtra paso bajo para que no haya aliasing.",
   "details": "Según Nyquist, con fs muestras por segundo solo se pueden representar frecuencias hasta fs/2. Todo lo que esté por encima se «dobla» y aparece como frecuencias falsas (aliasing), y después ya no se puede quitar. Por eso un conversor A/D real lleva delante un filtro paso bajo analógico: el filtro antialiasing. Aquí la entrada hace de señal analógica (está muestreada mucho más rápido) y el filtro es un FIR cuyo corte puedes elegir. En la gráfica ves el espectro de entrada (gris), la respuesta del filtro (discontinua), el espectro muestreado (color) y la línea roja en la nueva fs/2. Un filtro más abrupto deja pasar más banda útil, pero tiene más coeficientes y retrasa más.",
   "tryThis": "Conecta un Generador en modo «Barrido» a 16 kHz, baja a 4 kHz y desactiva el filtro: escucha cómo el tono sube, rebota en 2 kHz y baja.",
+  "interior": "Muestrear bien son dos pasos: un filtro paso bajo que quita lo que no cabe por debajo de fs/2 y, después, tomar las muestras.",
   "concepts": [
     "Teorema de Nyquist",
     "Aliasing",

@@ -7,6 +7,7 @@ import { examples, instantiate } from './examples';
 import { redo, startHistory, undo } from './history';
 import { HOME_SEEN_KEY, Home } from './home/Home';
 import { Inspector } from './inspector/Inspector';
+import { InteriorView } from './interior/InteriorView';
 import { loadAsset, pruneAssets } from './lib/assetDb';
 import { decodeCircuit } from './lib/share';
 import { Palette } from './palette/Palette';
@@ -166,6 +167,7 @@ export function App() {
           <Inspector />
         </ErrorBoundary>
       </div>
+      <InteriorView />
       <Toast />
       {home && <Home onClose={closeHome} />}
     </ReactFlowProvider>

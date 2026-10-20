@@ -12,6 +12,8 @@ export interface BlockText {
   summary: string;
   details?: string;
   tryThis?: string;
+  /** Explicación que se muestra al «entrar» en el bloque. */
+  interior?: string;
   /** Conceptos clave (palabras que el visitante puede buscar para saber más). */
   concepts?: string[];
   ports?: Record<string, string>;

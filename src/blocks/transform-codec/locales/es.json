@@ -3,6 +3,7 @@
   "summary": "Pasa cada bloque de muestras a frecuencia (DCT), se queda con los coeficientes importantes y los cuantiza.",
   "details": "En el dominio de la frecuencia la energía del audio se concentra en unos pocos coeficientes, así que se pueden descartar o cuantizar con pocos bits casi todos los demás. El precio es el retardo: para transformar un bloque de N muestras hay que esperar a tenerlas todas, así que el códec retrasa la señal N/fs. Bloques grandes resuelven mejor la frecuencia y comprimen más, pero retrasan más y emborronan los transitorios (pre-eco). Cada bloque envía un factor de escala de 16 bits y, si eliges los coeficientes mayores, también su posición.",
   "tryThis": "Sube el tamaño de bloque de 64 a 1024 muestras con una voz a 16 kHz y mira el retardo en la Salida: de 4 ms a 64 ms.",
+  "interior": "El códec trocea la señal en bloques, pasa cada uno a frecuencia con la DCT, se queda con algunos coeficientes, los cuantiza y vuelve al tiempo con la DCT inversa.",
   "concepts": [
     "DCT",
     "Compactación de energía",

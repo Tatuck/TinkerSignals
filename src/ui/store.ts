@@ -45,6 +45,10 @@ export interface State {
   assets: Record<string, AssetInfo>;
   /** Se incrementa al cargar un circuito entero: el lienzo lo usa para encuadrarlo. */
   loadCount: number;
+  /** Bloque cuyo interior se está viendo (solo en el circuito principal). */
+  interiorOf: string | null;
+  /** Qué nodo y puerto del interior corresponden a cada salida del bloque. */
+  interiorOutputs: Record<string, [string, string]>;
   /** Mensaje breve en pantalla (p. ej. «Enlace copiado»). */
   toast: string | null;
   notify(message: string): void;
@@ -62,6 +66,9 @@ export interface State {
   registerAsset(id: string, info: AssetInfo): void;
   load(nodes: BlockNode[], edges: CableEdge[]): void;
 }
+
+/** Función que fuerza recalcular cada circuito (ver attachRunner). */
+const runners = new Map<GraphStore, () => void>();
 
 let counter = 0;
 let toastTimer: ReturnType<typeof setTimeout> | undefined;
@@ -84,6 +91,8 @@ export function createGraphStore(scope: Scope): GraphStore {
     assets: {},
     loadCount: 0,
     toast: null,
+    interiorOf: null,
+    interiorOutputs: {},
 
     notify(message) {
       set({ toast: message });
@@ -204,8 +213,6 @@ export function toGraph(nodes: BlockNode[], edges: CableEdge[]): Graph {
 // Cada vez que cambia algo que afecta al cálculo (no al mover bloques), se
 // vuelve a ejecutar el grafo en el Worker. Si llega un cambio mientras se
 // calcula, se ejecuta una sola vez más al terminar con el último estado.
-
-const runners = new Map<GraphStore, () => void>();
 
 /** Fuerza recalcular aunque el grafo no haya cambiado (p. ej. nuevo audio). */
 export function invalidate(store: GraphStore = useStore): void {

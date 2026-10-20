@@ -1468,3 +1468,87 @@ select {
 .menu-list button:hover {
   background: var(--panel-2);
 }
+
+/* ─── Vista interior de un bloque ────────────────────────────────────────── */
+
+.interior {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  background: var(--paper);
+}
+.interior-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  padding: 10px 16px;
+  background: var(--panel);
+  border-bottom: 2px solid var(--ink);
+}
+.interior-head > p {
+  flex: 1 1 420px;
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 16px;
+}
+.crumbs .btn {
+  font-family: var(--font-body);
+}
+.compare-badge {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--ink-2);
+}
+.compare-badge.is-match {
+  background: color-mix(in srgb, var(--ok) 14%, white);
+  color: #1d6b46;
+}
+.interior-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  min-height: 0;
+}
+.interior-body .inspector {
+  grid-area: auto;
+  border-left: 1px solid var(--line);
+}
+.interior-body .canvas {
+  grid-area: auto;
+}
+@media (max-width: 960px) {
+  .interior-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: 60vh auto;
+    overflow-y: auto;
+  }
+}
+
+.node-inside {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  cursor: pointer;
+}
+.node-inside:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
