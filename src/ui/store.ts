@@ -45,6 +45,8 @@ export interface State {
   assets: Record<string, AssetInfo>;
   /** Se incrementa al cargar un circuito entero: el lienzo lo usa para encuadrarlo. */
   loadCount: number;
+  /** Ficha de teoría abierta (id), '' para el índice, o null si está cerrada. */
+  theory: string | null;
   /** Instante elegido con la lupa temporal (s), o null si no hay lupa. */
   cursor: number | null;
   setCursor(t: number | null): void;
@@ -94,6 +96,7 @@ export function createGraphStore(scope: Scope): GraphStore {
     assets: {},
     loadCount: 0,
     toast: null,
+    theory: null,
     cursor: null,
     setCursor: (cursor) => set({ cursor }),
     interiorOf: null,

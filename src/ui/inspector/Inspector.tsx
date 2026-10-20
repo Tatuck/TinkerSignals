@@ -4,7 +4,8 @@ import { formatMetric, formatNumber } from '../lib/format';
 import { Plot } from '../plots/Plot';
 import { ProbePanel } from '../probe/ProbePanel';
 import { registry } from '../registry';
-import { useGraphStore } from '../store';
+import { useGraphStore, useStore } from '../store';
+import { conceptFor } from '@/theory/es';
 import { categoryColor } from '../theme';
 import { ParamControl } from './ParamControl';
 import { useLessonTarget } from '../lessons/LessonPanel';
@@ -180,9 +181,24 @@ function NodeInspector({ id }: { id: string }) {
         <section>
           <h3>{t('inspector.concepts')}</h3>
           <ul className="concepts">
-            {text.concepts.map((c) => (
-              <li key={c}>{c}</li>
-            ))}
+            {text.concepts.map((c) => {
+              const concept = conceptFor(c);
+              return (
+                <li key={c}>
+                  {concept ? (
+                    <button
+                      className="concept-link"
+                      onClick={() => useStore.setState({ theory: concept.id })}
+                      title={`Abrir la ficha «${concept.title}»`}
+                    >
+                      {c}
+                    </button>
+                  ) : (
+                    c
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </section>
       )}

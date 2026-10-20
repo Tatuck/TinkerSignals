@@ -1027,6 +1027,24 @@ select {
   background: color-mix(in srgb, var(--cat, var(--ink)) 9%, white);
   color: var(--ink-2);
 }
+.concepts li:has(.concept-link) {
+  padding: 0;
+}
+.concept-link {
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--ink);
+  padding: 2px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--ink) 30%, transparent);
+  text-underline-offset: 2px;
+}
+.concept-link:hover {
+  background: color-mix(in srgb, var(--cat, var(--signal)) 18%, white);
+}
 
 .insp-ref {
   font-size: 12.5px;
@@ -1621,4 +1639,116 @@ select {
   background: var(--panel);
   padding: 1px 5px;
   border-radius: 4px;
+}
+
+/* ─── Teoría ─────────────────────────────────────────────────────────────── */
+
+.theory-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(31, 42, 68, 0.35);
+}
+.theory {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  width: min(980px, 100%);
+  height: min(720px, 100%);
+  background: var(--panel);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px -20px rgba(31, 42, 68, 0.6);
+}
+.theory-index {
+  background: var(--panel-2);
+  border-right: 1px solid var(--line);
+  padding: 16px;
+  overflow-y: auto;
+}
+.theory-index h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  margin: 0 0 10px;
+}
+.theory-index ul {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+.theory-index button {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.theory-index button:hover {
+  background: var(--panel);
+}
+.theory-index button.is-on {
+  background: var(--ink);
+  color: #fff;
+  font-weight: 700;
+}
+.theory-body {
+  padding: 22px 28px 28px;
+  overflow-y: auto;
+}
+.theory-body header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 12px;
+}
+.theory-body h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 12px;
+}
+.theory-body > p {
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 62ch;
+}
+.theory-body h3 {
+  font-size: 14px;
+  color: var(--ink-2);
+  margin: 22px 0 8px;
+}
+.formula-card {
+  margin: 0 0 10px;
+  padding: 10px 14px;
+  background: var(--panel-2);
+  border-radius: 10px;
+}
+.formula-card figcaption {
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+.formula {
+  overflow-x: auto;
+  font-size: 15px;
+}
+.try-blocks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+@media (max-width: 760px) {
+  .theory {
+    grid-template-columns: 1fr;
+    grid-template-rows: 180px minmax(0, 1fr);
+  }
 }
