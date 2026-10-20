@@ -134,16 +134,6 @@ function convolve(h: Float64Array, v: Float64Array, out: Float64Array): Float64A
   return out;
 }
 
-function sparseConvolve(h: Float64Array, c: Sparse, out: Float64Array): Float64Array {
-  out.fill(0);
-  const L = h.length;
-  for (let i = 0; i < c.pos.length; i++) {
-    const p = c.pos[i];
-    const s = c.sign[i];
-    for (let n = p; n < L; n++) out[n] += s * h[n - p];
-  }
-  return out;
-}
 
 const dot = (a: Float64Array, b: Float64Array) => {
   let s = 0;
@@ -192,7 +182,7 @@ export function celpEncode(x: Float32Array, c: CelpConfig) {
   const y = new Float32Array(x.length);
   const win = Math.round(c.frameLen * 1.5);
   const look = Math.round((win - c.frameLen) / 2);
-  const yBuf = new Float64Array(L);
+  const search = makeWorkspace(L);
   let lastA: Float64Array = new Float64Array(c.order);
 
   for (let start = 0; start < x.length; start += c.frameLen) {
@@ -222,39 +212,33 @@ export function celpEncode(x: Float32Array, c: CelpConfig) {
       let vA: Float64Array = new Float64Array(L);
       let gA = 0;
       if (c.adaptive) {
-        let bestT = c.minLag;
-        let bestScore = -1;
-        let bestV: Float64Array = vA;
-        let bestY: Float64Array = new Float64Array(L);
-        for (let T = c.minLag; T <= maxLag; T++) {
-          const v = adaptiveVector(history, T, L);
-          const yv = convolve(h, v, new Float64Array(L));
-          const ty = dot(target, yv);
-          const yy = dot(yv, yv);
-          if (yy > 1e-12 && ty > 0 && (ty * ty) / yy > bestScore) {
-            bestScore = (ty * ty) / yy;
-            bestT = T;
-            bestV = v;
-            bestY = yv;
-          }
-        }
-        const yy = dot(bestY, bestY);
-        const qa = quantGA(yy > 1e-12 ? dot(target, bestY) / yy : 0);
+        const best = searchAdaptive(history, h, target, c.minLag, maxLag, L, search);
+        const qa = quantGA(best.energy > 1e-12 ? best.corr / best.energy : 0);
         gA = dequantGA(qa);
-        w.write(bestT - c.minLag, c.pitchBits);
+        w.write(best.T - c.minLag, c.pitchBits);
         w.write(qa, GA_BITS);
-        vA = bestV;
-        for (let n = 0; n < L; n++) target[n] -= gA * bestY[n];
+        vA = adaptiveVector(history, best.T, L);
+        for (let n = 0; n < L; n++) target[n] -= gA * best.y[n];
       }
 
-      // 2. Libro estocástico.
+      // 2. Libro estocástico. Para no filtrar cada vector:
+      //   correlación  t·(h∗c) = (Hᵀt)·c → con el objetivo filtrado hacia atrás
+      //   energía      |h∗c|²  = cᵀ·Φ·c  → con la autocorrelación de h
+      // y como los vectores son dispersos, solo se suman sus pocos pulsos.
+      backwardFilter(target, h, search.d);
+      const phi = autocorrelationMatrix(h, search.phi);
       let bestI = 0;
       let bestScore = -1;
       let bestG = 0;
       for (let i = 0; i < codebook.length; i++) {
-        const yc = sparseConvolve(h, codebook[i], yBuf);
-        const ty = dot(target, yc);
-        const yy = dot(yc, yc);
+        const { pos, sign } = codebook[i];
+        let ty = 0;
+        let yy = 0;
+        for (let p = 0; p < pos.length; p++) {
+          ty += sign[p] * search.d[pos[p]];
+          yy += sign[p] * sign[p] * phi[pos[p] * L + pos[p]];
+          for (let q = p + 1; q < pos.length; q++) yy += 2 * sign[p] * sign[q] * phi[pos[p] * L + pos[q]];
+        }
         if (yy > 1e-12 && (ty * ty) / yy > bestScore) {
           bestScore = (ty * ty) / yy;
           bestI = i;
@@ -281,6 +265,105 @@ export function celpEncode(x: Float32Array, c: CelpConfig) {
     }
   }
   return { writer: w, reconstructed: y, lookaheadSamples: look, lastA };
+}
+
+// ─── Búsqueda rápida ────────────────────────────────────────────────────────
+
+interface Workspace {
+  y: Float64Array;
+  v: Float64Array;
+  best: Float64Array;
+  d: Float64Array;
+  phi: Float64Array;
+}
+
+const makeWorkspace = (L: number): Workspace => ({
+  y: new Float64Array(L),
+  v: new Float64Array(L),
+  best: new Float64Array(L),
+  d: new Float64Array(L),
+  phi: new Float64Array(L * L),
+});
+
+/**
+ * Busca el retardo T del libro adaptativo que maximiza (t·y)²/(y·y), con
+ * y = h ∗ v(T). Truco: sea e_T la excitación pasada desde T muestras atrás,
+ * cortada a T muestras (sin repetir), y z_T = h ∗ e_T. Entonces
+ *   z_T[n] = z_{T−1}[n−1] + h[n]·e_T[0]      → cada retardo cuesta O(L)
+ * y, como v(T) repite e_T cada T muestras, y_T se obtiene "plegando":
+ *   y_T[n] = z_T[n] + z_T[n−T] + z_T[n−2T] + …
+ * Solo el primer retardo se filtra entero.
+ */
+function searchAdaptive(
+  history: Float64Array,
+  h: Float64Array,
+  target: Float64Array,
+  minLag: number,
+  maxLag: number,
+  L: number,
+  ws: Workspace,
+): { T: number; corr: number; energy: number; y: Float64Array } {
+  const H = history.length;
+  const z = ws.v;
+  const y = ws.y;
+  let bestT = minLag;
+  let bestScore = -1;
+  let bestCorr = 0;
+  let bestEnergy = 0;
+  for (let T = minLag; T <= maxLag; T++) {
+    if (T === minLag) {
+      for (let n = 0; n < L; n++) y[n] = n < T ? history[H - T + n] : 0;
+      convolve(h, y, z);
+    } else {
+      const x0 = history[H - T];
+      for (let n = L - 1; n > 0; n--) z[n] = z[n - 1] + h[n] * x0;
+      z[0] = h[0] * x0;
+    }
+    for (let n = 0; n < L; n++) {
+      let acc = z[n];
+      for (let m = n - T; m >= 0; m -= T) acc += z[m];
+      y[n] = acc;
+    }
+    const ty = dot(target, y);
+    const yy = dot(y, y);
+    if (yy > 1e-12 && ty > 0 && (ty * ty) / yy > bestScore) {
+      bestScore = (ty * ty) / yy;
+      bestT = T;
+      bestCorr = ty;
+      bestEnergy = yy;
+      ws.best.set(y);
+    }
+  }
+  return { T: bestT, corr: bestCorr, energy: bestEnergy, y: ws.best };
+}
+
+/** d = Hᵀ·t: d[k] = Σ_{n≥k} t[n]·h[n−k]. */
+function backwardFilter(t: Float64Array, h: Float64Array, d: Float64Array): void {
+  const L = t.length;
+  for (let k = 0; k < L; k++) {
+    let s = 0;
+    for (let n = k; n < L; n++) s += t[n] * h[n - k];
+    d[k] = s;
+  }
+}
+
+/**
+ * Φ = Hᵀ·H con H la matriz de convolución truncada de h:
+ * Φ[i][j] = Σ_{n ≥ max(i,j)} h[n−i]·h[n−j]. Se rellena por diagonales,
+ * de abajo arriba, sumando un término cada vez: O(L²).
+ */
+function autocorrelationMatrix(h: Float64Array, phi: Float64Array): Float64Array {
+  const L = h.length;
+  for (let delta = 0; delta < L; delta++) {
+    let acc = 0;
+    for (let j = L - 1; j >= delta; j--) {
+      const i = j - delta;
+      acc += h[L - 1 - j] * h[L - 1 - j + delta];
+      phi[i * L + j] = acc;
+      phi[j * L + i] = acc;
+    }
+  }
+  return phi;
 }
 
 // ─── Decodificador ──────────────────────────────────────────────────────────
@@ -325,3 +408,6 @@ export function celpDecode(bytes: Uint8Array, bitLength: number, n: number, c: C
   }
   return { y, excitation };
 }
+
+/** Piezas internas expuestas solo para los tests. */
+export const __test = { searchAdaptive, backwardFilter, autocorrelationMatrix, makeWorkspace, convolve, adaptiveVector };
