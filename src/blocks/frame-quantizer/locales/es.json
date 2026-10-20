@@ -1,0 +1,19 @@
+{
+  "title": "Cuantizar por tramas",
+  "summary": "Cuantiza cada trama con n bits y un factor de escala propio (su máximo).",
+  "details": "En vez de una escalera fija para toda la señal, cada trama usa una escalera ajustada a su valor máximo, que habría que enviar junto a los datos (factor de escala). Así las tramas suaves no pierden resolución. Es lo que hacen los códecs por bloques.",
+  "tryThis": "Ponlo sobre coeficientes DCT con 3 bits y escucha el resultado tras la DCT inversa.",
+  "concepts": [
+    "Cuantización por bloques",
+    "Factor de escala"
+  ],
+  "ports": {
+    "in": "Tramas",
+    "out": "Tramas cuantizadas"
+  },
+  "params": {
+    "bits": {
+      "label": "Bits por valor"
+    }
+  }
+}

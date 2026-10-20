@@ -1,0 +1,47 @@
+{
+  "title": "Espectro (FFT)",
+  "summary": "Analiza qué frecuencias hay en la señal, trama a trama. Ideal para diagnosticar.",
+  "details": "Calcula la transformada rápida de Fourier de tramas solapadas (STFT). Una FFT de N puntos separa frecuencias que estén a más de fs/N Hz: más puntos, más resolución en frecuencia pero menos en tiempo. La gráfica muestra el espectro medio; abre el cable de salida para ver el espectrograma completo. Una senoidal de amplitud 1 aparece a 0 dB.",
+  "tryThis": "Ponla detrás de un Muestreador sin filtro y mira dónde aparecen las frecuencias de aliasing.",
+  "concepts": [
+    "FFT",
+    "Espectrograma",
+    "Resolución en frecuencia"
+  ],
+  "ports": {
+    "in": "Señal",
+    "out": "Espectro por tramas"
+  },
+  "params": {
+    "size": {
+      "label": "Puntos de la FFT"
+    },
+    "window": {
+      "label": "Ventana"
+    }
+  },
+  "options": {
+    "size": {
+      "64": "64 puntos",
+      "128": "128 puntos",
+      "256": "256 puntos",
+      "512": "512 puntos",
+      "1024": "1024 puntos",
+      "2048": "2048 puntos"
+    },
+    "window": {
+      "rect": "Rectangular (sin ventana)",
+      "hann": "Hann",
+      "hamming": "Hamming",
+      "sine": "Seno"
+    }
+  },
+  "metrics": {
+    "resolution": "Resolución",
+    "peakHz": "Frecuencia dominante",
+    "frameMs": "Duración de trama"
+  },
+  "plots": {
+    "spectrum": "Espectro medio"
+  }
+}

@@ -1,7 +1,7 @@
 import { makeBitstream, referenceBitsFor } from '@/engine/dsp/bitstream';
 import { averageSpectrumDb } from '@/engine/dsp/fft';
 import { snr } from '@/engine/dsp/metrics';
-import { defineBlock } from '@/engine/types';
+import { defineBlock, type InteriorGraph } from '@/engine/types';
 import { QMF_TAPS, subbandEncode } from '../_shared/subband';
 
 /** Modos de G.722: bits de la banda baja (la alta siempre lleva 2). */
@@ -17,6 +17,45 @@ export default defineBlock({
   outputs: { out: { type: 'bitstream' } },
   params: {
     mode: { type: 'select', default: '64', options: Object.keys(MODES) as (keyof typeof MODES)[] },
+  },
+  interior: (p, inputs): InteriorGraph => {
+    const fs = inputs.in?.kind === 'signal' ? inputs.in.sampleRate : 16000;
+    const n = inputs.in?.kind === 'signal' ? inputs.in.length : 0;
+    const lowBits = MODES[p.mode];
+    return {
+      nodes: [
+        { id: 'in', type: 'inner-signal-in', x: 0, y: 200 },
+        { id: 'h0', type: 'fir-filter', x: 300, y: 0, params: { type: 'qmf-low' } },
+        { id: 'd0', type: 'rate-change', x: 600, y: 0, params: { exactRate: fs / 2 } },
+        { id: 'a0', type: 'band-adpcm', x: 900, y: 0, params: { bits: lowBits, predictor: 'low' } },
+        { id: 'u0', type: 'upsample', x: 1200, y: 0, params: { factor: 2, length: n + QMF_TAPS - 1 } },
+        { id: 'g0', type: 'fir-filter', x: 1500, y: 0, params: { type: 'qmf-low', gain: 2 } },
+        { id: 'h1', type: 'fir-filter', x: 300, y: 420, params: { type: 'qmf-high' } },
+        { id: 'd1', type: 'rate-change', x: 600, y: 420, params: { exactRate: fs / 2 } },
+        { id: 'a1', type: 'band-adpcm', x: 900, y: 420, params: { bits: 2, predictor: 'high' } },
+        { id: 'u1', type: 'upsample', x: 1200, y: 420, params: { factor: 2, length: n + QMF_TAPS - 1 } },
+        { id: 'g1', type: 'fir-filter', x: 1500, y: 420, params: { type: 'qmf-high', gain: -2 } },
+        { id: 'sum', type: 'adder', x: 1800, y: 200 },
+        { id: 'align', type: 'delay', x: 2100, y: 200, params: { samples: -(QMF_TAPS - 1), length: n } },
+      ],
+      edges: [
+        ['in', 'out', 'h0', 'in'],
+        ['h0', 'out', 'd0', 'in'],
+        ['d0', 'out', 'a0', 'in'],
+        ['a0', 'out', 'u0', 'in'],
+        ['u0', 'out', 'g0', 'in'],
+        ['in', 'out', 'h1', 'in'],
+        ['h1', 'out', 'd1', 'in'],
+        ['d1', 'out', 'a1', 'in'],
+        ['a1', 'out', 'u1', 'in'],
+        ['u1', 'out', 'g1', 'in'],
+        ['g0', 'out', 'sum', 'a'],
+        ['g1', 'out', 'sum', 'b'],
+        ['sum', 'out', 'align', 'in'],
+      ],
+      inputs: { in: 'in' },
+      outputs: {},
+    };
   },
   process({ inputs, params }) {
     const { samples: x, sampleRate: fs } = inputs.in;

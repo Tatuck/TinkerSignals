@@ -1,0 +1,25 @@
+{
+  "title": "Retardo",
+  "summary": "Retrasa la señal N muestras (o la adelanta, para compensar el retardo de un filtro).",
+  "details": "Un retardo z⁻ᴺ es la operación más simple y aparece en todos los filtros y predictores. Con N negativo adelanta la señal: no es posible en tiempo real, pero sirve para alinear dos señales al compararlas.",
+  "tryThis": "Retrasa una señal 1 muestra y réstala a sí misma: has hecho un filtro paso alto muy sencillo.",
+  "concepts": [
+    "Retardo",
+    "z⁻¹"
+  ],
+  "ports": {
+    "in": "Señal",
+    "out": "Retrasada"
+  },
+  "params": {
+    "samples": {
+      "label": "Retardo"
+    },
+    "length": {
+      "label": "Longitud de salida"
+    }
+  },
+  "metrics": {
+    "delayMs": "Retardo"
+  }
+}

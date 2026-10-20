@@ -1,6 +1,6 @@
 import { makeBitstream, referenceBitsFor } from '@/engine/dsp/bitstream';
 import { frameAt, frameSpectrumDb, lpcEnvelopeDb } from '@/engine/dsp/voice';
-import { defineBlock } from '@/engine/types';
+import { defineBlock, type InteriorGraph } from '@/engine/types';
 import { bitsPerFrame, lpcConfig, lpcEncode } from '../_shared/lpc-vocoder';
 
 export default defineBlock({
@@ -15,6 +15,27 @@ export default defineBlock({
     order: { type: 'number', default: 10, min: 2, max: 24, step: 1 },
     frameMs: { type: 'number', default: 20, min: 10, max: 40, step: 2.5, unit: 'ms' },
     kBits: { type: 'number', default: 5, min: 2, max: 10, step: 1, unit: 'bits' },
+  },
+  interior: (p, inputs): InteriorGraph => {
+    const fs = inputs.in?.kind === 'signal' ? inputs.in.sampleRate : 8000;
+    const N = Math.max(32, Math.round((p.frameMs / 1000) * fs));
+    return {
+      nodes: [
+        { id: 'in', type: 'inner-signal-in', x: 0, y: 40 },
+        { id: 'frames', type: 'framer', x: 300, y: 20, params: { exactSize: Math.round(1.5 * N), exactHop: N, window: 'hamming' } },
+        { id: 'r', type: 'autocorrelation', x: 600, y: 0, params: { order: p.order } },
+        { id: 'lpc', type: 'levinson', x: 900, y: 0 },
+        { id: 'spec', type: 'fft', x: 300, y: 380, params: { size: '512', window: 'hann' } },
+      ],
+      edges: [
+        ['in', 'out', 'frames', 'in'],
+        ['frames', 'out', 'r', 'in'],
+        ['r', 'out', 'lpc', 'in'],
+        ['in', 'out', 'spec', 'in'],
+      ],
+      inputs: { in: 'in' },
+      outputs: {},
+    };
   },
   process({ inputs, params }) {
     const { samples: x, sampleRate: fs } = inputs.in;

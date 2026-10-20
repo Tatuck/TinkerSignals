@@ -9,6 +9,7 @@ export const categoryColor: Record<BlockCategory, string> = {
   perceptual: '#D9480F',
   'sin-perdidas': '#0B8A8A',
   canal: '#5C6B80',
+  piezas: '#5F3DC4',
   utilidades: '#8C6D1F',
   salida: '#1F2A44',
 };
@@ -21,6 +22,7 @@ export const categoryOrder: BlockCategory[] = [
   'perceptual',
   'sin-perdidas',
   'canal',
+  'piezas',
   'utilidades',
   'salida',
 ];
@@ -30,6 +32,7 @@ export const portColor: Record<PortType, string> = {
   signal: '#2F6FEB',
   bitstream: '#E09A00',
   packets: '#0E9F6E',
+  frames: '#9C36B5',
 };
 
 export const inputSeriesColor = '#9AA6B8';

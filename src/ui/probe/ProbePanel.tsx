@@ -7,19 +7,21 @@ import { formatMetric, formatNumber, formatRate } from '../lib/format';
 import { Envelope } from '../plots/Envelope';
 import { Plot } from '../plots/Plot';
 import { Spectrogram, Spectrum } from '../plots/Spectrum';
-import { useStore } from '../store';
+import { useGraphStore } from '../store';
 import { portColor } from '../theme';
 
 const W = 292;
 
 /** Inspector de un cable: qué pasa por él, cómo suena y cómo se ve. */
 export function ProbePanel({ edgeId }: { edgeId: string }) {
-  const edge = useStore((s) => s.edges.find((e) => e.id === edgeId));
-  const nodes = useStore((s) => s.nodes);
-  const port = useStore((s) =>
+  const useS = useGraphStore();
+  const scope = useS((s) => s.scope);
+  const edge = useS((s) => s.edges.find((e) => e.id === edgeId));
+  const nodes = useS((s) => s.nodes);
+  const port = useS((s) =>
     edge ? s.results?.nodes[edge.source]?.outputs[edge.sourceHandle ?? ''] : undefined,
   );
-  const removeEdge = useStore((s) => s.removeEdge);
+  const removeEdge = useS((s) => s.removeEdge);
   // El análisis se guarda junto al resumen del puerto del que salió: si el
   // cable cambia, el análisis antiguo deja de mostrarse sin tener que borrarlo.
   const [probed, setProbed] = useState<{ port: unknown; data: ProbeData | null } | null>(null);
@@ -32,12 +34,12 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
     if (!edge || !port) return;
     let alive = true;
     void engine
-      .probeOutput(edge.source, edge.sourceHandle ?? '')
+      .probeOutput(edge.source, edge.sourceHandle ?? '', scope)
       .then((d) => alive && setProbed({ port, data: d }));
     return () => {
       alive = false;
     };
-  }, [edge, port]);
+  }, [edge, port, scope]);
 
   if (!edge) return null;
   const src = nodes.find((n) => n.id === edge.source);
@@ -50,7 +52,7 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
 
   async function listen() {
     if (playing === key) return stop();
-    const s = await engine.getSignal(edge!.source, edge!.sourceHandle ?? '', 'out');
+    const s = await engine.getSignal(edge!.source, edge!.sourceHandle ?? '', 'out', scope);
     if (s) play(s, key);
   }
 
@@ -80,6 +82,16 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
               />
               <Metric label="Pico" text={formatNumber(port.summary.peak, 3)} />
               <Metric label="Valor eficaz (RMS)" text={formatNumber(port.summary.rms, 3)} />
+            </>
+          ) : port.summary.kind === 'frames' ? (
+            <>
+              <Metric label="Contenido" text={DOMAIN_LABEL[port.summary.domain]} />
+              <Metric label="Tramas" text={formatNumber(port.summary.count, 0)} />
+              <Metric label="Valores por trama" text={formatNumber(port.summary.size, 0)} />
+              <Metric
+                label="Avance entre tramas"
+                text={`${formatNumber((1000 * port.summary.hop) / port.summary.sampleRate, 1)} ms`}
+              />
             </>
           ) : port.summary.kind === 'packets' ? (
             <>
@@ -156,6 +168,30 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
         </section>
       )}
 
+      {data?.kind === 'frames' && (
+        <>
+          <section>
+            <h3>Todas las tramas</h3>
+            <Spectrogram cols={data.heat} width={W} height={110} />
+            <p className="param-help">
+              Tiempo en horizontal, índice dentro de la trama en vertical. Más claro, más energía.
+            </p>
+          </section>
+          <section>
+            <h3>
+              Trama {data.loudestIndex + 1} (la de más energía, en{' '}
+              {formatNumber((data.loudestIndex * data.hop) / data.sampleRate, 2)} s)
+            </h3>
+            <Plot
+              plot={{ kind: 'line', title: '', series: [{ role: 'out', y: data.loudest, style: data.loudest.length <= 64 ? 'step' : 'line' }] }}
+              color={color}
+              width={W}
+              height={100}
+            />
+          </section>
+        </>
+      )}
+
       {data?.kind === 'packets' && (
         <>
           <section>
@@ -196,6 +232,17 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
     </div>
   );
 }
+
+const DOMAIN_LABEL: Record<string, string> = {
+  time: 'Muestras en el tiempo',
+  dct: 'Coeficientes DCT',
+  spectrum: 'Espectro (dB)',
+  subbands: 'Subbandas',
+  autocorrelation: 'Autocorrelación',
+  lpc: 'Coeficientes LPC',
+  smr: 'Relación señal/máscara (dB)',
+  pitch: 'Tono',
+};
 
 /** Barra proporcional: carga útil frente a cabeceras. */
 function PacketBar({ payload, overhead }: { payload: number; overhead: number }) {

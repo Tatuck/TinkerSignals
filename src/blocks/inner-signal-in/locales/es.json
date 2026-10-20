@@ -1,0 +1,13 @@
+{
+  "title": "Entrada del bloque",
+  "summary": "Lo que le llega al bloque real en el circuito principal.",
+  "concepts": [],
+  "ports": {
+    "out": "Señal"
+  },
+  "params": {
+    "port": {
+      "label": "Puerto"
+    }
+  }
+}

@@ -23,7 +23,7 @@ export function ParamControl({
   const help = text.params?.[name]?.help;
   const id = `param-${blockId}-${name}`;
 
-  if (spec.type === 'audio') return null; // se gestiona en el propio bloque
+  if (spec.type === 'audio' || spec.type === 'external') return null; // se gestionan fuera del panel
 
   if (spec.type === 'number') {
     const v = typeof value === 'number' ? value : spec.default;

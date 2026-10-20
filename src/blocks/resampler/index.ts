@@ -1,7 +1,7 @@
 import { averageSpectrumDb } from '@/engine/dsp/fft';
 import { convolveSame, firResponseDb, lowpassFir } from '@/engine/dsp/filters';
 import { makeSignal } from '@/engine/dsp/signal';
-import { defineBlock } from '@/engine/types';
+import { defineBlock, type InteriorGraph } from '@/engine/types';
 
 const RATES = ['4000', '8000', '11025', '16000', '22050', '32000', '44100', '48000'] as const;
 const TAPS = { gentle: 31, normal: 101, steep: 301 } as const;
@@ -41,6 +41,44 @@ export default defineBlock({
       options: ['gentle', 'normal', 'steep'],
       visibleIf: { param: 'antialias', equals: [true] },
     },
+  },
+  interior: (p, inputs): InteriorGraph => {
+    const fsIn = inputs.in?.kind === 'signal' ? inputs.in.sampleRate : 16000;
+    const fsOut = Number(p.sampleRate);
+    const down = fsOut < fsIn;
+    const cutoff = p.cutoffMode === 'manual' ? p.cutoff : 0.45 * Math.min(fsIn, fsOut);
+    const filter = {
+      id: 'aa',
+      type: 'fir-filter',
+      params: { type: 'lowpass', cutoff: Math.round(cutoff), taps: TAPS[p.steepness] },
+    };
+    const sample = { id: 'rate', type: 'rate-change', params: { exactRate: fsOut } };
+    if (!p.antialias || fsOut === fsIn) {
+      return {
+        nodes: [
+          { id: 'in', type: 'inner-signal-in', x: 0, y: 40 },
+          { ...sample, x: 300, y: 20 },
+        ],
+        edges: [['in', 'out', 'rate', 'in']],
+        inputs: { in: 'in' },
+        outputs: { out: ['rate', 'out'] },
+      };
+    }
+    // Al bajar: filtrar y luego tomar muestras. Al subir: al revés.
+    const [first, second] = down ? [filter, sample] : [sample, filter];
+    return {
+      nodes: [
+        { id: 'in', type: 'inner-signal-in', x: 0, y: 40 },
+        { ...first, x: 300, y: 0 },
+        { ...second, x: 620, y: 20 },
+      ],
+      edges: [
+        ['in', 'out', first.id, 'in'],
+        [first.id, 'out', second.id, 'in'],
+      ],
+      inputs: { in: 'in' },
+      outputs: { out: [second.id, 'out'] },
+    };
   },
   process({ inputs, params }) {
     const { samples: x, sampleRate: fsIn } = inputs.in;

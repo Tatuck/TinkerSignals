@@ -25,14 +25,19 @@ interface CacheEntry {
  */
 export class Engine {
   private cache = new Map<string, CacheEntry>();
-  private assets = new Map<string, { signal: Signal; version: number }>();
+  private assets = new Map<string, { value: PortValue; version: number }>();
   private assetCounter = 0;
 
   constructor(private readonly registry: BlockRegistry) {}
 
   /** Registra (o reemplaza) un audio externo: archivo cargado o grabación. */
   setAsset(id: string, signal: Signal): void {
-    this.assets.set(id, { signal, version: ++this.assetCounter });
+    this.setExternal(id, signal);
+  }
+
+  /** Inyecta un valor de cualquier tipo (lo usan los circuitos interiores). */
+  setExternal(id: string, value: PortValue): void {
+    this.assets.set(id, { value, version: ++this.assetCounter });
   }
 
   deleteAsset(id: string): void {
@@ -126,7 +131,7 @@ export class Engine {
 
     const params = resolveParams(def.params, node.params);
     const assetVersions = Object.entries(def.params)
-      .filter(([, s]) => s.type === 'audio')
+      .filter(([, s]) => s.type === 'audio' || s.type === 'external')
       .map(([k]) => {
         const id = params[k] as string | null;
         return `${k}=${id ? (this.assets.get(id)?.version ?? 'missing') : 'none'}`;
@@ -143,7 +148,11 @@ export class Engine {
       const res = def.process({
         inputs: inputs as never,
         params: params as never,
-        getAsset: (id) => this.assets.get(id)?.signal,
+        getAsset: (id) => {
+          const v = this.assets.get(id)?.value;
+          return v?.kind === 'signal' ? v : undefined;
+        },
+        getExternal: (id) => this.assets.get(id)?.value,
       });
       const computeMs = now() - t0;
       const own = res.latencyMs ?? 0;

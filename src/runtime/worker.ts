@@ -3,28 +3,75 @@
  * Punto de composición: aquí se juntan el motor y los bloques reales.
  * Todo el cálculo pesado ocurre en este Web Worker para que la interfaz
  * nunca se congele.
+ *
+ * Hay dos motores: el del circuito principal y el del «interior» de un
+ * bloque (su circuito equivalente con piezas básicas).
  */
 import * as Comlink from 'comlink';
 import { createRegistry } from '@/blocks';
+import { snr } from '@/engine/dsp/metrics';
 import { Engine } from '@/engine/evaluator';
 import type { Graph, Signal } from '@/engine/types';
 import { probe } from './probe';
 
-const engine = new Engine(createRegistry());
+export type Scope = 'main' | 'interior';
+
+const registry = createRegistry();
+const engines: Record<Scope, Engine> = { main: new Engine(registry), interior: new Engine(registry) };
 
 const api = {
-  run: (graph: Graph) => engine.run(graph),
+  run: (graph: Graph, scope: Scope = 'main') => engines[scope].run(graph),
   setAsset: (id: string, samples: Float32Array, sampleRate: number) =>
-    engine.setAsset(id, { kind: 'signal', samples, sampleRate }),
-  deleteAsset: (id: string) => engine.deleteAsset(id),
-  probeOutput(nodeId: string, port: string) {
-    const v = engine.getValue(nodeId, port);
+    engines.main.setAsset(id, { kind: 'signal', samples, sampleRate }),
+  deleteAsset: (id: string) => engines.main.deleteAsset(id),
+  probeOutput(nodeId: string, port: string, scope: Scope = 'main') {
+    const v = engines[scope].getValue(nodeId, port);
     return v ? probe(v) : null;
   },
   /** Señal completa de una salida o de una entrada (para escuchar o descargar). */
-  getSignal(nodeId: string, port: string, side: 'out' | 'in'): Signal | null {
-    const v = side === 'out' ? engine.getValue(nodeId, port) : engine.getInputValue(nodeId, port);
+  getSignal(nodeId: string, port: string, side: 'out' | 'in', scope: Scope = 'main'): Signal | null {
+    const e = engines[scope];
+    const v = side === 'out' ? e.getValue(nodeId, port) : e.getInputValue(nodeId, port);
     return v?.kind === 'signal' ? v : null;
+  },
+  /**
+   * Prepara el interior de un bloque: le pasa los mismos valores que entran
+   * al bloque en el circuito principal (como valores inyectados `inner:<puerto>`).
+   * Devuelve qué puertos estaban conectados.
+   */
+  prepareInterior(nodeId: string, inputPorts: string[]): string[] {
+    const ready: string[] = [];
+    for (const port of inputPorts) {
+      const v = engines.main.getInputValue(nodeId, port);
+      if (v) {
+        engines.interior.setExternal(`inner:${port}`, v);
+        ready.push(port);
+      }
+    }
+    return ready;
+  },
+  /** Compara la salida del interior con la del bloque real. */
+  compareInterior(
+    nodeId: string,
+    port: string,
+    innerNode: string,
+    innerPort: string,
+  ): { kind: 'signal'; snr: number } | { kind: 'bits'; equalBits: number; totalBits: number } | null {
+    const real = engines.main.getValue(nodeId, port);
+    const inner = engines.interior.getValue(innerNode, innerPort);
+    if (!real || !inner) return null;
+    if (real.kind === 'signal' && inner.kind === 'signal') return { kind: 'signal', snr: snr(real.samples, inner.samples) };
+    if (real.kind === 'bitstream' && inner.kind === 'bitstream') {
+      const n = Math.min(real.bitLength, inner.bitLength);
+      let eq = 0;
+      for (let i = 0; i < n; i++) {
+        const a = (real.bytes[i >> 3] >> (7 - (i & 7))) & 1;
+        const b = (inner.bytes[i >> 3] >> (7 - (i & 7))) & 1;
+        if (a === b) eq++;
+      }
+      return { kind: 'bits', equalBits: eq, totalBits: Math.max(real.bitLength, inner.bitLength) };
+    }
+    return null;
   },
 };
 

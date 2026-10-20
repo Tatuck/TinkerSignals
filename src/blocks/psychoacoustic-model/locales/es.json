@@ -1,0 +1,19 @@
+{
+  "title": "Modelo psicoacústico",
+  "summary": "Calcula qué parte del sonido tapa a la de al lado y cuánto ruido se podría esconder en cada banda.",
+  "details": "Con una FFT de 512 puntos busca tonos y ruido, calcula cuánto enmascara cada uno a las frecuencias cercanas (en la escala Bark de bandas críticas) y suma el umbral absoluto de audición. El resultado, por trama y subbanda, es la SMR: cuántos dB está la señal por encima del umbral. Una SMR alta pide muchos bits; una negativa, ninguno.",
+  "tryThis": "Pásale un tono puro y luego ruido: mira cómo cambia el umbral de enmascaramiento.",
+  "concepts": [
+    "Enmascaramiento",
+    "Bandas críticas (Bark)",
+    "SMR"
+  ],
+  "ports": {
+    "in": "Audio",
+    "out": "SMR por subbanda"
+  },
+  "params": {},
+  "plots": {
+    "masking": "Espectro (gris) y umbral de enmascaramiento"
+  }
+}

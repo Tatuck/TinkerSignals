@@ -1,0 +1,44 @@
+{
+  "title": "Filtro FIR",
+  "summary": "Filtra con una respuesta al impulso finita: paso bajo, paso alto o los filtros QMF.",
+  "details": "Un FIR calcula cada muestra de salida como una media ponderada de las últimas N muestras de entrada. Con fase lineal no distorsiona la forma de onda, solo la retrasa (N−1)/2 muestras. Más coeficientes, corte más abrupto y más retardo. Los tipos QMF son los filtros de media banda del códec de subbandas.",
+  "tryThis": "Compara 21 y 301 coeficientes con un barrido: mira la pendiente de la respuesta y el retardo.",
+  "concepts": [
+    "Filtro FIR",
+    "Fase lineal",
+    "Banco QMF"
+  ],
+  "ports": {
+    "in": "Señal",
+    "out": "Filtrada"
+  },
+  "params": {
+    "type": {
+      "label": "Tipo"
+    },
+    "cutoff": {
+      "label": "Frecuencia de corte"
+    },
+    "taps": {
+      "label": "Coeficientes"
+    },
+    "gain": {
+      "label": "Ganancia"
+    }
+  },
+  "options": {
+    "type": {
+      "lowpass": "Paso bajo",
+      "highpass": "Paso alto",
+      "qmf-low": "QMF: mitad baja",
+      "qmf-high": "QMF: mitad alta"
+    }
+  },
+  "metrics": {
+    "taps": "Coeficientes"
+  },
+  "plots": {
+    "response": "Respuesta en frecuencia",
+    "impulse": "Respuesta al impulso"
+  }
+}

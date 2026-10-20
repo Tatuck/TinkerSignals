@@ -266,7 +266,7 @@ export function mpeg1Encode(
  * Reparte los bits: en cada paso sube los bits de la subbanda con menor
  * relación ruido/máscara (MNR = SNR(b) − SMR), si cabe en lo que queda.
  */
-function allocate(smr: Float64Array, available: number): number[] {
+export function allocate(smr: Float64Array, available: number): number[] {
   const bits = new Array<number>(BANDS).fill(0);
   let left = available;
   for (;;) {
@@ -292,6 +292,30 @@ function allocate(smr: Float64Array, available: number): number[] {
   }
   return bits;
 }
+
+// ─── Piezas sueltas (para el interior didáctico del códec) ──────────────────
+
+/** Bits disponibles para muestras y factores de escala en cada trama. */
+export const availableBits = (bitrate: number, fs: number) =>
+  Math.floor((bitrate * FRAME) / fs) - HEADER_BITS - BANDS * ALLOC_BITS;
+
+/** Índice del menor factor de escala que cubre el pico. */
+export function scaleFactorIndex(peak: number): number {
+  let i = 62;
+  while (i > 0 && SCALE_FACTORS[i] < peak) i--;
+  return i;
+}
+
+/** Cuantiza y reconstruye una muestra de subbanda igual que codificador + decodificador. */
+export function quantizeSubbandSample(v: number, bits: number, scf: number): number {
+  if (!bits) return 0;
+  const levels = 2 ** bits - 1;
+  const sf = SCALE_FACTORS[scf];
+  const code = Math.min(levels - 1, Math.round(((Math.max(-1, Math.min(1, v / sf)) + 1) / 2) * (levels - 1)));
+  return ((2 * code) / (levels - 1) - 1) * sf;
+}
+
+export const SUBBAND_SAMPLES = SAMPLES_PER_BAND;
 
 // ─── Decodificador ──────────────────────────────────────────────────────────
 

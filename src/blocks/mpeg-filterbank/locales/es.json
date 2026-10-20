@@ -1,0 +1,19 @@
+{
+  "title": "Banco de 32 subbandas",
+  "summary": "Divide el audio en 32 bandas de frecuencia de igual anchura.",
+  "details": "Cada 32 muestras de entrada produce 32 valores, uno por banda: no hay más datos que al principio, solo están reorganizados por frecuencia. Así el códec puede decidir los bits de cada banda por separado. Aquí se usa una MDCT con ventana seno, que reconstruye perfectamente con el banco de síntesis.",
+  "tryThis": "Conéctalo directamente al banco de síntesis y comprueba con un Comparador que la señal sale casi idéntica.",
+  "concepts": [
+    "Banco de filtros",
+    "Codificación en subbandas",
+    "MDCT"
+  ],
+  "ports": {
+    "in": "Audio",
+    "out": "Subbandas"
+  },
+  "params": {},
+  "metrics": {
+    "bandHz": "Ancho de cada banda"
+  }
+}

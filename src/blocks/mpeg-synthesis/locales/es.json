@@ -1,0 +1,14 @@
+{
+  "title": "Banco de síntesis",
+  "summary": "Junta las 32 subbandas para reconstruir el audio.",
+  "details": "Es el inverso del banco de análisis: cada grupo de 32 valores de subbanda vuelve a convertirse en 32 muestras, solapándose con el anterior.",
+  "tryThis": "Pon a cero las subbandas altas (con un Seleccionar coeficientes «de baja frecuencia») y escucha el resultado.",
+  "concepts": [
+    "Banco de síntesis"
+  ],
+  "ports": {
+    "in": "Subbandas",
+    "out": "Audio"
+  },
+  "params": {}
+}

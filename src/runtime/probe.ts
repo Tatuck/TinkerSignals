@@ -20,6 +20,17 @@ export type ProbeData =
       header: Record<string, unknown>;
     }
   | {
+      kind: 'frames';
+      domain: string;
+      /** Mapa de calor |valor| en dB: [trama][índice], reducido para pintar. */
+      heat: Float32Array[];
+      /** La trama de más energía, entera. */
+      loudest: Float32Array;
+      loudestIndex: number;
+      hop: number;
+      sampleRate: number;
+    }
+  | {
       kind: 'packets';
       /** Retardo de cada paquete (ms); null si se perdió. */
       delays: (number | null)[];
@@ -36,6 +47,42 @@ export function probe(v: PortValue): ProbeData {
       wave: envelope(v.samples, 600),
       spectrum: averageSpectrumDb(v.samples, 1024),
       spectrogram: spectrogramDb(v.samples, 512, 160),
+    };
+  }
+  if (v.kind === 'frames') {
+    const cols = Math.min(200, v.data.length);
+    const rows = Math.min(128, v.size);
+    const heat: Float32Array[] = [];
+    for (let c = 0; c < cols; c++) {
+      const f = v.data[Math.floor((c * v.data.length) / cols)];
+      const col = new Float32Array(rows);
+      for (let r = 0; r < rows; r++) {
+        const a = Math.floor((r * v.size) / rows);
+        const b = Math.max(a + 1, Math.floor(((r + 1) * v.size) / rows));
+        let m = 0;
+        for (let k = a; k < b; k++) m = Math.max(m, Math.abs(f[k]));
+        col[r] = v.domain === 'spectrum' ? f[a] : 20 * Math.log10(m + 1e-9);
+      }
+      heat.push(col);
+    }
+    let loudestIndex = 0;
+    let best = -1;
+    v.data.forEach((f, i) => {
+      let e = 0;
+      for (const x of f) e += x * x;
+      if (e > best) {
+        best = e;
+        loudestIndex = i;
+      }
+    });
+    return {
+      kind: 'frames',
+      domain: v.domain,
+      heat,
+      loudest: v.data[loudestIndex] ?? new Float32Array(0),
+      loudestIndex,
+      hop: v.hop,
+      sampleRate: v.sampleRate,
     };
   }
   if (v.kind === 'packets') {

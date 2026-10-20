@@ -42,7 +42,7 @@ export function Palette() {
     };
     return categoryOrder
       .map((cat) => {
-        const blocks = registry.list().filter((b) => b.category === cat && matches(b));
+        const blocks = registry.list().filter((b) => b.category === cat && !b.hidden && matches(b));
         const entries: Entry[] = [];
         const families = new Map<string, AnyBlock[]>();
         for (const b of blocks) {

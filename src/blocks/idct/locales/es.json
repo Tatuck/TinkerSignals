@@ -1,0 +1,14 @@
+{
+  "title": "DCT inversa",
+  "summary": "Reconstruye cada trama en el tiempo a partir de sus coeficientes DCT.",
+  "details": "Suma los cosenos con los pesos que indican los coeficientes. Si los coeficientes se han tocado (descartado o cuantizado), la trama reconstruida tendrá el error correspondiente.",
+  "tryThis": "Pon un «Seleccionar coeficientes» entre la DCT y su inversa y quédate solo con el 5 %: ¿se reconoce todavía la señal?",
+  "concepts": [
+    "DCT inversa"
+  ],
+  "ports": {
+    "in": "Coeficientes",
+    "out": "Tramas (tiempo)"
+  },
+  "params": {}
+}

@@ -1,5 +1,7 @@
 import * as Comlink from 'comlink';
-import type { EngineApi } from './worker';
+import type { EngineApi, Scope } from './worker';
+
+export type { Scope };
 
 /** Proxy al motor que vive en el Web Worker. Todas las llamadas son asíncronas. */
 export const engine = Comlink.wrap<EngineApi>(

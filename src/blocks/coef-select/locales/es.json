@@ -1,0 +1,32 @@
+{
+  "title": "Seleccionar coeficientes",
+  "summary": "Se queda con una parte de los coeficientes de cada trama y pone el resto a cero.",
+  "details": "Es la forma más directa de comprimir en un dominio transformado: si la energía está concentrada, tirar los coeficientes pequeños apenas se nota. Quedarse con los de baja frecuencia es fijo y no hay que decir cuáles son; quedarse con los mayores es mejor, pero hay que enviar también su posición.",
+  "tryThis": "Compara «los de baja frecuencia» con «los de mayor energía» al 10 %: mira la energía conservada.",
+  "concepts": [
+    "Compresión por transformada",
+    "Umbralización"
+  ],
+  "ports": {
+    "in": "Coeficientes",
+    "out": "Coeficientes"
+  },
+  "params": {
+    "keep": {
+      "label": "Coeficientes que se conservan"
+    },
+    "selection": {
+      "label": "Qué coeficientes"
+    }
+  },
+  "options": {
+    "selection": {
+      "low": "Los de baja frecuencia",
+      "largest": "Los de mayor energía"
+    }
+  },
+  "metrics": {
+    "kept": "Conservados por trama",
+    "energyKept": "Energía conservada"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "title": "Asignación de bits",
+  "summary": "Reparte los bits de cada trama entre las 32 subbandas según la SMR y las cuantiza.",
+  "details": "Va dando bits, de uno en uno, a la subbanda en la que el ruido de cuantización está más por encima del umbral de enmascaramiento, hasta agotar los bits de la tasa elegida. Cada subbanda se cuantiza con su factor de escala. La salida son las subbandas ya cuantizadas, listas para el banco de síntesis.",
+  "tryThis": "Baja la tasa a 32 kbps y mira en la gráfica qué bandas se quedan sin bits.",
+  "concepts": [
+    "Asignación de bits",
+    "Relación ruido/máscara"
+  ],
+  "ports": {
+    "subbands": "Subbandas",
+    "smr": "SMR",
+    "out": "Subbandas cuantizadas"
+  },
+  "params": {
+    "bitrate": {
+      "label": "Tasa"
+    }
+  },
+  "options": {
+    "bitrate": {
+      "32": "32 kbps",
+      "64": "64 kbps",
+      "96": "96 kbps",
+      "128": "128 kbps",
+      "192": "192 kbps",
+      "256": "256 kbps",
+      "384": "384 kbps"
+    }
+  },
+  "metrics": {
+    "bandsUsed": "Bandas con bits"
+  },
+  "plots": {
+    "allocation": "Bits por muestra en cada subbanda"
+  }
+}

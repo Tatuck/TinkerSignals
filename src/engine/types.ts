@@ -67,7 +67,28 @@ export interface PacketStream {
   protocol: string;
 }
 
-export type PortValue = Signal | Bitstream | PacketStream;
+/**
+ * Señal troceada en tramas (o en coeficientes por trama). Es lo que circula
+ * entre las piezas básicas: trocear → DCT → cuantizar → DCT inversa → unir.
+ */
+export interface Frames {
+  kind: 'frames';
+  /** Qué representan los valores de cada trama. */
+  domain: 'time' | 'dct' | 'spectrum' | 'subbands' | 'autocorrelation' | 'lpc' | 'smr' | 'pitch';
+  /** Frecuencia de muestreo de la señal de la que salen. */
+  sampleRate: number;
+  /** Muestras de la señal original entre el inicio de dos tramas. */
+  hop: number;
+  /** Valores por trama. */
+  size: number;
+  /** Longitud de la señal original (para poder reconstruirla). */
+  numSamples: number;
+  data: Float32Array[];
+  /** Ventana de análisis aplicada al trocear, si la hubo. */
+  window?: 'rect' | 'hann' | 'hamming' | 'sine';
+}
+
+export type PortValue = Signal | Bitstream | PacketStream | Frames;
 export type PortType = PortValue['kind'];
 
 // ─── Parámetros configurables de un bloque ──────────────────────────────────
@@ -75,6 +96,8 @@ export type PortType = PortValue['kind'];
 /** Muestra el parámetro solo cuando otro tiene ciertos valores (p. ej. μ solo con ley μ). */
 interface ParamBase {
   visibleIf?: { param: string; equals: readonly (string | boolean)[] };
+  /** No se muestra en el panel (lo fija quien monta el circuito, p. ej. un interior). */
+  hidden?: boolean;
 }
 
 export interface NumberParam extends ParamBase {
@@ -110,7 +133,16 @@ export interface AudioParam extends ParamBase {
   widget: 'file' | 'record';
 }
 
-export type ParamSpec = NumberParam | SelectParam | BooleanParam | AudioParam;
+/**
+ * Valor inyectado desde fuera del grafo (lo usa el motor para los circuitos
+ * interiores de los bloques). No se muestra en la interfaz.
+ */
+export interface ExternalParam extends ParamBase {
+  type: 'external';
+  default: string;
+}
+
+export type ParamSpec = NumberParam | SelectParam | BooleanParam | AudioParam | ExternalParam;
 export type ParamSpecs = Record<string, ParamSpec>;
 
 /** Convierte la especificación de parámetros en el tipo de sus valores. */
@@ -123,7 +155,9 @@ export type ParamValues<P extends ParamSpecs> = {
         ? boolean
         : P[K] extends AudioParam
           ? string | null
-          : never;
+          : P[K] extends ExternalParam
+            ? string
+            : never;
 };
 
 // ─── Puertos ────────────────────────────────────────────────────────────────
@@ -215,6 +249,8 @@ export interface ProcessContext<I extends PortSpecs, P extends ParamSpecs> {
   params: ParamValues<P>;
   /** Busca un audio externo (archivo o grabación) por id. */
   getAsset(id: string): Signal | undefined;
+  /** Busca un valor inyectado desde fuera del grafo (cualquier tipo de cable). */
+  getExternal(id: string): PortValue | undefined;
 }
 
 // ─── Definición de un bloque ────────────────────────────────────────────────
@@ -227,6 +263,7 @@ export type BlockCategory =
   | 'sin-perdidas'
   | 'voz'
   | 'canal'
+  | 'piezas'
   | 'utilidades'
   | 'salida';
 
@@ -247,6 +284,13 @@ export interface BlockDefinition<
    */
   family?: string;
   familyRole?: 'encoder' | 'decoder' | 'analysis';
+  /** Bloques internos del motor que no aparecen en la paleta. */
+  hidden?: boolean;
+  /**
+   * Circuito equivalente hecho con piezas básicas, para «entrar» en el
+   * bloque. Es solo didáctico: el motor sigue usando `process`.
+   */
+  interior?: (params: ParamValues<P>, inputs: InteriorInputs) => InteriorGraph;
   inputs: I;
   outputs: O;
   params: P;
@@ -272,6 +316,19 @@ export function defineBlock<
 }
 
 // ─── Grafo ──────────────────────────────────────────────────────────────────
+
+/** Lo que se sabe de lo que entra al bloque al construir su interior. */
+export type InteriorInputs = Record<string, ValueSummary | undefined>;
+
+export interface InteriorGraph {
+  nodes: { id: string; type: string; x: number; y: number; params?: Record<string, ParamValue> }[];
+  /** [origen, puertoOrigen, destino, puertoDestino] */
+  edges: [string, string, string, string][];
+  /** Puerto de entrada del bloque → id del nodo interior que lo recibe. */
+  inputs: Record<string, string>;
+  /** Puerto de salida del bloque → [nodo interior, puerto] que lo produce. */
+  outputs: Record<string, [string, string]>;
+}
 
 export type ParamValue = number | string | boolean | null;
 
@@ -320,6 +377,16 @@ export type ValueSummary =
       compression: number;
       /** Primeros bits, para enseñarlos en el inspector del cable. */
       firstBits: string;
+    }
+  | {
+      kind: 'frames';
+      domain: Frames['domain'];
+      count: number;
+      size: number;
+      hop: number;
+      sampleRate: number;
+      /** Valor absoluto medio de cada índice (≤ 64 grupos), para una miniatura. */
+      profile: Float32Array;
     }
   | {
       kind: 'packets';

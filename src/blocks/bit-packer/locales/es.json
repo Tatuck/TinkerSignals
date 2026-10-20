@@ -1,0 +1,19 @@
+{
+  "title": "Pasar a bits",
+  "summary": "Convierte cada nivel de la escalera de cuantización en su número binario.",
+  "details": "Tras cuantizar con n bits, cada muestra es uno de 2ⁿ niveles; este bloque escribe su índice en binario. Es la última etapa de un codificador PCM.",
+  "tryThis": "Ponlo tras un Cuantizador uniforme con los mismos bits y abre el cable de salida para ver los bits.",
+  "concepts": [
+    "Codificación binaria",
+    "PCM"
+  ],
+  "ports": {
+    "in": "Niveles cuantizados",
+    "out": "Bits"
+  },
+  "params": {
+    "bits": {
+      "label": "Bits por muestra"
+    }
+  }
+}

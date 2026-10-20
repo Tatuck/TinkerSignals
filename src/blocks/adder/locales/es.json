@@ -1,0 +1,23 @@
+{
+  "title": "Sumar",
+  "summary": "Suma (o resta, con ganancia negativa) dos señales.",
+  "details": "Con ganancias 1 y −1 calcula la diferencia entre dos señales: el error de un códec, o el residuo de una predicción.",
+  "tryThis": "Resta la entrada y la salida de un cuantizador para ver solo el ruido de cuantización.",
+  "concepts": [
+    "Suma de señales",
+    "Error"
+  ],
+  "ports": {
+    "a": "A",
+    "b": "B",
+    "out": "A·gA + B·gB"
+  },
+  "params": {
+    "gainA": {
+      "label": "Ganancia de A"
+    },
+    "gainB": {
+      "label": "Ganancia de B"
+    }
+  }
+}

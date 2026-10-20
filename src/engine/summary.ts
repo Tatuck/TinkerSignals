@@ -19,6 +19,22 @@ export function summarize(v: PortValue): ValueSummary {
       snippet: v.samples.slice(...interestingWindow(v.samples, Math.round(0.015 * v.sampleRate))),
     };
   }
+  if (v.kind === 'frames') {
+    const groups = Math.min(64, v.size);
+    const per = v.size / groups;
+    const profile = new Float32Array(groups);
+    for (const f of v.data) for (let k = 0; k < v.size; k++) profile[Math.floor(k / per)] += Math.abs(f[k]);
+    for (let g = 0; g < groups; g++) profile[g] /= Math.max(1, v.data.length * per);
+    return {
+      kind: 'frames',
+      domain: v.domain,
+      count: v.data.length,
+      size: v.size,
+      hop: v.hop,
+      sampleRate: v.sampleRate,
+      profile,
+    };
+  }
   if (v.kind === 'packets') {
     const pps = 1000 / v.packetMs;
     const payloadBits =

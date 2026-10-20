@@ -27,7 +27,8 @@
     "sin-perdidas": "Compresión sin pérdidas",
     "canal": "Canal y red",
     "utilidades": "Herramientas",
-    "salida": "Salidas y medida"
+    "salida": "Salidas y medida",
+    "piezas": "Piezas básicas"
   },
   "inspector": {
     "emptyTitle": "Monta tu primera cadena",
@@ -64,7 +65,8 @@
     "latency": "Retardo acumulado hasta aquí",
     "noData": "Por este cable aún no pasa nada: revisa el bloque de origen.",
     "delete": "Quitar cable",
-    "packets": "Paquetes de red"
+    "packets": "Paquetes de red",
+    "frames": "Tramas"
   },
   "node": {
     "waiting": "Esperando",
@@ -121,7 +123,8 @@
     "sin-perdidas": "Comprimen bits sin perder ninguno",
     "canal": "Lo que le pasa al audio por el camino",
     "utilidades": "Para preparar o modificar señales",
-    "salida": "Escuchar, descargar y comparar"
+    "salida": "Escuchar, descargar y comparar",
+    "piezas": "Las operaciones de las que están hechos los códecs"
   },
   "families": {
     "pcm": "PCM",
@@ -135,7 +138,10 @@
     "lzw": "LZW (diccionario)",
     "voip": "Paquetes RTP",
     "mpeg1": "MPEG-1 Audio Layer I",
-    "g722": "Subbandas (tipo G.722)"
+    "g722": "Subbandas (tipo G.722)",
+    "dct": "DCT",
+    "bits": "Bits ↔ niveles",
+    "filterbank": "Banco de 32 subbandas"
   },
   "familyRoles": {
     "encoder": "Codificador",
@@ -146,6 +152,18 @@
     "voip": {
       "encoder": "Paquetizar",
       "decoder": "Desempaquetar"
+    },
+    "dct": {
+      "encoder": "Directa",
+      "decoder": "Inversa"
+    },
+    "bits": {
+      "encoder": "Pasar a bits",
+      "decoder": "Leer bits"
+    },
+    "filterbank": {
+      "encoder": "Análisis",
+      "decoder": "Síntesis"
     }
   }
 }

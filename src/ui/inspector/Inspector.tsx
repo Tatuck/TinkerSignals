@@ -4,7 +4,7 @@ import { formatMetric, formatNumber } from '../lib/format';
 import { Plot } from '../plots/Plot';
 import { ProbePanel } from '../probe/ProbePanel';
 import { registry } from '../registry';
-import { useStore } from '../store';
+import { useGraphStore } from '../store';
 import { categoryColor } from '../theme';
 import { ParamControl } from './ParamControl';
 import { useLessonTarget } from '../lessons/LessonPanel';
@@ -13,7 +13,8 @@ const PLOT_W = 292;
 
 /** Panel derecho: explica y configura el bloque seleccionado, o sondea el cable seleccionado. */
 export function Inspector() {
-  const selection = useStore((s) => s.selection);
+  const useS = useGraphStore();
+  const selection = useS((s) => s.selection);
   return (
     <aside className="inspector" aria-live="polite">
       {selection?.kind === 'node' ? (
@@ -42,11 +43,12 @@ function Welcome() {
 }
 
 function NodeInspector({ id }: { id: string }) {
-  const node = useStore((s) => s.nodes.find((n) => n.id === id));
-  const result = useStore((s) => s.results?.nodes[id]);
-  const setParam = useStore((s) => s.setParam);
-  const removeNode = useStore((s) => s.removeNode);
-  const duplicateNode = useStore((s) => s.duplicateNode);
+  const useS = useGraphStore();
+  const node = useS((s) => s.nodes.find((n) => n.id === id));
+  const result = useS((s) => s.results?.nodes[id]);
+  const setParam = useS((s) => s.setParam);
+  const removeNode = useS((s) => s.removeNode);
+  const duplicateNode = useS((s) => s.duplicateNode);
   const target = useLessonTarget();
   const def = node && registry.get(node.data.blockType);
   if (!node || !def) return <Welcome />;
@@ -56,6 +58,8 @@ function NodeInspector({ id }: { id: string }) {
   const params = Object.entries(def.params).filter(
     ([, s]) =>
       s.type !== 'audio' &&
+      s.type !== 'external' &&
+      !s.hidden &&
       (!s.visibleIf ||
         s.visibleIf.equals.includes(
           (node.data.params[s.visibleIf.param] ?? def.params[s.visibleIf.param]?.default) as

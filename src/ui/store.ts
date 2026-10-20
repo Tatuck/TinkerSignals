@@ -9,11 +9,12 @@ import {
   type NodeChange,
   type XYPosition,
 } from '@xyflow/react';
-import { create } from 'zustand';
+import { createContext, useContext } from 'react';
+import { create, type StoreApi, type UseBoundStore } from 'zustand';
 import { canConnect } from '@/engine/graph';
 import { defaultParams } from '@/engine/registry';
 import type { Graph, ParamValue, RunResult } from '@/engine/types';
-import { engine } from '@/runtime/client';
+import { engine, type Scope } from '@/runtime/client';
 import { registry } from './registry';
 
 export interface BlockNodeData extends Record<string, unknown> {
@@ -33,7 +34,9 @@ export interface AssetInfo {
   trimmedS?: number;
 }
 
-interface State {
+export interface State {
+  /** Qué circuito es: el principal o el interior de un bloque. */
+  scope: Scope;
   nodes: BlockNode[];
   edges: CableEdge[];
   selection: Selection;
@@ -64,107 +67,124 @@ let counter = 0;
 let toastTimer: ReturnType<typeof setTimeout> | undefined;
 const newId = (prefix: string) => `${prefix}${Date.now().toString(36)}${(counter++).toString(36)}`;
 
-export const useStore = create<State>((set, get) => ({
-  nodes: [],
-  edges: [],
-  selection: null,
-  results: null,
-  running: false,
-  assets: {},
-  loadCount: 0,
-  toast: null,
+export type GraphStore = UseBoundStore<StoreApi<State>>;
 
-  notify(message) {
-    set({ toast: message });
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => set({ toast: null }), 3200);
-  },
+/**
+ * Crea un circuito con su propio estado y su propia ejecución en el Worker.
+ * Hay uno principal y, al «entrar» en un bloque, otro para su interior.
+ */
+export function createGraphStore(scope: Scope): GraphStore {
+  const store = create<State>((set, get) => ({
+    scope,
+    nodes: [],
+    edges: [],
+    selection: null,
+    results: null,
+    running: false,
+    assets: {},
+    loadCount: 0,
+    toast: null,
 
-  onNodesChange: (changes) => set({ nodes: applyNodeChanges(changes, get().nodes) }),
-  onEdgesChange: (changes) => set({ edges: applyEdgeChanges(changes, get().edges) }),
+    notify(message) {
+      set({ toast: message });
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => set({ toast: null }), 3200);
+    },
 
-  isValidConnection(c) {
-    const { nodes, edges } = get();
-    const src = nodes.find((n) => n.id === c.source);
-    const dst = nodes.find((n) => n.id === c.target);
-    if (!src || !dst || !c.sourceHandle || !c.targetHandle || src.id === dst.id) return false;
-    return (
-      canConnect(
-        registry,
-        src.data.blockType,
-        c.sourceHandle,
-        dst.data.blockType,
-        c.targetHandle,
-      ) &&
-      !edges.some(
-        (e) =>
-          e.target === c.target && e.targetHandle === c.targetHandle && e.id !== (c as Edge).id,
-      )
-    );
-  },
+    onNodesChange: (changes) => set({ nodes: applyNodeChanges(changes, get().nodes) }),
+    onEdgesChange: (changes) => set({ edges: applyEdgeChanges(changes, get().edges) }),
 
-  onConnect(c) {
-    if (!get().isValidConnection(c)) return;
-    set({ edges: addEdge({ ...c, id: newId('e'), type: 'cable' }, get().edges) as CableEdge[] });
-  },
+    isValidConnection(c) {
+      const { nodes, edges } = get();
+      const src = nodes.find((n) => n.id === c.source);
+      const dst = nodes.find((n) => n.id === c.target);
+      if (!src || !dst || !c.sourceHandle || !c.targetHandle || src.id === dst.id) return false;
+      return (
+        canConnect(
+          registry,
+          src.data.blockType,
+          c.sourceHandle,
+          dst.data.blockType,
+          c.targetHandle,
+        ) &&
+        !edges.some(
+          (e) =>
+            e.target === c.target && e.targetHandle === c.targetHandle && e.id !== (c as Edge).id,
+        )
+      );
+    },
 
-  addBlock(type, position) {
-    const def = registry.get(type);
-    if (!def) throw new Error(`Bloque desconocido: ${type}`);
-    const id = newId('n');
-    const node: BlockNode = {
-      id,
-      type: 'block',
-      position,
-      data: { blockType: type, params: defaultParams(def.params) },
-    };
-    set({ nodes: [...get().nodes, node], selection: { kind: 'node', id } });
-    return id;
-  },
+    onConnect(c) {
+      if (!get().isValidConnection(c)) return;
+      set({ edges: addEdge({ ...c, id: newId('e'), type: 'cable' }, get().edges) as CableEdge[] });
+    },
 
-  removeNode(id) {
-    set({
-      nodes: get().nodes.filter((n) => n.id !== id),
-      edges: get().edges.filter((e) => e.source !== id && e.target !== id),
-      selection: null,
-    });
-  },
+    addBlock(type, position) {
+      const def = registry.get(type);
+      if (!def) throw new Error(`Bloque desconocido: ${type}`);
+      const id = newId('n');
+      const node: BlockNode = {
+        id,
+        type: 'block',
+        position,
+        data: { blockType: type, params: defaultParams(def.params) },
+      };
+      set({ nodes: [...get().nodes, node], selection: { kind: 'node', id } });
+      return id;
+    },
 
-  duplicateNode(id) {
-    const n = get().nodes.find((x) => x.id === id);
-    if (!n) return;
-    const copy: BlockNode = {
-      ...n,
-      id: newId('n'),
-      selected: false,
-      position: { x: n.position.x + 40, y: n.position.y + 40 },
-      data: { ...n.data, params: { ...n.data.params } },
-    };
-    set({ nodes: [...get().nodes, copy], selection: { kind: 'node', id: copy.id } });
-  },
+    removeNode(id) {
+      set({
+        nodes: get().nodes.filter((n) => n.id !== id),
+        edges: get().edges.filter((e) => e.source !== id && e.target !== id),
+        selection: null,
+      });
+    },
 
-  removeEdge(id) {
-    set({ edges: get().edges.filter((e) => e.id !== id), selection: null });
-  },
+    duplicateNode(id) {
+      const n = get().nodes.find((x) => x.id === id);
+      if (!n) return;
+      const copy: BlockNode = {
+        ...n,
+        id: newId('n'),
+        selected: false,
+        position: { x: n.position.x + 40, y: n.position.y + 40 },
+        data: { ...n.data, params: { ...n.data.params } },
+      };
+      set({ nodes: [...get().nodes, copy], selection: { kind: 'node', id: copy.id } });
+    },
 
-  setParam(nodeId, key, value) {
-    set({
-      nodes: get().nodes.map((n) =>
-        n.id === nodeId
-          ? { ...n, data: { ...n.data, params: { ...n.data.params, [key]: value } } }
-          : n,
-      ),
-    });
-  },
+    removeEdge(id) {
+      set({ edges: get().edges.filter((e) => e.id !== id), selection: null });
+    },
 
-  select: (selection) => set({ selection }),
+    setParam(nodeId, key, value) {
+      set({
+        nodes: get().nodes.map((n) =>
+          n.id === nodeId
+            ? { ...n, data: { ...n.data, params: { ...n.data.params, [key]: value } } }
+            : n,
+        ),
+      });
+    },
 
-  registerAsset: (id, info) => set({ assets: { ...get().assets, [id]: info } }),
+    select: (selection) => set({ selection }),
 
-  load(nodes, edges) {
-    set({ nodes, edges, selection: null, loadCount: get().loadCount + 1 });
-  },
-}));
+    registerAsset: (id, info) => set({ assets: { ...get().assets, [id]: info } }),
+
+    load(nodes, edges) {
+      set({ nodes, edges, selection: null, loadCount: get().loadCount + 1 });
+    },
+  }));
+  attachRunner(store);
+  return store;
+}
+
+export const useStore = createGraphStore('main');
+
+/** Circuito al que pertenecen los componentes de este subárbol (principal por defecto). */
+export const ScopeContext = createContext<GraphStore>(useStore);
+export const useGraphStore = (): GraphStore => useContext(ScopeContext);
 
 /** Lo que el motor necesita saber del lienzo (sin posiciones ni estado visual). */
 export function toGraph(nodes: BlockNode[], edges: CableEdge[]): Graph {
@@ -185,44 +205,49 @@ export function toGraph(nodes: BlockNode[], edges: CableEdge[]): Graph {
 // vuelve a ejecutar el grafo en el Worker. Si llega un cambio mientras se
 // calcula, se ejecuta una sola vez más al terminar con el último estado.
 
-let lastSignature = '';
-let pending = false;
-let inFlight = false;
-let assetEpoch = 0;
+const runners = new Map<GraphStore, () => void>();
 
 /** Fuerza recalcular aunque el grafo no haya cambiado (p. ej. nuevo audio). */
-export function invalidate(): void {
-  assetEpoch++;
-  scheduleRun();
+export function invalidate(store: GraphStore = useStore): void {
+  runners.get(store)?.();
 }
 
-function scheduleRun(): void {
-  pending = true;
-  if (!inFlight) void runLoop();
-}
+function attachRunner(store: GraphStore): void {
+  let lastSignature = '';
+  let pending = false;
+  let inFlight = false;
+  let epoch = 0;
+  let timer: ReturnType<typeof setTimeout> | undefined;
 
-async function runLoop(): Promise<void> {
-  inFlight = true;
-  while (pending) {
-    pending = false;
-    const { nodes, edges } = useStore.getState();
-    useStore.setState({ running: true });
-    try {
-      const results = await engine.run(toGraph(nodes, edges));
-      useStore.setState({ results });
-    } catch (err) {
-      console.error('[motor] fallo inesperado', err);
+  const runLoop = async () => {
+    inFlight = true;
+    while (pending) {
+      pending = false;
+      const { nodes, edges, scope } = store.getState();
+      store.setState({ running: true });
+      try {
+        const results = await engine.run(toGraph(nodes, edges), scope);
+        store.setState({ results });
+      } catch (err) {
+        console.error('[motor] fallo inesperado', err);
+      }
     }
-  }
-  useStore.setState({ running: false });
-  inFlight = false;
+    store.setState({ running: false });
+    inFlight = false;
+  };
+  const schedule = () => {
+    pending = true;
+    if (!inFlight) void runLoop();
+  };
+  runners.set(store, () => {
+    epoch++;
+    schedule();
+  });
+  store.subscribe((s) => {
+    const sig = JSON.stringify([toGraph(s.nodes, s.edges), epoch]);
+    if (sig === lastSignature) return;
+    lastSignature = sig;
+    clearTimeout(timer);
+    timer = setTimeout(schedule, 120);
+  });
 }
-
-let timer: ReturnType<typeof setTimeout> | undefined;
-useStore.subscribe((s) => {
-  const sig = JSON.stringify([toGraph(s.nodes, s.edges), assetEpoch]);
-  if (sig === lastSignature) return;
-  lastSignature = sig;
-  clearTimeout(timer);
-  timer = setTimeout(scheduleRun, 120);
-});

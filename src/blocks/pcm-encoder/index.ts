@@ -1,7 +1,7 @@
 import { makeBitstream, referenceBitsFor } from '@/engine/dsp/bitstream';
 import { compress } from '@/engine/dsp/companding';
 import { entropy } from '@/engine/dsp/metrics';
-import { defineBlock } from '@/engine/types';
+import { defineBlock, type InteriorGraph } from '@/engine/types';
 import { pcmEncode } from '../_shared/pcm';
 
 export default defineBlock({
@@ -24,6 +24,31 @@ export default defineBlock({
       scale: 'log',
       visibleIf: { param: 'law', equals: ['mu'] },
     },
+  },
+  interior: (p): InteriorGraph => {
+    const companded = p.law !== 'linear';
+    return {
+      nodes: [
+        { id: 'in', type: 'inner-signal-in', x: 0, y: 40 },
+        ...(companded
+          ? [{ id: 'comp', type: 'compander', x: 300, y: 0, params: { direction: 'compress', law: p.law, mu: p.mu } }]
+          : []),
+        { id: 'q', type: 'quantizer-uniform', x: companded ? 600 : 300, y: 20, params: { bits: p.bits, mode: 'midrise' } },
+        { id: 'bits', type: 'bit-packer', x: companded ? 900 : 600, y: 40, params: { bits: p.bits } },
+      ],
+      edges: companded
+        ? [
+            ['in', 'out', 'comp', 'in'],
+            ['comp', 'out', 'q', 'in'],
+            ['q', 'out', 'bits', 'in'],
+          ]
+        : [
+            ['in', 'out', 'q', 'in'],
+            ['q', 'out', 'bits', 'in'],
+          ],
+      inputs: { in: 'in' },
+      outputs: { out: ['bits', 'out'] },
+    };
   },
   process({ inputs, params }) {
     const { samples: x, sampleRate } = inputs.in;

@@ -17,7 +17,7 @@ function ensureLoaded(id: RecordingId): Promise<void> {
       })
       .then(decodeAudio)
       .then((a) => setAsset(recordingAssetId(id), a.samples, a.sampleRate))
-      .then(invalidate);
+      .then(() => invalidate());
     p.catch(() => loaded.delete(id));
     loaded.set(id, p);
   }

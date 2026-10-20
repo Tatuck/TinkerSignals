@@ -13,6 +13,7 @@ describe('plantilla', () => {
       inputs: { in: makeSignal(new Float32Array([1, -0.5]), 8000) },
       params: { gain: 2, invert: false },
       getAsset: () => undefined,
+      getExternal: () => undefined,
     });
     expect([...r.outputs.out.samples]).toEqual([2, -1]);
   });

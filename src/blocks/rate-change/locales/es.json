@@ -1,0 +1,34 @@
+{
+  "title": "Tomar muestras",
+  "summary": "Cambia la frecuencia de muestreo sin filtrar nada (interpolación lineal).",
+  "details": "Es el muestreo «a pelo»: sin filtro antialiasing, lo que esté por encima de la nueva fs/2 se dobla. Pon un Filtro FIR paso bajo delante para tener un muestreador correcto.",
+  "tryThis": "Compara este bloque con el Muestreador (que filtra antes) usando un barrido.",
+  "concepts": [
+    "Muestreo",
+    "Aliasing"
+  ],
+  "ports": {
+    "in": "Señal",
+    "out": "Señal muestreada"
+  },
+  "params": {
+    "sampleRate": {
+      "label": "Nueva frecuencia de muestreo"
+    },
+    "exactRate": {
+      "label": "Frecuencia exacta"
+    }
+  },
+  "options": {
+    "sampleRate": {
+      "4000": "4.000 Hz",
+      "8000": "8.000 Hz",
+      "11025": "11.025 Hz",
+      "16000": "16.000 Hz",
+      "22050": "22.050 Hz",
+      "32000": "32.000 Hz",
+      "44100": "44.100 Hz",
+      "48000": "48.000 Hz"
+    }
+  }
+}

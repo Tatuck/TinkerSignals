@@ -1,0 +1,28 @@
+{
+  "title": "ADPCM de banda",
+  "summary": "Codifica y decodifica una señal con ADPCM de paso adaptativo (Jayant).",
+  "details": "Predice cada muestra con la anterior, cuantiza la diferencia con pocos bits y adapta el tamaño del escalón según los códigos recientes. Es el ADPCM que usa cada banda del códec de subbandas.",
+  "tryThis": "Bájale los bits a 2 y mira cómo el paso se adapta a la envolvente.",
+  "concepts": [
+    "ADPCM",
+    "Paso adaptativo de Jayant"
+  ],
+  "ports": {
+    "in": "Señal",
+    "out": "Reconstruida"
+  },
+  "params": {
+    "bits": {
+      "label": "Bits por muestra"
+    },
+    "predictor": {
+      "label": "Predictor"
+    }
+  },
+  "options": {
+    "predictor": {
+      "low": "Banda baja (predice)",
+      "high": "Banda alta (sin predicción)"
+    }
+  }
+}

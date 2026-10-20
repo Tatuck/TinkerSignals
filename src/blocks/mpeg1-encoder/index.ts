@@ -1,5 +1,5 @@
 import { makeBitstream, referenceBitsFor } from '@/engine/dsp/bitstream';
-import { defineBlock, type Plot } from '@/engine/types';
+import { defineBlock, type Plot, type InteriorGraph } from '@/engine/types';
 import { BANDS, FRAME, mpeg1Encode } from '../_shared/mpeg1';
 
 const RATES = ['32', '64', '96', '128', '192', '256', '384'] as const;
@@ -16,6 +16,24 @@ export default defineBlock({
     bitrate: { type: 'select', default: '128', options: RATES },
     psychoacoustic: { type: 'boolean', default: true },
   },
+  interior: (p): InteriorGraph => ({
+    nodes: [
+      { id: 'in', type: 'inner-signal-in', x: 0, y: 160 },
+      { id: 'bank', type: 'mpeg-filterbank', x: 300, y: 0 },
+      { id: 'psy', type: 'psychoacoustic-model', x: 300, y: 340 },
+      { id: 'alloc', type: 'bit-allocation', x: 640, y: 120, params: { bitrate: p.bitrate } },
+      { id: 'synth', type: 'mpeg-synthesis', x: 980, y: 140 },
+    ],
+    edges: [
+      ['in', 'out', 'bank', 'in'],
+      ['in', 'out', 'psy', 'in'],
+      ['bank', 'out', 'alloc', 'subbands'],
+      ['psy', 'out', 'alloc', 'smr'],
+      ['alloc', 'out', 'synth', 'in'],
+    ],
+    inputs: { in: 'in' },
+    outputs: {},
+  }),
   process({ inputs, params }) {
     const { samples: x, sampleRate: fs } = inputs.in;
     const bitrate = Number(params.bitrate) * 1000;

@@ -14,6 +14,9 @@ import { convolveCausal } from '@/engine/dsp/filters';
 export const QMF_TAPS = 48;
 const H0 = designQmf(QMF_TAPS);
 const H1 = H0.map((v, n) => (n % 2 ? -v : v));
+/** Filtros de análisis del QMF (los usa también la pieza «Filtro FIR»). */
+export const QMF_H0 = H0;
+export const QMF_H1 = H1;
 /** Retardo total de análisis + síntesis (muestras). Se compensa al final. */
 const DELAY = QMF_TAPS - 1;
 /** Muestras de cada banda para una señal de `n` muestras. */
@@ -92,6 +95,16 @@ function reconstruct(code: number, bits: number, s: BandState, a1: number): numb
 
 const A_LOW = 0.9;
 const A_HIGH = 0;
+
+/** ADPCM de una banda (codifica y decodifica): lo usa la pieza «ADPCM de banda». */
+export function bandAdpcm(x: Float32Array, bits: number, band: 'low' | 'high'): Float32Array {
+  const st: BandState = { pred: 0, step: 0.01 };
+  const a1 = band === 'low' ? A_LOW : A_HIGH;
+  return x.map((v) => quantizeSample(v, bits, st, a1).rec);
+}
+
+/** Retardo total del QMF (análisis + síntesis), en muestras. */
+export const QMF_DELAY = QMF_TAPS - 1;
 
 export function subbandEncode(x: Float32Array, lowBits: number, highBits: number) {
   const { low, high } = qmfSplit(x);

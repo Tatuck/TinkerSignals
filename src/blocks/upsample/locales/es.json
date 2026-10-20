@@ -1,0 +1,22 @@
+{
+  "title": "Interpolar ↑M",
+  "summary": "Multiplica la frecuencia de muestreo insertando ceros entre las muestras.",
+  "details": "Al meter M−1 ceros entre muestras, el espectro original aparece repetido (imágenes). Después hace falta un filtro paso bajo para quitarlas: es la mitad de un banco de filtros de síntesis.",
+  "tryThis": "Mira el espectro con un bloque FFT antes y después del filtro que lo sigue.",
+  "concepts": [
+    "Interpolación",
+    "Imágenes espectrales"
+  ],
+  "ports": {
+    "in": "Señal",
+    "out": "Señal"
+  },
+  "params": {
+    "factor": {
+      "label": "Factor M"
+    },
+    "length": {
+      "label": "Longitud de salida"
+    }
+  }
+}

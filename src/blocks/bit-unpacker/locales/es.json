@@ -1,0 +1,18 @@
+{
+  "title": "Leer bits",
+  "summary": "Lee grupos de n bits y los convierte en el nivel de la escalera que representan.",
+  "details": "Es lo contrario de «Pasar a bits»: la primera etapa de un decodificador PCM.",
+  "tryThis": "Encadena Pasar a bits → Errores de bit → Leer bits y escucha los chasquidos.",
+  "concepts": [
+    "Decodificación binaria"
+  ],
+  "ports": {
+    "in": "Bits",
+    "out": "Niveles"
+  },
+  "params": {
+    "bits": {
+      "label": "Bits por muestra"
+    }
+  }
+}

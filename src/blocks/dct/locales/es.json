@@ -1,0 +1,19 @@
+{
+  "title": "DCT",
+  "summary": "Pasa cada trama del tiempo a la frecuencia con la transformada discreta del coseno.",
+  "details": "La DCT escribe cada trama como suma de cosenos de frecuencia creciente; los coeficientes dicen cuánto hay de cada uno. Para señales reales casi toda la energía se concentra en pocos coeficientes (compactación de energía): es la base de MP3, AAC, JPEG y los códecs de vídeo. Es ortonormal, así que no pierde nada: la DCT inversa recupera la trama exacta.",
+  "tryThis": "Mira la métrica de compactación: qué porcentaje de la energía se llevan el 10 % de coeficientes más grandes. Compara una vocal con ruido blanco.",
+  "concepts": [
+    "DCT",
+    "Compactación de energía",
+    "Dominio de la frecuencia"
+  ],
+  "ports": {
+    "in": "Tramas (tiempo)",
+    "out": "Coeficientes"
+  },
+  "params": {},
+  "metrics": {
+    "compaction": "Energía en el 10 % mayor"
+  }
+}

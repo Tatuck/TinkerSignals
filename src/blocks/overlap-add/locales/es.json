@@ -1,0 +1,14 @@
+{
+  "title": "Unir tramas",
+  "summary": "Vuelve a pegar las tramas en una señal continua, deshaciendo la ventana.",
+  "details": "Coloca cada trama en su sitio y suma las zonas solapadas (overlap-add). Divide por la suma de las ventanas que caen en cada muestra, así que si las tramas no se han tocado, la señal sale exactamente igual que entró.",
+  "tryThis": "Pon en medio un Cuantizar por tramas con pocos bits y escucha cómo aparecen saltos en los bordes de las tramas.",
+  "concepts": [
+    "Solapar y sumar (overlap-add)"
+  ],
+  "ports": {
+    "in": "Tramas",
+    "out": "Señal"
+  },
+  "params": {}
+}

@@ -6,7 +6,7 @@ import { formatMetric } from '../lib/format';
 import { Envelope } from '../plots/Envelope';
 import { Plot } from '../plots/Plot';
 import { registry } from '../registry';
-import { useStore, type BlockNode as BlockNodeType } from '../store';
+import { useGraphStore, type BlockNode as BlockNodeType } from '../store';
 import { categoryColor, portColor } from '../theme';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { useLessonTarget } from '../lessons/LessonPanel';
@@ -23,8 +23,9 @@ const PLOT_H = 60;
  * Un bloque nuevo no necesita tocar este fichero.
  */
 export const BlockNode = memo(function BlockNode({ id, data, selected }: NodeProps<BlockNodeType>) {
+  const useS = useGraphStore();
   const def = registry.get(data.blockType);
-  const result = useStore((s) => s.results?.nodes[id]);
+  const result = useS((s) => s.results?.nodes[id]);
   const isTarget = useLessonTarget().node === id;
   if (!def) return <div className="node node-unknown">{data.blockType}</div>;
 

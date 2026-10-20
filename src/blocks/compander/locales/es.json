@@ -1,0 +1,39 @@
+{
+  "title": "Compresor / expansor",
+  "summary": "Aplica la curva logarítmica de la ley μ o A, o su inversa.",
+  "details": "El compresor agranda las amplitudes pequeñas y aplasta las grandes; el expansor hace lo contrario. Compresor + cuantizador uniforme + expansor = cuantizador no uniforme, la idea de G.711.",
+  "tryThis": "Encadena compresor → expansor: la señal sale igual. Mete un Cuantizador uniforme en medio y compara con cuantizar sin compresor.",
+  "concepts": [
+    "Compansión",
+    "Ley μ",
+    "Ley A"
+  ],
+  "ports": {
+    "in": "Señal",
+    "out": "Señal"
+  },
+  "params": {
+    "direction": {
+      "label": "Dirección"
+    },
+    "law": {
+      "label": "Ley"
+    },
+    "mu": {
+      "label": "Valor de μ"
+    }
+  },
+  "options": {
+    "direction": {
+      "compress": "Comprimir",
+      "expand": "Expandir"
+    },
+    "law": {
+      "mu": "Ley μ",
+      "a": "Ley A"
+    }
+  },
+  "plots": {
+    "curve": "Curva"
+  }
+}

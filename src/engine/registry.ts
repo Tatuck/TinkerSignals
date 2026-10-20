@@ -62,6 +62,9 @@ export function resolveParams(
       case 'audio':
         out[key] = typeof v === 'string' ? v : null;
         break;
+      case 'external':
+        out[key] = typeof v === 'string' ? v : spec.default;
+        break;
     }
   }
   return out;

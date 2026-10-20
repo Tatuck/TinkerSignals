@@ -28,3 +28,17 @@ export function quantizeUniform(
     y[i] = uniformValue(uniformIndex(x[i], bits, mode), bits, mode);
   return y;
 }
+
+/**
+ * Cuantizador simétrico mid-tread con 2ⁿ − 1 niveles en [−escala, escala]
+ * (cero incluido). Con un número impar de niveles, el valor máximo cae
+ * justo en un nivel y no en la frontera entre dos. Con 1 bit solo queda el
+ * signo: ±escala.
+ */
+export function quantizeSymmetric(v: number, scale: number, bits: number): number {
+  if (scale <= 0) return 0;
+  if (bits <= 1) return v === 0 ? 0 : Math.sign(v) * scale;
+  const half = 2 ** (bits - 1) - 1; // niveles a cada lado del cero
+  const q = Math.max(-half, Math.min(half, Math.round((v / scale) * half)));
+  return (q / half) * scale;
+}

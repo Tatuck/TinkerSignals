@@ -1,8 +1,9 @@
 import { dct, idct } from '@/engine/dsp/dct';
 import { snr } from '@/engine/dsp/metrics';
+import { quantizeSymmetric } from '@/engine/dsp/quantize';
 import { compareWaves } from '@/engine/dsp/plots';
 import { makeSignal } from '@/engine/dsp/signal';
-import { defineBlock } from '@/engine/types';
+import { defineBlock, type InteriorGraph } from '@/engine/types';
 
 const SIZES = ['16', '32', '64', '128', '256', '512', '1024'] as const;
 const SCALE_BITS = 16;
@@ -24,11 +25,31 @@ export default defineBlock({
     selection: { type: 'select', default: 'largest', options: ['low', 'largest'] },
     bits: { type: 'number', default: 6, min: 1, max: 16, step: 1, unit: 'bits' },
   },
+  interior: (p): InteriorGraph => ({
+    nodes: [
+      { id: 'in', type: 'inner-signal-in', x: 0, y: 60 },
+      { id: 'frames', type: 'framer', x: 300, y: 40, params: { exactSize: Number(p.blockSize), exactHop: Number(p.blockSize), window: 'rect' } },
+      { id: 'dct', type: 'dct', x: 600, y: 20 },
+      { id: 'sel', type: 'coef-select', x: 900, y: 0, params: { keep: p.keep, selection: p.selection } },
+      { id: 'q', type: 'frame-quantizer', x: 900, y: 300, params: { bits: p.bits } },
+      { id: 'idct', type: 'idct', x: 600, y: 320 },
+      { id: 'join', type: 'overlap-add', x: 300, y: 340 },
+    ],
+    edges: [
+      ['in', 'out', 'frames', 'in'],
+      ['frames', 'out', 'dct', 'in'],
+      ['dct', 'out', 'sel', 'in'],
+      ['sel', 'out', 'q', 'in'],
+      ['q', 'out', 'idct', 'in'],
+      ['idct', 'out', 'join', 'in'],
+    ],
+    inputs: { in: 'in' },
+    outputs: { out: ['join', 'out'] },
+  }),
   process({ inputs, params }) {
     const { samples: x, sampleRate: fs } = inputs.in;
     const N = Number(params.blockSize);
     const K = Math.max(1, Math.round((N * params.keep) / 100));
-    const L = 2 ** params.bits;
     const posBits = params.selection === 'largest' && K < N ? Math.ceil(Math.log2(N)) : 0;
 
     const y = new Float32Array(x.length);
@@ -52,11 +73,7 @@ export default defineBlock({
       let scale = 0;
       for (const k of order) scale = Math.max(scale, Math.abs(coeffs[k]));
       const kept = new Float64Array(N);
-      if (scale > 0) {
-        // Cuantización uniforme mid-tread en [-scale, scale].
-        const delta = (2 * scale) / (L - 1 || 1);
-        for (const k of order) kept[k] = L > 1 ? Math.round(coeffs[k] / delta) * delta : 0;
-      }
+      for (const k of order) kept[k] = quantizeSymmetric(coeffs[k], scale, params.bits);
       idct(kept, block);
       for (let i = 0; i < N && start + i < x.length; i++) y[start + i] = block[i];
       totalBits += SCALE_BITS + K * (params.bits + posBits);

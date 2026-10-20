@@ -1,0 +1,58 @@
+{
+  "title": "Trocear en tramas",
+  "summary": "Corta la señal en trozos de N muestras, opcionalmente solapados y con ventana.",
+  "details": "Casi todo el procesado de audio trabaja por tramas: trozos cortos en los que la señal se puede considerar estable. El tamaño fija el compromiso entre resolución en frecuencia (tramas largas) y en tiempo (tramas cortas), y también el retardo: hay que esperar a tener la trama completa. La ventana suaviza los bordes para que el corte no añada frecuencias falsas.",
+  "tryThis": "Conecta Trocear → Unir tramas y comprueba con un Comparador que la señal sale idéntica. Luego mete una DCT y su inversa en medio.",
+  "concepts": [
+    "Análisis por tramas",
+    "Ventana",
+    "Resolución tiempo-frecuencia"
+  ],
+  "ports": {
+    "in": "Señal",
+    "out": "Tramas"
+  },
+  "params": {
+    "size": {
+      "label": "Muestras por trama"
+    },
+    "overlap": {
+      "label": "Solapamiento"
+    },
+    "window": {
+      "label": "Ventana"
+    },
+    "exactSize": {
+      "label": "Tamaño exacto"
+    },
+    "exactHop": {
+      "label": "Avance exacto"
+    }
+  },
+  "options": {
+    "size": {
+      "16": "16 muestras",
+      "32": "32 muestras",
+      "64": "64 muestras",
+      "128": "128 muestras",
+      "256": "256 muestras",
+      "384": "384 muestras",
+      "512": "512 muestras",
+      "1024": "1024 muestras"
+    },
+    "overlap": {
+      "0": "Sin solapar",
+      "50": "50 %"
+    },
+    "window": {
+      "rect": "Rectangular (sin ventana)",
+      "hann": "Hann",
+      "hamming": "Hamming",
+      "sine": "Seno"
+    }
+  },
+  "metrics": {
+    "frames": "Tramas",
+    "frameMs": "Duración de trama"
+  }
+}

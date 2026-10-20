@@ -2,7 +2,7 @@ import { BaseEdge, EdgeLabelRenderer, type EdgeProps } from '@xyflow/react';
 import { memo, type CSSProperties } from 'react';
 import { formatMetric, formatRate } from '../lib/format';
 import { registry } from '../registry';
-import { useStore, type CableEdge as CableEdgeType } from '../store';
+import { useGraphStore, type CableEdge as CableEdgeType } from '../store';
 import { portColor } from '../theme';
 
 /**
@@ -20,8 +20,9 @@ export const CableEdge = memo(function CableEdge({
   targetY,
   selected,
 }: EdgeProps<CableEdgeType>) {
-  const blockType = useStore((s) => s.nodes.find((n) => n.id === source)?.data.blockType);
-  const port = useStore((s) => s.results?.nodes[source]?.outputs[sourceHandleId ?? '']);
+  const useS = useGraphStore();
+  const blockType = useS((s) => s.nodes.find((n) => n.id === source)?.data.blockType);
+  const port = useS((s) => s.results?.nodes[source]?.outputs[sourceHandleId ?? '']);
   const type =
     (blockType && registry.get(blockType)?.outputs[sourceHandleId ?? '']?.type) || 'signal';
 
@@ -37,6 +38,9 @@ export const CableEdge = memo(function CableEdge({
 
   let label: string | null = null;
   if (port?.summary.kind === 'signal') label = formatRate(port.summary.sampleRate);
+  if (port?.summary.kind === 'frames') {
+    label = `${port.summary.count} × ${port.summary.size}`;
+  }
   if (port?.summary.kind === 'packets') {
     const r = formatMetric(port.summary.networkBitrate, 'bps');
     label = `${r.value} ${r.unit} en red`;

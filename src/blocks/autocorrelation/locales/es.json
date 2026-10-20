@@ -1,0 +1,22 @@
+{
+  "title": "Autocorrelación",
+  "summary": "Mide, en cada trama, cuánto se parece la señal a sí misma desplazada k muestras.",
+  "details": "r(k) = Σ x[n]·x[n−k]. Para voz, los primeros valores describen la envolvente espectral (los formantes) y es lo que necesita Levinson-Durbin para calcular el predictor. Un pico a la distancia del periodo indica que la trama es sonora.",
+  "tryThis": "Ponla tras Trocear con ventana Hamming y mira cómo cambia de una vocal a una «s».",
+  "concepts": [
+    "Autocorrelación",
+    "Predicción lineal"
+  ],
+  "ports": {
+    "in": "Tramas",
+    "out": "Autocorrelación"
+  },
+  "params": {
+    "order": {
+      "label": "Orden (retardos)"
+    }
+  },
+  "metrics": {
+    "lags": "Valores por trama"
+  }
+}

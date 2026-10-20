@@ -1,0 +1,23 @@
+{
+  "title": "Levinson-Durbin",
+  "summary": "Calcula los coeficientes del predictor lineal a partir de la autocorrelación.",
+  "details": "Resuelve de forma recursiva (orden 1, 2, 3…) las ecuaciones de Yule-Walker. Los coeficientes definen el filtro 1/A(z), cuya respuesta (la gráfica) imita la envolvente espectral de la trama: los picos son los formantes. La ganancia de predicción dice cuánto más pequeño es el error que la señal.",
+  "tryThis": "Cambia el orden de la autocorrelación de 2 a 20 y mira cómo la envolvente va siguiendo los formantes.",
+  "concepts": [
+    "Levinson-Durbin",
+    "Yule-Walker",
+    "Envolvente espectral"
+  ],
+  "ports": {
+    "in": "Autocorrelación",
+    "out": "Coeficientes LPC"
+  },
+  "params": {},
+  "metrics": {
+    "predGain": "Ganancia de predicción",
+    "order": "Orden"
+  },
+  "plots": {
+    "envelope": "Envolvente LPC (trama más fuerte)"
+  }
+}
