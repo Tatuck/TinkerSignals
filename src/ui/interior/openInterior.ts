@@ -21,7 +21,9 @@ export async function openInterior(nodeId: string): Promise<void> {
   const inputs: InteriorInputs = {};
   for (const port of Object.keys(def.inputs)) {
     const e = main.edges.find((x) => x.target === nodeId && x.targetHandle === port);
-    inputs[port] = e ? main.results?.nodes[e.source]?.outputs[e.sourceHandle ?? '']?.summary : undefined;
+    inputs[port] = e
+      ? main.results?.nodes[e.source]?.outputs[e.sourceHandle ?? '']?.summary
+      : undefined;
   }
   const g = def.interior(resolveParams(def.params, node.data.params) as never, inputs);
   const portOf = new Map(Object.entries(g.inputs).map(([port, id]) => [id, port]));
@@ -30,7 +32,12 @@ export async function openInterior(nodeId: string): Promise<void> {
     const d = registry.get(n.type)!;
     const params = { ...defaultParams(d.params), ...n.params };
     if (portOf.has(n.id)) params.port = portOf.get(n.id)!;
-    return { id: n.id, type: 'block', position: { x: n.x, y: n.y }, data: { blockType: n.type, params } };
+    return {
+      id: n.id,
+      type: 'block',
+      position: { x: n.x, y: n.y },
+      data: { blockType: n.type, params },
+    };
   });
   const edges: CableEdge[] = g.edges.map(([s, sp, d, dp], i) => ({
     id: `i${i}`,

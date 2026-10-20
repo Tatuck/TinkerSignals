@@ -19,7 +19,14 @@ export default defineBlock({
     for (let i = 0; i < n; i++) y[i] = x[i - params.samples] ?? 0;
     return {
       outputs: { out: makeSignal(y, inputs.in.sampleRate) },
-      metrics: [{ key: 'delayMs', value: (1000 * params.samples) / inputs.in.sampleRate, unit: 'ms', highlight: true }],
+      metrics: [
+        {
+          key: 'delayMs',
+          value: (1000 * params.samples) / inputs.in.sampleRate,
+          unit: 'ms',
+          highlight: true,
+        },
+      ],
       latencyMs: Math.max(0, (1000 * params.samples) / inputs.in.sampleRate),
     };
   },

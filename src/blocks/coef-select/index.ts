@@ -35,7 +35,12 @@ export default defineBlock({
       outputs: { out },
       metrics: [
         { key: 'kept', value: K, unit: `de ${N}`, highlight: true },
-        { key: 'energyKept', value: total > 0 ? (100 * kept) / total : 100, unit: '%', highlight: true },
+        {
+          key: 'energyKept',
+          value: total > 0 ? (100 * kept) / total : 100,
+          unit: '%',
+          highlight: true,
+        },
       ],
     };
   },

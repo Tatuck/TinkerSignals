@@ -11,7 +11,11 @@ export default defineBlock({
   inputs: { in: { type: 'signal' } },
   outputs: { out: { type: 'signal' } },
   params: {
-    type: { type: 'select', default: 'lowpass', options: ['lowpass', 'highpass', 'qmf-low', 'qmf-high'] },
+    type: {
+      type: 'select',
+      default: 'lowpass',
+      options: ['lowpass', 'highpass', 'qmf-low', 'qmf-high'],
+    },
     cutoff: {
       type: 'number',
       default: 3400,
@@ -42,7 +46,10 @@ export default defineBlock({
     } else {
       const lp = lowpassFir(Math.min(0.499, params.cutoff / fs), params.taps);
       // Paso alto = impulso − paso bajo (inversión espectral).
-      h = params.type === 'lowpass' ? lp : lp.map((v, i) => (i === (params.taps - 1) / 2 ? 1 - v : -v));
+      h =
+        params.type === 'lowpass'
+          ? lp
+          : lp.map((v, i) => (i === (params.taps - 1) / 2 ? 1 - v : -v));
     }
     const g = params.gain;
     const y = (causal ? convolveCausal : convolveSame)(inputs.in.samples, h).map((v) => v * g);
@@ -53,7 +60,14 @@ export default defineBlock({
       metrics: [{ key: 'taps', value: h.length, highlight: true }],
       latencyMs: (((h.length - 1) / 2) * 1000) / fs,
       plots: [
-        { kind: 'line', title: 'response', series: [{ role: 'out', x: hz, y: resp }], xLabel: 'f', yLabel: 'dB', yRange: [-80, 10] },
+        {
+          kind: 'line',
+          title: 'response',
+          series: [{ role: 'out', x: hz, y: resp }],
+          xLabel: 'f',
+          yLabel: 'dB',
+          yRange: [-80, 10],
+        },
         { kind: 'bars', title: 'impulse', values: Array.from(h, (v) => v * g) },
       ],
     };

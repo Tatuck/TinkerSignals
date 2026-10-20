@@ -27,9 +27,27 @@ export default defineBlock({
   interior: (p): InteriorGraph => ({
     nodes: [
       { id: 'in', type: 'inner-signal-in', x: 0, y: 40 },
-      { id: 'comp', type: 'compander', x: 300, y: 0, params: { direction: 'compress', law: p.law, mu: p.mu } },
-      { id: 'q', type: 'quantizer-uniform', x: 600, y: 20, params: { bits: p.bits, mode: 'midrise' } },
-      { id: 'exp', type: 'compander', x: 900, y: 0, params: { direction: 'expand', law: p.law, mu: p.mu } },
+      {
+        id: 'comp',
+        type: 'compander',
+        x: 300,
+        y: 0,
+        params: { direction: 'compress', law: p.law, mu: p.mu },
+      },
+      {
+        id: 'q',
+        type: 'quantizer-uniform',
+        x: 600,
+        y: 20,
+        params: { bits: p.bits, mode: 'midrise' },
+      },
+      {
+        id: 'exp',
+        type: 'compander',
+        x: 900,
+        y: 0,
+        params: { direction: 'expand', law: p.law, mu: p.mu },
+      },
     ],
     edges: [
       ['in', 'out', 'comp', 'in'],

@@ -12,7 +12,8 @@ export default defineBlock({
   outputs: { out: { type: 'frames' } },
   params: {},
   process({ inputs }) {
-    if (inputs.in.domain !== 'autocorrelation') throw new Error('Levinson-Durbin espera autocorrelaciones.');
+    if (inputs.in.domain !== 'autocorrelation')
+      throw new Error('Levinson-Durbin espera autocorrelaciones.');
     const order = inputs.in.size - 1;
     let gainSum = 0;
     let n = 0;
@@ -34,7 +35,15 @@ export default defineBlock({
         { key: 'predGain', value: n ? gainSum / n : 0, unit: 'dB', highlight: true },
         { key: 'order', value: order, highlight: true },
       ],
-      plots: [{ kind: 'line', title: 'envelope', series: [{ role: 'out', x: hz, y: env }], xLabel: 'f', yLabel: 'dB' }],
+      plots: [
+        {
+          kind: 'line',
+          title: 'envelope',
+          series: [{ role: 'out', x: hz, y: env }],
+          xLabel: 'f',
+          yLabel: 'dB',
+        },
+      ],
     };
   },
 });

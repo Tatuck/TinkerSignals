@@ -2,7 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { __test } from './celp';
 import { seededRandom } from './random';
 
-const { searchAdaptive, backwardFilter, autocorrelationMatrix, makeWorkspace, convolve, adaptiveVector } = __test;
+const {
+  searchAdaptive,
+  backwardFilter,
+  autocorrelationMatrix,
+  makeWorkspace,
+  convolve,
+  adaptiveVector,
+} = __test;
 const rand = seededRandom(5);
 const randArray = (n: number) => Float64Array.from({ length: n }, () => rand() * 2 - 1);
 

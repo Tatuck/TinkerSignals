@@ -71,11 +71,16 @@ export class Engine {
     const inputs = Object.keys(def.inputs).map((p) => this.getInputValue(nodeId, p));
     const outputs = Object.keys(def.outputs).map((p) => this.getValue(nodeId, p));
     const res = inspectValues(inputs, outputs, timeS);
-    if (def.inspectAt && inputs.every((v, i) => v || def.inputs[Object.keys(def.inputs)[i]].optional)) {
+    if (
+      def.inspectAt &&
+      inputs.every((v, i) => v || def.inputs[Object.keys(def.inputs)[i]].optional)
+    ) {
       try {
         res.detail.push(
           ...def.inspectAt({
-            inputs: Object.fromEntries(Object.keys(def.inputs).map((p, i) => [p, inputs[i]])) as never,
+            inputs: Object.fromEntries(
+              Object.keys(def.inputs).map((p, i) => [p, inputs[i]]),
+            ) as never,
             params: node.params as never,
             getAsset: () => undefined,
             getExternal: () => undefined,
@@ -137,6 +142,7 @@ export class Engine {
     const inputKeys: string[] = [];
     const missing: string[] = [];
     let upstreamLatency = 0;
+    const inputLatencyMs: Record<string, number> = {};
     let upstreamFailed = false;
 
     for (const [name, spec] of Object.entries(def.inputs)) {
@@ -151,7 +157,8 @@ export class Engine {
       }
       inputs[name] = value;
       inputKeys.push(`${name}:${src.key}/${edge.sourcePort}`);
-      upstreamLatency = Math.max(upstreamLatency, src.outLatency[edge.sourcePort] ?? 0);
+      inputLatencyMs[name] = src.outLatency[edge.sourcePort] ?? 0;
+      upstreamLatency = Math.max(upstreamLatency, inputLatencyMs[name]);
     }
 
     if (missing.length) {
@@ -188,6 +195,7 @@ export class Engine {
           return v?.kind === 'signal' ? v : undefined;
         },
         getExternal: (id) => this.assets.get(id)?.value,
+        inputLatencyMs,
       });
       const computeMs = now() - t0;
       const own = res.latencyMs ?? 0;

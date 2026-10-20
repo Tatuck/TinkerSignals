@@ -31,10 +31,30 @@ export default defineBlock({
       nodes: [
         { id: 'in', type: 'inner-signal-in', x: 0, y: 40 },
         ...(companded
-          ? [{ id: 'comp', type: 'compander', x: 300, y: 0, params: { direction: 'compress', law: p.law, mu: p.mu } }]
+          ? [
+              {
+                id: 'comp',
+                type: 'compander',
+                x: 300,
+                y: 0,
+                params: { direction: 'compress', law: p.law, mu: p.mu },
+              },
+            ]
           : []),
-        { id: 'q', type: 'quantizer-uniform', x: companded ? 600 : 300, y: 20, params: { bits: p.bits, mode: 'midrise' } },
-        { id: 'bits', type: 'bit-packer', x: companded ? 900 : 600, y: 40, params: { bits: p.bits } },
+        {
+          id: 'q',
+          type: 'quantizer-uniform',
+          x: companded ? 600 : 300,
+          y: 20,
+          params: { bits: p.bits, mode: 'midrise' },
+        },
+        {
+          id: 'bits',
+          type: 'bit-packer',
+          x: companded ? 900 : 600,
+          y: 40,
+          params: { bits: p.bits },
+        },
       ],
       edges: companded
         ? [

@@ -15,6 +15,7 @@ import { registry } from './registry';
 import { invalidate, useStore, type BlockNode, type CableEdge } from './store';
 import { Toolbar } from './Toolbar';
 import { TheoryPanel } from './theory/TheoryPanel';
+import { BenchPanel } from './bench/BenchPanel';
 
 const STORAGE_KEY = 'tinkersignals:circuit';
 
@@ -170,6 +171,7 @@ export function App() {
       </div>
       <InteriorView />
       <TheoryPanel />
+      <BenchPanel />
       <Toast />
       {home && <Home onClose={closeHome} />}
     </ReactFlowProvider>

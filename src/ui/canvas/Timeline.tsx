@@ -16,7 +16,11 @@ export function Timeline() {
   const cursor = useStore((s) => s.cursor);
   const setCursor = useStore((s) => s.setCursor);
   const source = useStore((s) => {
-    const n = s.nodes.find((x) => registry.get(x.data.blockType)?.category === 'entrada' && s.results?.nodes[x.id]?.status === 'ok');
+    const n = s.nodes.find(
+      (x) =>
+        registry.get(x.data.blockType)?.category === 'entrada' &&
+        s.results?.nodes[x.id]?.status === 'ok',
+    );
     const out = n && s.results?.nodes[n.id]?.outputs.out?.summary;
     return out?.kind === 'signal' ? out : undefined;
   });
@@ -64,7 +68,12 @@ export function Timeline() {
         }}
       >
         <Envelope env={source.preview} width={W} height={H} color="var(--ink-3)" />
-        {cursor !== null && <i className="timeline-cursor" style={{ left: `${(cursor / source.durationS) * 100}%` }} />}
+        {cursor !== null && (
+          <i
+            className="timeline-cursor"
+            style={{ left: `${(cursor / source.durationS) * 100}%` }}
+          />
+        )}
       </div>
     </div>
   );

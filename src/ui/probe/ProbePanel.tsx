@@ -183,7 +183,17 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
               {formatNumber((data.loudestIndex * data.hop) / data.sampleRate, 2)} s)
             </h3>
             <Plot
-              plot={{ kind: 'line', title: '', series: [{ role: 'out', y: data.loudest, style: data.loudest.length <= 64 ? 'step' : 'line' }] }}
+              plot={{
+                kind: 'line',
+                title: '',
+                series: [
+                  {
+                    role: 'out',
+                    y: data.loudest,
+                    style: data.loudest.length <= 64 ? 'step' : 'line',
+                  },
+                ],
+              }}
               color={color}
               width={W}
               height={100}

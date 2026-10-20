@@ -3,7 +3,11 @@ import { snr } from './metrics';
 import { overlapAdd, toFrames } from './frames';
 
 describe('tramas', () => {
-  const x = { kind: 'signal' as const, sampleRate: 8000, samples: Float32Array.from({ length: 1000 }, (_, i) => Math.sin(i * 0.05)) };
+  const x = {
+    kind: 'signal' as const,
+    sampleRate: 8000,
+    samples: Float32Array.from({ length: 1000 }, (_, i) => Math.sin(i * 0.05)),
+  };
   it.each([
     ['rect', 64, 64],
     ['hann', 64, 32],

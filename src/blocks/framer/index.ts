@@ -8,7 +8,11 @@ export default defineBlock({
   inputs: { in: { type: 'signal' } },
   outputs: { out: { type: 'frames' } },
   params: {
-    size: { type: 'select', default: '256', options: ['16', '32', '64', '128', '256', '384', '512', '1024'] },
+    size: {
+      type: 'select',
+      default: '256',
+      options: ['16', '32', '64', '128', '256', '384', '512', '1024'],
+    },
     overlap: { type: 'select', default: '0', options: ['0', '50'] },
     window: { type: 'select', default: 'rect', options: ['rect', 'hann', 'hamming', 'sine'] },
     /** Tamaño y avance exactos en muestras (0 = usar los de arriba). Los fija un circuito interior. */
@@ -23,7 +27,12 @@ export default defineBlock({
       outputs: { out },
       metrics: [
         { key: 'frames', value: out.data.length, highlight: true },
-        { key: 'frameMs', value: (1000 * size) / inputs.in.sampleRate, unit: 'ms', highlight: true },
+        {
+          key: 'frameMs',
+          value: (1000 * size) / inputs.in.sampleRate,
+          unit: 'ms',
+          highlight: true,
+        },
       ],
       latencyMs: (1000 * size) / inputs.in.sampleRate,
     };

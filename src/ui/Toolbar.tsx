@@ -121,6 +121,9 @@ export function Toolbar({ onHome }: { onHome(): void }) {
         <button className="btn btn-quiet" onClick={() => useStore.setState({ theory: 'muestreo' })}>
           Teoría
         </button>
+        <button className="btn btn-quiet" onClick={() => useStore.setState({ bench: true })}>
+          Comparar códecs
+        </button>
         <span className="toolbar-group" role="group" aria-label="Historial">
           <button
             className="btn btn-quiet btn-icon"

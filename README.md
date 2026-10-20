@@ -20,7 +20,15 @@ servicios multimedia:
 
 Hay lecciones guiadas, experimentos ya montados, una biblioteca de sonidos
 (sintéticos y grabaciones de dominio público), enlaces para compartir
-circuitos y deshacer/rehacer.
+circuitos y deshacer/rehacer. Además:
+
+- **Por dentro**: doble clic en un bloque abre su circuito equivalente hecho
+  con piezas básicas (tramas, DCT, FFT, filtros, Levinson…), ejecutado sobre
+  la misma entrada y comparado con el bloque real.
+- **Lupa temporal**: eliges un instante y todos los bloques muestran esa trama.
+- **Teoría**: fichas con explicación y fórmulas, enlazadas desde cada bloque.
+- **Comparar códecs**: curvas tasa–calidad de varias familias con la misma señal.
+- **Calidad de la llamada**: MOS con el modelo E (ITU-T G.107).
 
 ## Uso
 

@@ -23,7 +23,13 @@ export default defineBlock({
       outputs: {
         out: makeBitstream(
           w,
-          { codec: 'raw', sampleRate, numSamples: x.length, bits: params.bits, symbolBits: params.bits },
+          {
+            codec: 'raw',
+            sampleRate,
+            numSamples: x.length,
+            bits: params.bits,
+            symbolBits: params.bits,
+          },
           referenceBitsFor(x.length),
         ),
       },

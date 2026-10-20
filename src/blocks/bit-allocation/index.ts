@@ -19,12 +19,18 @@ export default defineBlock({
   inputs: { subbands: { type: 'frames' }, smr: { type: 'frames' } },
   outputs: { out: { type: 'frames' } },
   params: {
-    bitrate: { type: 'select', default: '128', options: ['32', '64', '96', '128', '192', '256', '384'] },
+    bitrate: {
+      type: 'select',
+      default: '128',
+      options: ['32', '64', '96', '128', '192', '256', '384'],
+    },
   },
   process({ inputs, params }) {
     const sb = inputs.subbands;
     if (sb.domain !== 'subbands' || inputs.smr.domain !== 'smr') {
-      throw new Error('Conecta las subbandas del banco de filtros y la SMR del modelo psicoacústico.');
+      throw new Error(
+        'Conecta las subbandas del banco de filtros y la SMR del modelo psicoacústico.',
+      );
     }
     const fs = sb.sampleRate;
     const available = availableBits(Number(params.bitrate) * 1000, fs);
@@ -32,7 +38,10 @@ export default defineBlock({
     const avg = new Float64Array(BANDS);
     const frames = Math.ceil(sb.data.length / SUBBAND_SAMPLES);
     for (let f = 0; f < frames; f++) {
-      const rows = Array.from({ length: SUBBAND_SAMPLES }, (_, j) => sb.data[f * SUBBAND_SAMPLES + j]);
+      const rows = Array.from(
+        { length: SUBBAND_SAMPLES },
+        (_, j) => sb.data[f * SUBBAND_SAMPLES + j],
+      );
       const smr = Float64Array.from(inputs.smr.data[f] ?? new Float32Array(BANDS));
       const alloc = allocate(smr, available);
       for (let band = 0; band < BANDS; band++) {
@@ -40,14 +49,22 @@ export default defineBlock({
         for (const r of rows) if (r) peak = Math.max(peak, Math.abs(r[band]));
         const scf = scaleFactorIndex(peak);
         rows.forEach((r, j) => {
-          if (r) data[f * SUBBAND_SAMPLES + j][band] = quantizeSubbandSample(r[band], alloc[band], scf);
+          if (r)
+            data[f * SUBBAND_SAMPLES + j][band] = quantizeSubbandSample(r[band], alloc[band], scf);
         });
         avg[band] += alloc[band] / frames;
       }
     }
     return {
       outputs: { out: { ...sb, data } },
-      metrics: [{ key: 'bandsUsed', value: Array.from(avg).filter((b) => b > 0.05).length, unit: `de ${BANDS}`, highlight: true }],
+      metrics: [
+        {
+          key: 'bandsUsed',
+          value: Array.from(avg).filter((b) => b > 0.05).length,
+          unit: `de ${BANDS}`,
+          highlight: true,
+        },
+      ],
       plots: [{ kind: 'bars', title: 'allocation', values: Array.from(avg) }],
     };
   },

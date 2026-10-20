@@ -24,9 +24,22 @@ export default defineBlock({
         sample = pa;
       }
     }
-    const hz = Array.from({ length: sample.spectrum.length }, (_, k) => (k * fs) / (2 * sample.spectrum.length));
+    const hz = Array.from(
+      { length: sample.spectrum.length },
+      (_, k) => (k * fs) / (2 * sample.spectrum.length),
+    );
     return {
-      outputs: { out: { kind: 'frames', domain: 'smr', sampleRate: fs, hop: FRAME, size: BANDS, numSamples: x.length, data } },
+      outputs: {
+        out: {
+          kind: 'frames',
+          domain: 'smr',
+          sampleRate: fs,
+          hop: FRAME,
+          size: BANDS,
+          numSamples: x.length,
+          data,
+        },
+      },
       plots: [
         {
           kind: 'line',

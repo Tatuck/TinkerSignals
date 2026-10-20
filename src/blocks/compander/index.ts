@@ -11,7 +11,15 @@ export default defineBlock({
   params: {
     direction: { type: 'select', default: 'compress', options: ['compress', 'expand'] },
     law: { type: 'select', default: 'mu', options: ['mu', 'a'] },
-    mu: { type: 'number', default: 255, min: 1, max: 1000, step: 1, scale: 'log', visibleIf: { param: 'law', equals: ['mu'] } },
+    mu: {
+      type: 'number',
+      default: 255,
+      min: 1,
+      max: 1000,
+      step: 1,
+      scale: 'log',
+      visibleIf: { param: 'law', equals: ['mu'] },
+    },
   },
   process({ inputs, params }) {
     const f = params.direction === 'compress' ? compress : expand;

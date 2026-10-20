@@ -282,8 +282,10 @@ export const examples: Example[] = [
       { id: 'dp', type: 'depacketizer', x: 1800, y: 60 },
       { id: 'dec', type: 'pcm-decoder', x: 2100, y: 80 },
       { id: 'out', type: 'output', x: 2400, y: 60 },
+      { id: 'mos', type: 'call-quality', x: 1800, y: 420 },
     ],
     edges: [
+      ['jb', 'out', 'mos', 'in'],
       ['lib', 'out', 'rs', 'in'],
       ['rs', 'out', 'enc', 'in'],
       ['enc', 'out', 'pk', 'in'],

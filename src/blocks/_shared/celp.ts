@@ -134,7 +134,6 @@ function convolve(h: Float64Array, v: Float64Array, out: Float64Array): Float64A
   return out;
 }
 
-
 const dot = (a: Float64Array, b: Float64Array) => {
   let s = 0;
   for (let i = 0; i < a.length; i++) s += a[i] * b[i];
@@ -237,7 +236,8 @@ export function celpEncode(x: Float32Array, c: CelpConfig) {
         for (let p = 0; p < pos.length; p++) {
           ty += sign[p] * search.d[pos[p]];
           yy += sign[p] * sign[p] * phi[pos[p] * L + pos[p]];
-          for (let q = p + 1; q < pos.length; q++) yy += 2 * sign[p] * sign[q] * phi[pos[p] * L + pos[q]];
+          for (let q = p + 1; q < pos.length; q++)
+            yy += 2 * sign[p] * sign[q] * phi[pos[p] * L + pos[q]];
         }
         if (yy > 1e-12 && (ty * ty) / yy > bestScore) {
           bestScore = (ty * ty) / yy;
@@ -410,4 +410,11 @@ export function celpDecode(bytes: Uint8Array, bitLength: number, n: number, c: C
 }
 
 /** Piezas internas expuestas solo para los tests. */
-export const __test = { searchAdaptive, backwardFilter, autocorrelationMatrix, makeWorkspace, convolve, adaptiveVector };
+export const __test = {
+  searchAdaptive,
+  backwardFilter,
+  autocorrelationMatrix,
+  makeWorkspace,
+  convolve,
+  adaptiveVector,
+};

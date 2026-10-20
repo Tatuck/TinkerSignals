@@ -251,6 +251,8 @@ export interface ProcessContext<I extends PortSpecs, P extends ParamSpecs> {
   getAsset(id: string): Signal | undefined;
   /** Busca un valor inyectado desde fuera del grafo (cualquier tipo de cable). */
   getExternal(id: string): PortValue | undefined;
+  /** Retardo acumulado (ms) con el que llega cada entrada. */
+  inputLatencyMs?: Record<string, number>;
 }
 
 // ─── Definición de un bloque ────────────────────────────────────────────────

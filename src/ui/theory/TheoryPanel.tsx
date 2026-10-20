@@ -8,7 +8,10 @@ import { useStore } from '../store';
 
 /** Fórmula renderizada con KaTeX (el texto es nuestro, no del usuario). */
 function Formula({ tex }: { tex: string }) {
-  const html = useMemo(() => katex.renderToString(tex, { displayMode: true, throwOnError: false }), [tex]);
+  const html = useMemo(
+    () => katex.renderToString(tex, { displayMode: true, throwOnError: false }),
+    [tex],
+  );
   return <div className="formula" dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
@@ -88,7 +91,10 @@ export function TheoryPanel() {
               <ul className="concepts">
                 {concept.related.map((id) => (
                   <li key={id}>
-                    <button className="concept-link" onClick={() => useStore.setState({ theory: id })}>
+                    <button
+                      className="concept-link"
+                      onClick={() => useStore.setState({ theory: id })}
+                    >
                       {conceptById(id)?.title}
                     </button>
                   </li>

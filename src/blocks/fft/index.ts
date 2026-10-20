@@ -39,7 +39,15 @@ export default defineBlock({
       }
       data.push(mag);
     }
-    const out: Frames = { kind: 'frames', domain: 'spectrum', sampleRate: fs, hop, size: N / 2, numSamples: x.length, data };
+    const out: Frames = {
+      kind: 'frames',
+      domain: 'spectrum',
+      sampleRate: fs,
+      hop,
+      size: N / 2,
+      numSamples: x.length,
+      data,
+    };
     const mean = Array.from(avg, (v) => 10 * Math.log10(v / data.length + 1e-18));
     let peak = 0;
     mean.forEach((v, k) => v > mean[peak] && (peak = k));
@@ -51,7 +59,15 @@ export default defineBlock({
         { key: 'peakHz', value: hz[peak], unit: 'Hz', highlight: true },
         { key: 'frameMs', value: (1000 * N) / fs, unit: 'ms' },
       ],
-      plots: [{ kind: 'line', title: 'spectrum', series: [{ role: 'out', x: hz, y: mean }], xLabel: 'f', yLabel: 'dB' }],
+      plots: [
+        {
+          kind: 'line',
+          title: 'spectrum',
+          series: [{ role: 'out', x: hz, y: mean }],
+          xLabel: 'f',
+          yLabel: 'dB',
+        },
+      ],
     };
   },
 });

@@ -10,7 +10,9 @@ export default defineBlock({
   params: {},
   process({ inputs }) {
     if (inputs.in.domain !== 'time') {
-      throw new Error('Estas tramas no son muestras en el tiempo: pásalas antes por la transformada inversa.');
+      throw new Error(
+        'Estas tramas no son muestras en el tiempo: pásalas antes por la transformada inversa.',
+      );
     }
     return { outputs: { out: overlapAdd(inputs.in) } };
   },

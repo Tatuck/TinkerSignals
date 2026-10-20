@@ -1,0 +1,33 @@
+{
+  "title": "Calidad de la llamada (modelo E)",
+  "summary": "Estima la nota media (MOS) que darían los usuarios a la llamada, a partir del retardo, las pérdidas y el códec.",
+  "details": "El modelo E de la ITU-T (G.107) es la herramienta con la que los operadores planifican redes de voz. Parte de una calidad máxima R = 93,2 y le resta los deterioros: Id por el retardo en un sentido (crece mucho a partir de unos 177 ms) e Ie,eff por el códec y las pérdidas de paquetes, que dependen de lo robusto que sea el códec (Bpl). Después convierte R en MOS, de 1 (malo) a 4,5. Conéctalo detrás del búfer de jitter: toma de ahí el retardo acumulado y los paquetes que faltan. En «Automático» elige el códec de referencia más parecido al que viaja en los paquetes; para los códecs didácticos de esta web los valores son aproximados.",
+  "tryThis": "En la llamada VoIP de ejemplo, sube las pérdidas de la red al 5 % y compara G.711 con y sin ocultación de pérdidas (PLC). Después sube el retardo de la red a 250 ms.",
+  "concepts": ["VoIP", "Pérdida de paquetes", "Retardo de red", "Medida de calidad"],
+  "ports": { "in": "Paquetes (tras el búfer)" },
+  "params": {
+    "codec": { "label": "Códec", "help": "Factores de deterioro Ie y Bpl de ITU-T G.113." },
+    "burstR": { "label": "Ráfagas (BurstR)", "help": "1 = pérdidas al azar; más de 1, a ráfagas." },
+    "extraDelayMs": { "label": "Retardo de los terminales", "help": "Lo que añaden micrófono, altavoz y sistema operativo." }
+  },
+  "options": {
+    "codec": {
+      "auto": "Automático",
+      "g711-plc": "G.711 con ocultación (PLC)",
+      "g711": "G.711 sin ocultación",
+      "g726": "G.726 32 kbps (aprox.)",
+      "g729": "G.729A",
+      "g723": "G.723.1 6,3 kbps",
+      "lpc": "Vocoder LPC (aprox.)"
+    }
+  },
+  "metrics": { "mos": "MOS", "r": "Factor R", "delay": "Retardo boca-oído", "loss": "Paquetes perdidos", "ie": "Ie del códec" },
+  "plots": {
+    "sat-very": "R frente al retardo: usuarios muy satisfechos",
+    "sat-satisfied": "R frente al retardo: usuarios satisfechos",
+    "sat-some": "R frente al retardo: algunos usuarios insatisfechos",
+    "sat-many": "R frente al retardo: muchos usuarios insatisfechos",
+    "sat-nearly-all": "R frente al retardo: casi todos insatisfechos",
+    "sat-not": "R frente al retardo: calidad no recomendable"
+  }
+}

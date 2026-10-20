@@ -17,7 +17,10 @@ export function windowAt(s: Signal, timeS: number, ms: number): Float32Array {
 
 /** Trama que contiene el instante `timeS`. */
 export function frameAt(f: Frames, timeS: number): { frame: Float32Array; index: number } {
-  const index = Math.max(0, Math.min(f.data.length - 1, Math.floor((timeS * f.sampleRate) / f.hop)));
+  const index = Math.max(
+    0,
+    Math.min(f.data.length - 1, Math.floor((timeS * f.sampleRate) / f.hop)),
+  );
   return { frame: f.data[index] ?? new Float32Array(0), index };
 }
 
@@ -45,8 +48,14 @@ export function inspectValues(
   const wave = (ms: number): Plot | null => {
     const series: Extract<Plot, { kind: 'line' }>['series'] = [];
     if (sin) series.push({ role: 'in', y: windowAt(sin, timeS, ms) });
-    if (sout && (!sin || sout.sampleRate === sin.sampleRate)) series.push({ role: 'out', y: windowAt(sout, timeS, ms) });
-    else if (sout) return { kind: 'line', title: 'waveAt', series: [{ role: 'out', y: windowAt(sout, timeS, ms) }] };
+    if (sout && (!sin || sout.sampleRate === sin.sampleRate))
+      series.push({ role: 'out', y: windowAt(sout, timeS, ms) });
+    else if (sout)
+      return {
+        kind: 'line',
+        title: 'waveAt',
+        series: [{ role: 'out', y: windowAt(sout, timeS, ms) }],
+      };
     return series.length ? { kind: 'line', title: 'waveAt', series } : null;
   };
   const frame = (): Plot | null => {
@@ -54,7 +63,12 @@ export function inspectValues(
     const { frame: f, index } = frameAt(fout, timeS);
     const values = Array.from(f);
     return values.length <= 64
-      ? { kind: 'bars', title: 'frameAt', values: values.map(Math.abs), labels: values.map((v, k) => `${k}: ${v.toFixed(3)} (trama ${index + 1})`) }
+      ? {
+          kind: 'bars',
+          title: 'frameAt',
+          values: values.map(Math.abs),
+          labels: values.map((v, k) => `${k}: ${v.toFixed(3)} (trama ${index + 1})`),
+        }
       : { kind: 'line', title: 'frameAt', series: [{ role: 'out', y: f }] };
   };
 
@@ -69,7 +83,11 @@ export function inspectValues(
       title: 'spectrumAt',
       series: spec.map((s, i) => {
         const { hz, db } = spectrumAt(s, timeS);
-        return { role: spec.length === 2 && i === 0 ? ('in' as const) : ('out' as const), x: hz, y: db };
+        return {
+          role: spec.length === 2 && i === 0 ? ('in' as const) : ('out' as const),
+          x: hz,
+          y: db,
+        };
       }),
       xLabel: 'f',
       yLabel: 'dB',

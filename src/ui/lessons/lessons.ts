@@ -190,8 +190,19 @@ export const lessons: Lesson[] = [
         check: (c) => Number(c.param('jb', 'bufferMs')) === 0,
       },
       {
-        text: 'Muchos paquetes llegan después de su turno y se descartan (mira «Llegan tarde»). Un búfer más grande los salva a cambio de retardo. Busca un valor que deje el retardo total por debajo de 150 ms con pocas pérdidas.',
+        text: 'Muchos paquetes llegan después de su turno y se descartan (mira «Llegan tarde»). Un búfer más grande los salva a cambio de retardo.',
         node: 'jb',
+      },
+      {
+        text: 'El bloque «Calidad de la llamada» lo resume con el modelo E de la ITU-T: una nota (MOS) de 1 a 4,5 a partir del retardo y las pérdidas. Con un 5 % de paquetes perdidos, ni el mejor búfer pasa de un MOS de 3,8.',
+        node: 'mos',
+      },
+      {
+        text: 'Baja las pérdidas de la red al 1 % y ajusta el búfer de jitter hasta que la llamada sea buena.',
+        node: 'net',
+        param: 'lossPct',
+        task: 'Consigue un MOS de al menos 4.',
+        check: (c) => (c.metric('mos', 'mos') ?? 0) >= 4,
       },
     ],
   },

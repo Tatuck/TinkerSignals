@@ -311,7 +311,10 @@ export function quantizeSubbandSample(v: number, bits: number, scf: number): num
   if (!bits) return 0;
   const levels = 2 ** bits - 1;
   const sf = SCALE_FACTORS[scf];
-  const code = Math.min(levels - 1, Math.round(((Math.max(-1, Math.min(1, v / sf)) + 1) / 2) * (levels - 1)));
+  const code = Math.min(
+    levels - 1,
+    Math.round(((Math.max(-1, Math.min(1, v / sf)) + 1) / 2) * (levels - 1)),
+  );
   return ((2 * code) / (levels - 1) - 1) * sf;
 }
 

@@ -17,10 +17,13 @@ export default defineBlock({
     const M = params.factor;
     const target = params.length || inputs.in.samples.length * M;
     const y = new Float32Array(target);
-    for (let i = 0; i < inputs.in.samples.length && i * M < target; i++) y[i * M] = inputs.in.samples[i];
+    for (let i = 0; i < inputs.in.samples.length && i * M < target; i++)
+      y[i * M] = inputs.in.samples[i];
     return {
       outputs: { out: makeSignal(y, inputs.in.sampleRate * M) },
-      metrics: [{ key: 'sampleRate', value: inputs.in.sampleRate * M, unit: 'Hz', highlight: true }],
+      metrics: [
+        { key: 'sampleRate', value: inputs.in.sampleRate * M, unit: 'Hz', highlight: true },
+      ],
     };
   },
 });

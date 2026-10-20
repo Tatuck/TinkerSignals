@@ -1,7 +1,7 @@
 {
   "title": "Codificador DPCM",
   "summary": "Predice cada muestra a partir de las anteriores y solo envía el error de predicción.",
-  "details": "Las muestras de audio consecutivas se parecen mucho. DPCM aprovecha esa redundancia: un predictor lineal de orden p (calculado con Levinson-Durbin sobre la autocorrelación) estima la siguiente muestra y se cuantiza solo la diferencia, que es mucho más pequeña. Con menos amplitud basta con menos bits para la misma calidad. La ganancia de predicción mide cuánto más pequeña es la potencia del error que la de la señal. Los coeficientes del predictor viajan al principio del flujo. Aquí se calculan sobre toda la señal para simplificar; un códec real los recalcula por tramas.",
+  "details": "Las muestras de audio consecutivas se parecen mucho. DPCM aprovecha esa redundancia: un predictor lineal de orden p (calculado con Levinson-Durbin sobre la autocorrelación) estima la siguiente muestra y se cuantiza solo la diferencia, que es mucho más pequeña. Con menos amplitud basta con menos bits para la misma calidad. La ganancia de predicción mide cuánto más pequeña es la potencia del error que la de la señal. Los coeficientes del predictor y el rango del cuantizador (el codificador prueba varios y elige el mejor) viajan al principio del flujo. Aquí se calculan sobre toda la señal para simplificar; un códec real los recalcula por tramas.",
   "tryThis": "Mira la ganancia de predicción con una vocal y con ruido blanco. Con ruido, no hay nada que predecir.",
   "concepts": [
     "Predicción lineal",

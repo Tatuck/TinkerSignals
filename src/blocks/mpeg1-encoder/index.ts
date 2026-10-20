@@ -38,7 +38,10 @@ export default defineBlock({
     const { samples: x, sampleRate: fs } = inputs.in;
     const frame = Math.floor((timeS * fs) / FRAME);
     const pa = psychoacoustic(x, frame * FRAME, fs);
-    const hz = Array.from({ length: pa.spectrum.length }, (_, k) => (k * fs) / (2 * pa.spectrum.length));
+    const hz = Array.from(
+      { length: pa.spectrum.length },
+      (_, k) => (k * fs) / (2 * pa.spectrum.length),
+    );
     return [
       {
         kind: 'line',

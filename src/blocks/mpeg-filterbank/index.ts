@@ -25,7 +25,9 @@ export default defineBlock({
           data: blocks.map((b) => Float32Array.from(b)),
         },
       },
-      metrics: [{ key: 'bandHz', value: inputs.in.sampleRate / 2 / BANDS, unit: 'Hz', highlight: true }],
+      metrics: [
+        { key: 'bandHz', value: inputs.in.sampleRate / 2 / BANDS, unit: 'Hz', highlight: true },
+      ],
       latencyMs: (1000 * BANDS) / inputs.in.sampleRate,
     };
   },

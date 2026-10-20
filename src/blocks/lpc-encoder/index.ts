@@ -29,7 +29,13 @@ export default defineBlock({
     return {
       nodes: [
         { id: 'in', type: 'inner-signal-in', x: 0, y: 40 },
-        { id: 'frames', type: 'framer', x: 300, y: 20, params: { exactSize: Math.round(1.5 * N), exactHop: N, window: 'hamming' } },
+        {
+          id: 'frames',
+          type: 'framer',
+          x: 300,
+          y: 20,
+          params: { exactSize: Math.round(1.5 * N), exactHop: N, window: 'hamming' },
+        },
         { id: 'r', type: 'autocorrelation', x: 600, y: 0, params: { order: p.order } },
         { id: 'lpc', type: 'levinson', x: 900, y: 0 },
         { id: 'spec', type: 'fft', x: 300, y: 380, params: { size: '512', window: 'hann' } },

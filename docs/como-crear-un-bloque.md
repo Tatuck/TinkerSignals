@@ -47,6 +47,19 @@ process({ inputs, params, getAsset }) => {
   salida en el color del bloque (`role: 'out'`). `compareWaves` hace la gráfica
   típica de entrada frente a salida.
 
+## Opcional: interior y lupa temporal
+
+- `interior(params, inputs)` devuelve un circuito de piezas básicas que hace
+  lo mismo que el bloque. Se ejecuta de verdad al hacer doble clic y se
+  compara con la salida real; `src/blocks/interiors.test.ts` comprueba que
+  coinciden. Las entradas del circuito interior son bloques
+  `inner-signal-in` / `inner-bitstream-in`.
+- `inspectAt({ inputs, params, timeS })` devuelve gráficas para un instante
+  concreto (por ejemplo, la envolvente LPC de esa trama). Las gráficas
+  genéricas de la lupa (onda, espectro, trama) ya las pone el motor.
+- Si añades un concepto nuevo en `concepts`, crea su ficha en
+  `src/theory/es.ts`: un test comprueba que ninguna etiqueta se queda sin ficha.
+
 ## Depurar
 
 - Los bloques se prueban llamando a `process` en un test de Vitest, sin

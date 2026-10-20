@@ -28,9 +28,21 @@ export default defineBlock({
   interior: (p): InteriorGraph => ({
     nodes: [
       { id: 'in', type: 'inner-signal-in', x: 0, y: 60 },
-      { id: 'frames', type: 'framer', x: 300, y: 40, params: { exactSize: Number(p.blockSize), exactHop: Number(p.blockSize), window: 'rect' } },
+      {
+        id: 'frames',
+        type: 'framer',
+        x: 300,
+        y: 40,
+        params: { exactSize: Number(p.blockSize), exactHop: Number(p.blockSize), window: 'rect' },
+      },
       { id: 'dct', type: 'dct', x: 600, y: 20 },
-      { id: 'sel', type: 'coef-select', x: 900, y: 0, params: { keep: p.keep, selection: p.selection } },
+      {
+        id: 'sel',
+        type: 'coef-select',
+        x: 900,
+        y: 0,
+        params: { keep: p.keep, selection: p.selection },
+      },
       { id: 'q', type: 'frame-quantizer', x: 900, y: 300, params: { bits: p.bits } },
       { id: 'idct', type: 'idct', x: 600, y: 320 },
       { id: 'join', type: 'overlap-add', x: 300, y: 340 },
@@ -66,7 +78,10 @@ export default defineBlock({
         title: 'coefficientsAt',
         values: Array.from({ length: show }, (_, k) => Math.abs(c[k])),
         highlight: [...kept].filter((k) => k < show),
-        labels: Array.from({ length: show }, (_, k) => `Coeficiente ${k}: ${c[k].toFixed(3)}${kept.has(k) ? ' (se conserva)' : ''}`),
+        labels: Array.from(
+          { length: show },
+          (_, k) => `Coeficiente ${k}: ${c[k].toFixed(3)}${kept.has(k) ? ' (se conserva)' : ''}`,
+        ),
       },
     ];
   },

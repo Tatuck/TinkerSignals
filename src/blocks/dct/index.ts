@@ -12,7 +12,8 @@ export default defineBlock({
   outputs: { out: { type: 'frames' } },
   params: {},
   process({ inputs }) {
-    if (inputs.in.domain !== 'time') throw new Error('La DCT espera tramas de muestras en el tiempo.');
+    if (inputs.in.domain !== 'time')
+      throw new Error('La DCT espera tramas de muestras en el tiempo.');
     const out = mapFrames(inputs.in, 'dct', (f) => Float32Array.from(dct(f)));
     // Compactación de energía: qué fracción se lleva el 10 % de coeficientes más grandes.
     let top = 0;
@@ -27,7 +28,14 @@ export default defineBlock({
     }
     return {
       outputs: { out },
-      metrics: [{ key: 'compaction', value: total > 0 ? (100 * top) / total : 0, unit: '%', highlight: true }],
+      metrics: [
+        {
+          key: 'compaction',
+          value: total > 0 ? (100 * top) / total : 0,
+          unit: '%',
+          highlight: true,
+        },
+      ],
     };
   },
 });

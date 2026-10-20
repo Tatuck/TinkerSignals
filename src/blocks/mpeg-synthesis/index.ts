@@ -13,6 +13,14 @@ export default defineBlock({
   process({ inputs }) {
     if (inputs.in.domain !== 'subbands') throw new Error('El banco de síntesis espera subbandas.');
     const blocks = inputs.in.data.map((f) => Float64Array.from(f));
-    return { outputs: { out: { kind: 'signal', samples: synthesis(blocks, inputs.in.numSamples), sampleRate: inputs.in.sampleRate } } };
+    return {
+      outputs: {
+        out: {
+          kind: 'signal',
+          samples: synthesis(blocks, inputs.in.numSamples),
+          sampleRate: inputs.in.sampleRate,
+        },
+      },
+    };
   },
 });

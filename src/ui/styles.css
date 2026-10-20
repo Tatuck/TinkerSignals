@@ -1752,3 +1752,158 @@ select {
     grid-template-rows: 180px minmax(0, 1fr);
   }
 }
+
+/* ─── Comparador tasa–calidad ────────────────────────────────────────────── */
+
+.bench {
+  width: min(900px, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  background: var(--panel);
+  border-radius: 16px;
+  padding: 20px 24px 24px;
+  box-shadow: 0 20px 60px -20px rgba(31, 42, 68, 0.6);
+}
+.bench-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.bench-head h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 26px;
+  margin: 0 0 4px;
+}
+.bench-head p {
+  margin: 0;
+  color: var(--ink-2);
+  max-width: 62ch;
+}
+.bench-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin: 16px 0 10px;
+}
+.bench-controls label {
+  display: grid;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.bench-controls select {
+  padding: 6px 10px;
+  border-radius: var(--radius-control);
+  border: 1.5px solid var(--line);
+  background: var(--panel);
+  font-weight: 400;
+  color: var(--ink);
+}
+.bench-families {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  border: 0;
+  padding: 0;
+  margin: 0 0 8px;
+}
+.bench-families legend {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink-2);
+  margin-bottom: 4px;
+}
+.bench-family {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.bench-family i,
+.bench-table .swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+.bench-family small {
+  color: var(--ink-3);
+}
+.bench-empty {
+  display: grid;
+  place-items: center;
+  height: 200px;
+  border: 1.5px dashed var(--line);
+  border-radius: 12px;
+  color: var(--ink-3);
+}
+.rq-chart {
+  margin: 0;
+}
+.rq-chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.rq-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.rq-tick {
+  font-size: 11px;
+  fill: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.rq-axis {
+  font-size: 12px;
+  fill: var(--ink-2);
+}
+.rq-label {
+  font-size: 12px;
+  font-weight: 700;
+  fill: var(--ink);
+}
+.rq-hit {
+  cursor: pointer;
+}
+.rq-tip {
+  fill: var(--ink);
+}
+.rq-tip-title {
+  font-size: 12px;
+  font-weight: 700;
+  fill: #fff;
+}
+.rq-tip-text {
+  font-size: 12px;
+  fill: #fff;
+}
+.rq-tip-hint {
+  font-size: 10.5px;
+  fill: #c9d1de;
+}
+.bench-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 14px;
+  font-size: 13.5px;
+}
+.bench-table th {
+  text-align: left;
+  font-size: 12px;
+  color: var(--ink-3);
+  padding: 4px 8px;
+  border-bottom: 1.5px solid var(--line);
+}
+.bench-table td {
+  padding: 3px 8px;
+  border-bottom: 1px solid var(--line);
+}
+.bench-table .num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}

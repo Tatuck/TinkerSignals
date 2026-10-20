@@ -45,6 +45,8 @@ export interface State {
   assets: Record<string, AssetInfo>;
   /** Se incrementa al cargar un circuito entero: el lienzo lo usa para encuadrarlo. */
   loadCount: number;
+  /** ¿Está abierto el comparador tasa–calidad? */
+  bench: boolean;
   /** Ficha de teoría abierta (id), '' para el índice, o null si está cerrada. */
   theory: string | null;
   /** Instante elegido con la lupa temporal (s), o null si no hay lupa. */
@@ -96,6 +98,7 @@ export function createGraphStore(scope: Scope): GraphStore {
     assets: {},
     loadCount: 0,
     toast: null,
+    bench: false,
     theory: null,
     cursor: null,
     setCursor: (cursor) => set({ cursor }),

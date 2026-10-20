@@ -45,7 +45,9 @@ export function InteriorView() {
     if (!parentId || !entry || !innerResults) return;
     const [port, [node, innerPort]] = entry;
     let alive = true;
-    void engine.compareInterior(parentId, port, node, innerPort).then((c) => alive && setComparison(c));
+    void engine
+      .compareInterior(parentId, port, node, innerPort)
+      .then((c) => alive && setComparison(c));
     return () => {
       alive = false;
     };
@@ -56,7 +58,12 @@ export function InteriorView() {
   const text = blockText(parent.data.blockType);
 
   return (
-    <div className="interior" role="dialog" aria-modal="true" aria-label={`Por dentro: ${text.title}`}>
+    <div
+      className="interior"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Por dentro: ${text.title}`}
+    >
       <header className="interior-head">
         <nav className="crumbs" aria-label="Dónde estás">
           <button className="btn btn-quiet" onClick={closeInterior}>
@@ -70,7 +77,8 @@ export function InteriorView() {
         <p>
           {text.interior ??
             'Así funciona por dentro, montado con piezas básicas que también tienes en la paleta. El bloque real hace el mismo cálculo de forma optimizada.'}{' '}
-          Haz clic en cualquier cable para ver qué pasa por él; lo que cambies aquí no afecta al circuito principal.
+          Haz clic en cualquier cable para ver qué pasa por él; lo que cambies aquí no afecta al
+          circuito principal.
         </p>
         <ComparisonBadge c={comparison} hasOutput={Object.keys(outputs).length > 0} />
         <button className="btn btn-primary" onClick={closeInterior}>
@@ -95,22 +103,28 @@ export function InteriorView() {
 
 function ComparisonBadge({ c, hasOutput }: { c: Comparison; hasOutput: boolean }) {
   if (!hasOutput) {
-    return <p className="compare-badge">Este interior muestra el proceso; la escritura final de los bits no se representa.</p>;
+    return (
+      <p className="compare-badge">
+        Este interior muestra el proceso; la escritura final de los bits no se representa.
+      </p>
+    );
   }
   if (!c) return <p className="compare-badge">Comparando con el bloque real…</p>;
   if (c.kind === 'bits') {
     const pct = (100 * c.equalBits) / Math.max(1, c.totalBits);
     return (
       <p className={`compare-badge${pct === 100 ? ' is-match' : ''}`}>
-        {pct === 100 ? 'Bits idénticos a los del bloque real' : `Coinciden el ${formatNumber(pct, 2)} % de los bits`}
+        {pct === 100
+          ? 'Bits idénticos a los del bloque real'
+          : `Coinciden el ${formatNumber(pct, 2)} % de los bits`}
       </p>
     );
   }
   const match = c.snr > 60;
   return (
     <p className={`compare-badge${match ? ' is-match' : ''}`}>
-      {match ? 'Misma salida que el bloque real' : 'Salida parecida a la del bloque real'} (SNR entre ambas:{' '}
-      {Number.isFinite(c.snr) ? `${formatNumber(c.snr, 0)} dB` : '∞'})
+      {match ? 'Misma salida que el bloque real' : 'Salida parecida a la del bloque real'} (SNR
+      entre ambas: {Number.isFinite(c.snr) ? `${formatNumber(c.snr, 0)} dB` : '∞'})
     </p>
   );
 }

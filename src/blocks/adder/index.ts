@@ -17,7 +17,8 @@ export default defineBlock({
     }
     const n = Math.max(inputs.a.samples.length, inputs.b.samples.length);
     const y = new Float32Array(n);
-    for (let i = 0; i < n; i++) y[i] = params.gainA * (inputs.a.samples[i] ?? 0) + params.gainB * (inputs.b.samples[i] ?? 0);
+    for (let i = 0; i < n; i++)
+      y[i] = params.gainA * (inputs.a.samples[i] ?? 0) + params.gainB * (inputs.b.samples[i] ?? 0);
     return { outputs: { out: makeSignal(y, inputs.a.sampleRate) } };
   },
 });

@@ -9,7 +9,11 @@ export default defineBlock({
   inputs: { in: { type: 'signal' } },
   outputs: { out: { type: 'signal' } },
   params: {
-    sampleRate: { type: 'select', default: '8000', options: ['4000', '8000', '11025', '16000', '22050', '32000', '44100', '48000'] },
+    sampleRate: {
+      type: 'select',
+      default: '8000',
+      options: ['4000', '8000', '11025', '16000', '22050', '32000', '44100', '48000'],
+    },
     /** Frecuencia exacta en Hz (0 = la de arriba). La fija un circuito interior. */
     exactRate: { type: 'number', default: 0, min: 0, max: 384000, step: 1, hidden: true },
   },

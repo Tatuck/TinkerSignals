@@ -1,3 +1,5 @@
+import { fft as fftInPlace } from './fft';
+
 /** Métricas de calidad y de información. */
 
 /** SNR global en dB entre una referencia y su versión procesada. */
@@ -69,4 +71,47 @@ export function peak(x: Float32Array): number {
   let p = 0;
   for (let i = 0; i < x.length; i++) p = Math.max(p, Math.abs(x[i]));
   return p;
+}
+
+/**
+ * Distancia espectral logarítmica media (dB): compara los espectros de
+ * referencia y procesada trama a trama, ignorando la fase. Al contrario que
+ * la SNR, no castiga a los códecs que no copian la forma de onda (vocoders,
+ * perceptuales). Cuanto más baja, más parecidas.
+ */
+export function logSpectralDistance(
+  reference: Float32Array,
+  processed: Float32Array,
+  size = 512,
+): number {
+  const n = Math.min(reference.length, processed.length);
+  const hop = size / 2;
+  const w = Float64Array.from(
+    { length: size },
+    (_, i) => 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / size),
+  );
+  const spec = (x: Float32Array, start: number) => {
+    const re = new Float64Array(size);
+    const im = new Float64Array(size);
+    for (let i = 0; i < size; i++) re[i] = (x[start + i] ?? 0) * w[i];
+    fftInPlace(re, im);
+    return Float64Array.from({ length: size / 2 }, (_, k) => re[k] * re[k] + im[k] * im[k]);
+  };
+  let total = 0;
+  let frames = 0;
+  for (let start = 0; start + size <= n; start += hop) {
+    const a = spec(reference, start);
+    let energy = 0;
+    for (const v of a) energy += v;
+    if (10 * Math.log10(energy / size + 1e-20) < -60) continue; // silencio
+    const b = spec(processed, start);
+    let d = 0;
+    for (let k = 1; k < a.length; k++) {
+      const diff = 10 * Math.log10((a[k] + 1e-10) / (b[k] + 1e-10));
+      d += diff * diff;
+    }
+    total += Math.sqrt(d / (a.length - 1));
+    frames++;
+  }
+  return frames ? total / frames : NaN;
 }

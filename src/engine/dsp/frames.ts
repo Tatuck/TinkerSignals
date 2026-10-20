@@ -34,7 +34,16 @@ export function toFrames(x: Signal, size: number, hop: number, window: WindowNam
     for (let i = 0; i < size; i++) frame[i] = (x.samples[start + i] ?? 0) * w[i];
     data.push(frame);
   }
-  return { kind: 'frames', domain: 'time', sampleRate: x.sampleRate, hop, size, numSamples: x.samples.length, data, window };
+  return {
+    kind: 'frames',
+    domain: 'time',
+    sampleRate: x.sampleRate,
+    hop,
+    size,
+    numSamples: x.samples.length,
+    data,
+    window,
+  };
 }
 
 /**
@@ -58,7 +67,11 @@ export function overlapAdd(f: Frames): Signal {
 }
 
 /** Aplica una función a cada trama y devuelve unas tramas nuevas. */
-export function mapFrames(f: Frames, domain: Frames['domain'], fn: (frame: Float32Array, index: number) => Float32Array): Frames {
+export function mapFrames(
+  f: Frames,
+  domain: Frames['domain'],
+  fn: (frame: Float32Array, index: number) => Float32Array,
+): Frames {
   const data = f.data.map(fn);
   return { ...f, domain, data, size: data[0]?.length ?? f.size };
 }

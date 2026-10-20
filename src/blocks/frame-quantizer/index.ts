@@ -27,7 +27,14 @@ export default defineBlock({
     });
     return {
       outputs: { out },
-      metrics: [{ key: 'snr', value: 10 * Math.log10((sig + 1e-20) / (err + 1e-20)), unit: 'dB', highlight: true }],
+      metrics: [
+        {
+          key: 'snr',
+          value: 10 * Math.log10((sig + 1e-20) / (err + 1e-20)),
+          unit: 'dB',
+          highlight: true,
+        },
+      ],
     };
   },
 });
