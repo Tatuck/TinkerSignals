@@ -251,3 +251,16 @@ describe('Red y VoIP', () => {
     expect(late(0)).toBeGreaterThan(late(120));
   });
 });
+
+describe('Subbandas (tipo G.722)', () => {
+  it('reconstruye con buena calidad a 64 kbps y peor a 48', () => {
+    const run = (mode: string) => {
+      const c = chain([{ type: 'subband-encoder', params: { mode } }, { type: 'subband-decoder' }], { frequency: 160 });
+      expect(c.metric('b0', 'bitrate')).toBe({ '64': 64000, '48': 48000 }[mode]);
+      return snr(c.input.samples, (c.output as Signal).samples);
+    };
+    const s64 = run('64');
+    expect(s64).toBeGreaterThan(20);
+    expect(s64).toBeGreaterThan(run('48'));
+  });
+});

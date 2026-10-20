@@ -133,7 +133,9 @@
     "rle": "RLE (rachas)",
     "arithmetic": "Codificación aritmética",
     "lzw": "LZW (diccionario)",
-    "voip": "Paquetes RTP"
+    "voip": "Paquetes RTP",
+    "mpeg1": "MPEG-1 Audio Layer I",
+    "g722": "Subbandas (tipo G.722)"
   },
   "familyRoles": {
     "encoder": "Codificador",

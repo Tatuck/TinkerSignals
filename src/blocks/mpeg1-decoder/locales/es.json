@@ -1,0 +1,9 @@
+{
+  "title": "Decodificador MPEG-1 Layer I",
+  "summary": "Reconstruye las 32 subbandas con los bits y factores de escala recibidos y las vuelve a juntar.",
+  "details": "El decodificador es mucho más sencillo que el codificador: no necesita modelo psicoacústico. Lee cuántos bits tiene cada subbanda, su factor de escala y las muestras, y pasa todo por el banco de filtros de síntesis. Por eso los códecs perceptuales pueden mejorar con los años sin cambiar los reproductores: basta con un codificador más listo.",
+  "tryThis": "Conecta un Comparador y escucha su salida «Error»: es el ruido que el códec ha escondido bajo el umbral de enmascaramiento.",
+  "concepts": ["Banco de filtros de síntesis", "Asimetría codificador-decodificador"],
+  "ports": { "in": "Bits", "out": "Audio" },
+  "params": {}
+}

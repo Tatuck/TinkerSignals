@@ -1,0 +1,9 @@
+{
+  "title": "Decodificador de subbandas (tipo G.722)",
+  "summary": "Decodifica cada banda con su ADPCM y las vuelve a juntar con el banco QMF de síntesis.",
+  "details": "El banco QMF de síntesis está diseñado para que el aliasing que introdujo el de análisis al diezmar cada banda se cancele al sumarlas. Si una banda llega muy dañada, por ejemplo con errores de canal, la cancelación deja de ser perfecta.",
+  "tryThis": "Pon «Errores de bit» delante y compara cómo suena con ADPCM de banda completa.",
+  "concepts": ["Banco QMF", "Cancelación de aliasing"],
+  "ports": { "in": "Bits", "out": "Audio" },
+  "params": {}
+}

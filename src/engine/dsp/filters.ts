@@ -95,3 +95,14 @@ export function firResponseDb(h: ArrayLike<number>, points = 128): Float32Array 
   }
   return out;
 }
+
+/** Convolución causal: y[n] = Σ h[k]·x[n−k] (misma longitud que x). */
+export function convolveCausal(x: Float32Array, h: ArrayLike<number>): Float32Array {
+  const y = new Float32Array(x.length);
+  for (let n = 0; n < x.length; n++) {
+    let s = 0;
+    for (let k = 0; k < h.length && k <= n; k++) s += h[k] * x[n - k];
+    y[n] = s;
+  }
+  return y;
+}

@@ -85,14 +85,22 @@ function speak(segments: Segment[], fs: number, f0: number, seed = 3): Float32Ar
       } else if (seg.kind === 'fric') {
         const noise = rand() * 2 - 1;
         const [lo, hi] = seg.band;
-        s = fric[1].process(fric[0].process(noise, lo, (hi - lo) * 0.8, fs), hi, (hi - lo), fs);
-        s *= (seg.gain ?? 1) * 3 * Math.min(1, i / (0.01 * fs), (n - i) / (0.01 * fs));
+        s = fric[1].process(fric[0].process(noise, lo, (hi - lo) * 0.8, fs), hi, hi - lo, fs);
+        s *= (seg.gain ?? 1) * Math.min(1, i / (0.01 * fs), (n - i) / (0.01 * fs));
       } else if (seg.kind === 'stop') {
         // Oclusiva: silencio y una pequeña explosión al final.
         s = i > n - 0.012 * fs ? (rand() * 2 - 1) * 0.5 : 0;
       }
       y[pos] = s;
     }
+    // Cada tipo de sonido con su nivel típico: las vocales mandan, las
+    // fricativas van unos 16 dB por debajo (como en la voz real).
+    const level = { vowel: 0.2, nasal: 0.07, fric: 0.03, stop: 0.04, pause: 0 }[seg.kind];
+    const seg0 = pos - n;
+    let e = 0;
+    for (let i = seg0; i < pos; i++) e += y[i] * y[i];
+    const rms = Math.sqrt(e / Math.max(1, n));
+    if (rms > 0) for (let i = seg0; i < pos; i++) y[i] *= (level * (seg.kind === 'fric' ? (seg.gain ?? 1) : 1)) / rms;
   });
   return normalize(y, 0.85);
 }

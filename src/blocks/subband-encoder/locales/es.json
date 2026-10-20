@@ -1,0 +1,12 @@
+{
+  "title": "Codificador de subbandas (tipo G.722)",
+  "summary": "Parte la señal en graves y agudos y da más bits a los graves, donde está casi toda la energía de la voz.",
+  "details": "Un banco de filtros QMF divide la señal en dos mitades: de 0 a fs/4 y de fs/4 a fs/2, cada una muestreada a la mitad de velocidad. Cada banda se codifica con su propio ADPCM: la baja con 6 bits (o 5 o 4 en los modos de 56 y 48 kbps) y la alta con solo 2. Es la idea de G.722, el códec de «voz HD» de banda ancha: con 16 kHz de muestreo transmite hasta 7 kHz en 64 kbps, el doble de ancho de banda que el teléfono clásico con la misma tasa. La línea roja de la gráfica marca la frontera entre bandas. Esta versión simplifica el ADPCM, así que no es compatible bit a bit con G.722.",
+  "tryThis": "Compara a 16 kHz este códec en modo 64 kbps con un PCM ley μ de 8 bits a 8 kHz (también 64 kbps): escucha la diferencia en las «s».",
+  "concepts": ["Codificación en subbandas", "Banco QMF", "Banda ancha", "ITU-T G.722"],
+  "ports": { "in": "Audio (16 kHz)", "out": "Bits" },
+  "params": { "mode": { "label": "Modo", "help": "Bits de la banda baja: 6, 5 o 4. La alta lleva siempre 2." } },
+  "options": { "mode": { "64": "64 kbps (6 + 2 bits)", "56": "56 kbps (5 + 2 bits)", "48": "48 kbps (4 + 2 bits)" } },
+  "metrics": { "snrExpected": "SNR al decodificar", "lowEnergy": "Energía en banda baja", "lowBits": "Bits banda baja", "highBits": "Bits banda alta" },
+  "plots": { "spectrum": "Espectro: entrada, salida y frontera entre bandas" }
+}
