@@ -79,3 +79,19 @@ export function biquadResponseDb(f: ReturnType<typeof biquad>, points = 128): Fl
   }
   return out;
 }
+
+/** Respuesta en magnitud (dB) de un FIR en `points` frecuencias de 0 a fs/2. */
+export function firResponseDb(h: ArrayLike<number>, points = 128): Float32Array {
+  const out = new Float32Array(points);
+  for (let i = 0; i < points; i++) {
+    const w = (Math.PI * i) / (points - 1);
+    let re = 0;
+    let im = 0;
+    for (let k = 0; k < h.length; k++) {
+      re += h[k] * Math.cos(w * k);
+      im -= h[k] * Math.sin(w * k);
+    }
+    out[i] = 10 * Math.log10(re * re + im * im + 1e-12);
+  }
+  return out;
+}

@@ -1,32 +1,65 @@
 {
-  "title": "Remuestreo",
-  "summary": "Cambia la frecuencia de muestreo. Sin filtro antialiasing verás (y oirás) el aliasing.",
-  "details": "Según Nyquist, con fs muestras por segundo solo se pueden representar frecuencias hasta fs/2. Al bajar la frecuencia de muestreo, todo lo que esté por encima de la nueva fs/2 se «dobla» y aparece como frecuencias falsas (aliasing). Por eso se filtra paso bajo antes de diezmar. La gráfica superpone el espectro de entrada (gris) y el de salida (color): con el filtro, la salida se corta limpia en fs/2.",
-  "tryThis": "Conecta un Generador en modo «Barrido» a 16 kHz, baja a 4 kHz y desactiva el filtro: escucha cómo el tono sube, rebota y baja.",
+  "title": "Muestreador (A/D)",
+  "summary": "Toma muestras a la frecuencia que elijas. Antes filtra paso bajo para que no haya aliasing.",
+  "details": "Según Nyquist, con fs muestras por segundo solo se pueden representar frecuencias hasta fs/2. Todo lo que esté por encima se «dobla» y aparece como frecuencias falsas (aliasing), y después ya no se puede quitar. Por eso un conversor A/D real lleva delante un filtro paso bajo analógico: el filtro antialiasing. Aquí la entrada hace de señal analógica (está muestreada mucho más rápido) y el filtro es un FIR cuyo corte puedes elegir. En la gráfica ves el espectro de entrada (gris), la respuesta del filtro (discontinua), el espectro muestreado (color) y la línea roja en la nueva fs/2. Un filtro más abrupto deja pasar más banda útil, pero tiene más coeficientes y retrasa más.",
+  "tryThis": "Conecta un Generador en modo «Barrido» a 16 kHz, baja a 4 kHz y desactiva el filtro: escucha cómo el tono sube, rebota en 2 kHz y baja.",
   "concepts": [
     "Teorema de Nyquist",
     "Aliasing",
-    "Filtro antialiasing"
+    "Filtro antialiasing",
+    "Conversión A/D"
   ],
   "ports": {
-    "in": "Entrada",
-    "out": "Remuestreada"
+    "in": "Señal «analógica»",
+    "out": "Muestreada"
   },
   "params": {
     "sampleRate": {
-      "label": "Nueva frecuencia de muestreo",
-      "help": "En Hz. La telefonía clásica usa 8000."
+      "label": "Frecuencia de muestreo",
+      "help": "Muestras por segundo. La telefonía usa 8000 Hz; la voz en banda ancha, 16000 Hz."
     },
     "antialias": {
       "label": "Filtro antialiasing",
-      "help": "Paso bajo a 0,45·fs antes de diezmar."
+      "help": "Paso bajo antes de muestrear. Sin él, verás aliasing."
+    },
+    "cutoffMode": {
+      "label": "Frecuencia de corte"
+    },
+    "cutoff": {
+      "label": "Corte del filtro",
+      "help": "Para voz telefónica, 3400 Hz."
+    },
+    "steepness": {
+      "label": "Pendiente del filtro"
+    }
+  },
+  "options": {
+    "sampleRate": {
+      "4000": "4.000 Hz",
+      "8000": "8.000 Hz",
+      "11025": "11.025 Hz",
+      "16000": "16.000 Hz",
+      "22050": "22.050 Hz",
+      "32000": "32.000 Hz",
+      "44100": "44.100 Hz",
+      "48000": "48.000 Hz"
+    },
+    "cutoffMode": {
+      "auto": "Automática (0,45·fs)",
+      "manual": "Manual"
+    },
+    "steepness": {
+      "gentle": "Suave (31 coef.)",
+      "normal": "Normal (101)",
+      "steep": "Abrupta (301)"
     }
   },
   "metrics": {
     "nyquist": "Frec. máxima (fs/2)",
+    "cutoff": "Corte del filtro",
     "ratio": "Relación"
   },
   "plots": {
-    "spectrum": "Espectro: entrada vs salida"
+    "spectrum": "Espectro: entrada, filtro, salida y fs/2"
   }
 }

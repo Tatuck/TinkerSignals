@@ -1,7 +1,7 @@
 {
   "title": "Filtro",
   "summary": "Deja pasar solo las frecuencias graves, las agudas o una banda.",
-  "details": "Es un filtro IIR de segundo orden (biquad) que puedes encadenar varias veces para que corte más fuerte: cada etapa añade 12 dB por octava. La telefonía limita la voz a la banda 300–3400 Hz; prueba a recrearlo con un paso alto y un paso bajo.",
+  "details": "Es un filtro IIR de segundo orden (biquad) que puedes encadenar varias veces para que corte más fuerte: cada etapa añade 12 dB por octava. La opción «Banda telefónica» deja solo de 300 a 3400 Hz, el canal de voz de la telefonía clásica (ITU-T G.712). Ojo: no es lo mismo que el filtro antialiasing del Muestreador, que es obligatorio antes de muestrear; la banda telefónica es una decisión del canal.",
   "tryThis": "Filtra una canción con un paso bajo a 3400 Hz: así suena por teléfono.",
   "concepts": [
     "Filtros IIR",
@@ -31,7 +31,8 @@
     "type": {
       "lowpass": "Paso bajo",
       "highpass": "Paso alto",
-      "bandpass": "Paso banda"
+      "bandpass": "Paso banda",
+      "telephone": "Banda telefónica (300–3400 Hz)"
     }
   },
   "metrics": {
