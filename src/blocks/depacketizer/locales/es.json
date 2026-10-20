@@ -1,0 +1,30 @@
+{
+  "title": "Depaquetizador",
+  "summary": "Vuelve a unir los paquetes en un flujo de bits y tapa los huecos de los que faltan.",
+  "details": "Junta las cargas útiles en orden. Para los paquetes perdidos aplica una ocultación de pérdidas (PLC): repetir el último paquete bueno, que funciona bien con huecos cortos porque la voz cambia despacio, o rellenar con silencio. Los códecs con memoria (DPCM, ADPCM, CELP) se desincronizan un rato tras cada pérdida, así que el daño dura más que el propio hueco.",
+  "tryThis": "Compara «Repetir» con «Silencio» con un 10 % de pérdidas. Después cambia el códec de PCM a ADPCM y escucha cuánto dura cada fallo.",
+  "concepts": [
+    "Ocultación de pérdidas (PLC)",
+    "Reensamblado"
+  ],
+  "ports": {
+    "in": "Paquetes",
+    "out": "Bits del códec"
+  },
+  "params": {
+    "concealment": {
+      "label": "Ocultación de pérdidas"
+    }
+  },
+  "options": {
+    "concealment": {
+      "repeat": "Repetir el paquete anterior",
+      "silence": "Silencio"
+    }
+  },
+  "metrics": {
+    "concealedPct": "Paquetes ocultados",
+    "concealedMs": "Audio reconstruido",
+    "concealed": "Paquetes ocultados"
+  }
+}

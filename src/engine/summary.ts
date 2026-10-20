@@ -19,6 +19,20 @@ export function summarize(v: PortValue): ValueSummary {
       snippet: v.samples.slice(...interestingWindow(v.samples, Math.round(0.015 * v.sampleRate))),
     };
   }
+  if (v.kind === 'packets') {
+    const pps = 1000 / v.packetMs;
+    const payloadBits = v.packets.reduce((a, p) => a + p.payloadBits, 0) / Math.max(1, v.packets.length);
+    return {
+      kind: 'packets',
+      protocol: v.protocol,
+      count: v.packets.length,
+      lost: v.packets.filter((p) => p.arrivalMs === null).length,
+      packetMs: v.packetMs,
+      packetsPerSecond: pps,
+      payloadBitrate: payloadBits * pps,
+      networkBitrate: (payloadBits + v.overheadBits) * pps,
+    };
+  }
   const duration = v.header.numSamples / v.header.sampleRate;
   return {
     kind: 'bitstream',

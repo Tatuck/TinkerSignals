@@ -37,6 +37,10 @@ export const CableEdge = memo(function CableEdge({
 
   let label: string | null = null;
   if (port?.summary.kind === 'signal') label = formatRate(port.summary.sampleRate);
+  if (port?.summary.kind === 'packets') {
+    const r = formatMetric(port.summary.networkBitrate, 'bps');
+    label = `${r.value} ${r.unit} en red`;
+  }
   if (port?.summary.kind === 'bitstream') {
     const r = formatMetric(port.summary.bitrate, 'bps');
     label = `${r.value} ${r.unit}`;

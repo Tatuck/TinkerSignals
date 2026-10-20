@@ -29,6 +29,7 @@ export const categoryOrder: BlockCategory[] = [
 export const portColor: Record<PortType, string> = {
   signal: '#2F6FEB',
   bitstream: '#E09A00',
+  packets: '#0E9F6E',
 };
 
 export const inputSeriesColor = '#9AA6B8';

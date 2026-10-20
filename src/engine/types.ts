@@ -41,7 +41,33 @@ export interface Bitstream {
   referenceBits: number;
 }
 
-export type PortValue = Signal | Bitstream;
+/** Un paquete de red: un trozo del flujo de bits más su historia en la red. */
+export interface Packet {
+  seq: number;
+  /** Instante en que sale del emisor (ms desde el inicio). */
+  sentMs: number;
+  /** Instante en que llega, o null si se ha perdido (o llegó tarde al búfer). */
+  arrivalMs: number | null;
+  /** Por qué falta, si falta. */
+  lostReason?: 'network' | 'late';
+  /** Posición y tamaño de su carga útil dentro de `payload`. */
+  startBit: number;
+  payloadBits: number;
+}
+
+/** Flujo de paquetes (VoIP): el flujo de bits original troceado y su viaje por la red. */
+export interface PacketStream {
+  kind: 'packets';
+  payload: Bitstream;
+  packets: Packet[];
+  /** Audio que lleva cada paquete (ms). */
+  packetMs: number;
+  /** Bits de cabeceras por paquete (RTP + UDP + IP…). */
+  overheadBits: number;
+  protocol: string;
+}
+
+export type PortValue = Signal | Bitstream | PacketStream;
 export type PortType = PortValue['kind'];
 
 // ─── Parámetros configurables de un bloque ──────────────────────────────────
@@ -294,6 +320,17 @@ export type ValueSummary =
       compression: number;
       /** Primeros bits, para enseñarlos en el inspector del cable. */
       firstBits: string;
+    }
+  | {
+      kind: 'packets';
+      protocol: string;
+      count: number;
+      lost: number;
+      packetMs: number;
+      packetsPerSecond: number;
+      /** Tasa en la red, cabeceras incluidas (bps). */
+      networkBitrate: number;
+      payloadBitrate: number;
     };
 
 export interface PortResult {

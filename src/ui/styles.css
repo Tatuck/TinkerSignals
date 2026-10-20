@@ -470,6 +470,11 @@ select {
     stroke-dashoffset: -18;
   }
 }
+.cable-packets {
+  stroke-dasharray: 12 6;
+  stroke-width: 5;
+  animation: bits-flow 0.9s linear infinite;
+}
 .cable.is-idle {
   opacity: 0.45;
 }
@@ -590,6 +595,16 @@ select {
 }
 .handle.handle-bitstream.react-flow__handle {
   border-radius: 3px;
+}
+/* Paquetes: rombo. */
+.handle.handle-packets.react-flow__handle {
+  border-radius: 2px;
+}
+.port-in .handle.handle-packets.react-flow__handle {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.port-out .handle.handle-packets.react-flow__handle {
+  transform: translate(50%, -50%) rotate(45deg);
 }
 .port-in .handle.react-flow__handle {
   left: -8px;
@@ -1043,6 +1058,7 @@ select {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .cable-packets,
   .cable-bitstream,
   .run-status.is-running .run-dot,
   .btn-recording .rec-dot {
@@ -1061,4 +1077,28 @@ select {
   font-family: var(--font-bits);
   font-size: 11.5px;
   overflow-wrap: anywhere;
+}
+
+.packet-bar > div {
+  display: flex;
+  height: 26px;
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #fff;
+}
+.packet-bar span {
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  min-width: 0;
+}
+.packet-payload {
+  background: var(--cable);
+}
+.packet-overhead {
+  background: var(--ink-3);
 }

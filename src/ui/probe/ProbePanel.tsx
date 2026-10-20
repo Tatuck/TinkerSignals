@@ -5,6 +5,7 @@ import type { ProbeData } from '@/runtime/probe';
 import { onPlaybackChange, play, stop } from '../lib/audio';
 import { formatMetric, formatNumber, formatRate } from '../lib/format';
 import { Envelope } from '../plots/Envelope';
+import { Plot } from '../plots/Plot';
 import { Spectrogram, Spectrum } from '../plots/Spectrum';
 import { useStore } from '../store';
 import { portColor } from '../theme';
@@ -58,7 +59,7 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
       <header className="insp-head">
         <span className="probe-swatch" aria-hidden />
         <div>
-          <h2>{kind === 'signal' ? t('probe.signal') : t('probe.bitstream')}</h2>
+          <h2>{t(`probe.${kind}`)}</h2>
           <p className="insp-cat">
             {t('probe.from')} {srcText?.title} ({srcText?.ports?.[edge.sourceHandle ?? '']}){' '}
             {t('probe.to')} {dstText?.title} ({dstText?.ports?.[edge.targetHandle ?? '']})
@@ -79,6 +80,18 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
               />
               <Metric label="Pico" text={formatNumber(port.summary.peak, 3)} />
               <Metric label="Valor eficaz (RMS)" text={formatNumber(port.summary.rms, 3)} />
+            </>
+          ) : port.summary.kind === 'packets' ? (
+            <>
+              <Metric label="Tasa en la red" text={fmt(port.summary.networkBitrate, 'bps')} />
+              <Metric label="Tasa del códec" text={fmt(port.summary.payloadBitrate, 'bps')} />
+              <Metric label="Paquetes por segundo" text={formatNumber(port.summary.packetsPerSecond, 1)} />
+              <Metric
+                label="Perdidos"
+                text={`${port.summary.lost} de ${port.summary.count} (${formatNumber((100 * port.summary.lost) / Math.max(1, port.summary.count), 1)} %)`}
+              />
+              <Metric label="Audio por paquete" text={`${formatNumber(port.summary.packetMs, 1)} ms`} />
+              <Metric label="Protocolos" text={port.summary.protocol} />
             </>
           ) : (
             <>
@@ -137,11 +150,63 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
         </section>
       )}
 
+      {data?.kind === 'packets' && (
+        <>
+          <section>
+            <h3>Retardo de cada paquete</h3>
+            <Plot
+              plot={{
+                kind: 'line',
+                title: '',
+                series: [
+                  { role: 'out', y: data.delays.map((d) => d ?? 0), style: 'dots' },
+                  {
+                    role: 'error',
+                    y: data.delays.map((d) => (d === null ? 0 : NaN)),
+                    style: 'dots',
+                  },
+                ],
+              }}
+              color={color}
+              width={W}
+              height={90}
+            />
+            <p className="param-help">
+              Cada punto es un paquete. Los rojos, abajo, no llegaron (o llegaron tarde al búfer).
+            </p>
+          </section>
+          <section>
+            <h3>Qué lleva cada paquete</h3>
+            <PacketBar payload={data.payloadBits} overhead={data.overheadBits} />
+          </section>
+        </>
+      )}
+
       <footer className="insp-actions">
         <button className="btn btn-danger" onClick={() => removeEdge(edgeId)}>
           {t('probe.delete')}
         </button>
       </footer>
+    </div>
+  );
+}
+
+/** Barra proporcional: carga útil frente a cabeceras. */
+function PacketBar({ payload, overhead }: { payload: number; overhead: number }) {
+  const total = Math.max(1, payload + overhead);
+  return (
+    <div className="packet-bar">
+      <div>
+        <span style={{ flex: payload / total }} className="packet-payload">
+          Audio {Math.round(payload / 8)} B
+        </span>
+        <span style={{ flex: overhead / total }} className="packet-overhead">
+          Cabeceras {Math.round(overhead / 8)} B
+        </span>
+      </div>
+      <p className="param-help">
+        Las cabeceras son el {formatNumber((100 * overhead) / total, 0)} % de cada paquete.
+      </p>
     </div>
   );
 }

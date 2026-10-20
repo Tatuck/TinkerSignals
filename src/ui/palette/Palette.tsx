@@ -163,6 +163,11 @@ export function Palette() {
   );
 }
 
+function roleLabel(family: string, role: string): string {
+  const specific = t(`familyRoleLabels.${family}.${role}`);
+  return specific.startsWith('familyRoleLabels.') ? t(`familyRoles.${role}`) : specific;
+}
+
 function entryTitle(e: Entry): string {
   return e.kind === 'single' ? blockText(e.block.id).title : t(`families.${e.id}`);
 }
@@ -222,7 +227,7 @@ function FamilyItem({
             onClick={() => onAdd(b.id)}
             title={blockText(b.id).summary}
           >
-            {t(`familyRoles.${b.familyRole ?? 'encoder'}`)}
+            {roleLabel(family, b.familyRole ?? 'encoder')}
           </button>
         ))}
       </div>

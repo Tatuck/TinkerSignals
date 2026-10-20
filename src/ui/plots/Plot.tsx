@@ -49,6 +49,7 @@ function LinePlot({
     let xMax = -Infinity;
     for (const s of plot.series) {
       for (let i = 0; i < s.y.length; i++) {
+        if (!Number.isFinite(s.y[i])) continue;
         yMin = Math.min(yMin, s.y[i]);
         yMax = Math.max(yMax, s.y[i]);
       }
@@ -95,9 +96,9 @@ function LinePlot({
         {geometry.paths.map(({ d, s }, i) =>
           s.style === 'dots' ? (
             <g key={i} fill={roleColor(s.role, color)}>
-              {Array.from(s.y, (v, j) => (
-                <circle key={j} cx={geometry.sx(s, j)} cy={geometry.sy(v)} r={1.6} />
-              ))}
+              {Array.from(s.y, (v, j) =>
+                Number.isFinite(v) ? <circle key={j} cx={geometry.sx(s, j)} cy={geometry.sy(v)} r={1.8} /> : null,
+              )}
             </g>
           ) : (
             <path

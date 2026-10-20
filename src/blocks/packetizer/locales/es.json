@@ -1,0 +1,42 @@
+{
+  "title": "Paquetizador (RTP)",
+  "summary": "Trocea el flujo de bits en paquetes de unos milisegundos de audio y les pone las cabeceras RTP/UDP/IP.",
+  "details": "En una llamada por Internet (VoIP) el códec no se envía como un chorro continuo: cada 10–30 ms se mete el audio acumulado en un paquete RTP, que va dentro de UDP, que va dentro de IP. Cada capa añade su cabecera: 12 + 8 + 20 = 40 bytes con IPv4, 60 con IPv6, y casi 80 si contamos Ethernet. Con códecs de baja tasa las cabeceras pesan más que el propio audio: G.729 a 8 kbps en paquetes de 20 ms ocupa unos 24 kbps en la red. Paquetes más largos ahorran cabeceras, pero cada paquete hay que esperar a llenarlo (retardo) y perder uno se nota más.",
+  "tryThis": "Pon CELP (unos 5 kbps) y prueba paquetes de 10, 20 y 60 ms: mira cuánto ocupa en la red y cuánto retardo añade cada opción.",
+  "concepts": [
+    "VoIP",
+    "RTP",
+    "Sobrecarga de cabeceras",
+    "Tiempo de paquetización"
+  ],
+  "ports": {
+    "in": "Bits del códec",
+    "out": "Paquetes"
+  },
+  "params": {
+    "packetMs": {
+      "label": "Audio por paquete",
+      "help": "Milisegundos de audio que lleva cada paquete."
+    },
+    "stack": {
+      "label": "Pila de protocolos"
+    }
+  },
+  "options": {
+    "stack": {
+      "rtp-udp-ipv4": "RTP/UDP/IPv4 (40 B)",
+      "rtp-udp-ipv6": "RTP/UDP/IPv6 (60 B)",
+      "rtp-udp-ipv4-eth": "RTP/UDP/IPv4 + Ethernet (78 B)",
+      "crtp": "RTP comprimido (4 B)"
+    }
+  },
+  "metrics": {
+    "networkBitrate": "Tasa en la red",
+    "overhead": "Cabeceras",
+    "pps": "Paquetes por segundo",
+    "payloadBytes": "Audio por paquete"
+  },
+  "plots": {
+    "packet": "Contenido de un paquete (bytes): audio frente a cabeceras"
+  }
+}

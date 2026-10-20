@@ -1,0 +1,52 @@
+{
+  "title": "Red IP",
+  "summary": "Simula Internet: retrasa los paquetes, unos más que otros (jitter), y pierde algunos.",
+  "details": "Cada paquete tarda un retardo fijo (la propagación) más una parte variable que depende de las colas de los routers: esa variación es el jitter. Algunos paquetes se pierden. En el modelo aleatorio cada paquete se pierde de forma independiente; en el modelo a ráfagas (Gilbert), las pérdidas vienen seguidas, como cuando un enlace se satura un momento, y se notan mucho más aunque el porcentaje sea el mismo.",
+  "tryThis": "Con el mismo 5 % de pérdidas, compara el modelo aleatorio con el de ráfagas de 5 paquetes. ¿Cuál suena peor?",
+  "concepts": [
+    "Pérdida de paquetes",
+    "Jitter",
+    "Modelo de Gilbert",
+    "Retardo de red"
+  ],
+  "ports": {
+    "in": "Paquetes",
+    "out": "Paquetes"
+  },
+  "params": {
+    "lossPct": {
+      "label": "Pérdida de paquetes"
+    },
+    "lossModel": {
+      "label": "Cómo se pierden"
+    },
+    "burstLength": {
+      "label": "Longitud media de ráfaga"
+    },
+    "delayMs": {
+      "label": "Retardo de propagación"
+    },
+    "jitterMs": {
+      "label": "Jitter",
+      "help": "Cuánto varía el retardo de un paquete a otro."
+    },
+    "seed": {
+      "label": "Semilla"
+    }
+  },
+  "options": {
+    "lossModel": {
+      "random": "Al azar",
+      "bursty": "A ráfagas (Gilbert)"
+    }
+  },
+  "metrics": {
+    "lostPct": "Perdidos",
+    "meanDelay": "Retardo medio",
+    "jitter": "Jitter medido",
+    "lost": "Paquetes perdidos"
+  },
+  "plots": {
+    "delay": "Retardo de cada paquete (rojo: perdido)"
+  }
+}

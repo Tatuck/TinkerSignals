@@ -207,3 +207,47 @@ describe('Voz', () => {
     expect(s({ codebookSize: '64' })).toBeGreaterThan(s({ codebookSize: '64', adaptive: false }));
   });
 });
+
+describe('Red y VoIP', () => {
+  const voip = (extra: { type: string; params?: Record<string, number | string | boolean> }[]) =>
+    chain(
+      [{ type: 'pcm-encoder', params: { bits: 8, law: 'mu' } }, { type: 'packetizer', params: { packetMs: 20 } }, ...extra],
+      { sampleRate: '8000', duration: 2 },
+    );
+
+  it('64 kbps de G.711 en paquetes de 20 ms ocupan 80 kbps con RTP/UDP/IPv4', () => {
+    const c = voip([]);
+    expect(c.metric('b1', 'networkBitrate')).toBeCloseTo(80000, -2);
+    expect(c.result.nodes.b1.ownLatencyMs).toBe(20);
+  });
+
+  it('sin pérdidas, desempaquetar devuelve exactamente los mismos bits', () => {
+    const c = voip([{ type: 'depacketizer' }]);
+    const original = chain([{ type: 'pcm-encoder', params: { bits: 8, law: 'mu' } }], {
+      sampleRate: '8000',
+      duration: 2,
+    }).output as Bitstream;
+    expect([...(c.output as Bitstream).bytes]).toEqual([...original.bytes]);
+  });
+
+  it('la red pierde aproximadamente lo pedido y el audio conserva su duración', () => {
+    const c = voip([
+      { type: 'ip-network', params: { lossPct: 20 } },
+      { type: 'depacketizer' },
+      { type: 'pcm-decoder' },
+    ]);
+    const lost = c.metric('b2', 'lostPct')!;
+    expect(lost).toBeGreaterThan(10);
+    expect(lost).toBeLessThan(30);
+    expect((c.output as Signal).samples.length).toBe(16000);
+  });
+
+  it('un búfer más grande descarta menos paquetes tardíos', () => {
+    const late = (bufferMs: number) =>
+      voip([{ type: 'ip-network', params: { lossPct: 0, jitterMs: 40 } }, { type: 'jitter-buffer', params: { bufferMs } }]).metric(
+        'b3',
+        'latePct',
+      )!;
+    expect(late(0)).toBeGreaterThan(late(120));
+  });
+});

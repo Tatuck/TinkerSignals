@@ -63,7 +63,8 @@
     "stop": "Parar",
     "latency": "Retardo acumulado hasta aquí",
     "noData": "Por este cable aún no pasa nada: revisa el bloque de origen.",
-    "delete": "Quitar cable"
+    "delete": "Quitar cable",
+    "packets": "Paquetes de red"
   },
   "node": {
     "waiting": "Esperando",
@@ -131,11 +132,18 @@
     "celp": "CELP",
     "rle": "RLE (rachas)",
     "arithmetic": "Codificación aritmética",
-    "lzw": "LZW (diccionario)"
+    "lzw": "LZW (diccionario)",
+    "voip": "Paquetes RTP"
   },
   "familyRoles": {
     "encoder": "Codificador",
     "decoder": "Decodificador",
     "analysis": "Análisis"
+  },
+  "familyRoleLabels": {
+    "voip": {
+      "encoder": "Paquetizar",
+      "decoder": "Desempaquetar"
+    }
   }
 }

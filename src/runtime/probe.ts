@@ -18,6 +18,14 @@ export type ProbeData =
       onesRatio: number;
       bitLength: number;
       header: Record<string, unknown>;
+    }
+  | {
+      kind: 'packets';
+      /** Retardo de cada paquete (ms); null si se perdió. */
+      delays: (number | null)[];
+      lostReasons: (string | null)[];
+      overheadBits: number;
+      payloadBits: number;
     };
 
 export function probe(v: PortValue): ProbeData {
@@ -28,6 +36,15 @@ export function probe(v: PortValue): ProbeData {
       wave: envelope(v.samples, 600),
       spectrum: averageSpectrumDb(v.samples, 1024),
       spectrogram: spectrogramDb(v.samples, 512, 160),
+    };
+  }
+  if (v.kind === 'packets') {
+    return {
+      kind: 'packets',
+      delays: v.packets.map((p) => (p.arrivalMs === null ? null : p.arrivalMs - p.sentMs)),
+      lostReasons: v.packets.map((p) => p.lostReason ?? null),
+      overheadBits: v.overheadBits,
+      payloadBits: v.packets[0]?.payloadBits ?? 0,
     };
   }
   let ones = 0;

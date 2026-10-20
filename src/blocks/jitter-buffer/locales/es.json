@@ -1,0 +1,28 @@
+{
+  "title": "Búfer de jitter",
+  "summary": "Retiene los paquetes un tiempo para reproducirlos a ritmo constante. Los que llegan tarde se descartan.",
+  "details": "El receptor no puede reproducir cada paquete en cuanto llega, porque llegan a trompicones. Guarda unos milisegundos de margen y reproduce cada paquete en su instante previsto. Un búfer pequeño añade poco retardo pero descarta muchos paquetes que llegan tarde; uno grande los salva todos a costa de retrasar la conversación. Es el mismo compromiso calidad-retardo de siempre, ahora en la red.",
+  "tryThis": "Con jitter de 30 ms en la Red IP, sube el búfer de 0 a 100 ms y mira cómo bajan los paquetes tardíos y sube el retardo total en la Salida.",
+  "concepts": [
+    "Búfer de jitter",
+    "Instante de reproducción",
+    "Compromiso retardo-pérdidas"
+  ],
+  "ports": {
+    "in": "Paquetes",
+    "out": "Paquetes a tiempo"
+  },
+  "params": {
+    "bufferMs": {
+      "label": "Tamaño del búfer"
+    }
+  },
+  "metrics": {
+    "latePct": "Llegan tarde",
+    "missingPct": "Faltan en total",
+    "late": "Paquetes tardíos"
+  },
+  "plots": {
+    "deadline": "Retardo de cada paquete y límite del búfer (rojo)"
+  }
+}
