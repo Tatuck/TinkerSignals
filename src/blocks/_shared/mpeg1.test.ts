@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { snr } from '@/engine/dsp/metrics';
 import { absoluteThreshold, analysis, mpeg1Decode, mpeg1Encode, synthesis } from './mpeg1';
+import { qmfMerge, qmfSplit } from './subband';
 
 const fs = 32000;
 const music = Float32Array.from({ length: fs * 2 }, (_, i) => {
@@ -32,8 +33,6 @@ describe('MPEG-1 Layer I', () => {
     expect(absoluteThreshold(3500)).toBeLessThan(absoluteThreshold(15000));
   });
 });
-
-import { qmfMerge, qmfSplit } from './subband';
 
 describe('QMF de 2 bandas', () => {
   it('casi reconstruye la señal sin cuantizar', () => {
