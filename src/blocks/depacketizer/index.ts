@@ -37,7 +37,12 @@ export default defineBlock({
     return {
       outputs: { out },
       metrics: [
-        { key: 'concealedPct', value: (100 * concealed) / Math.max(1, packets.length), unit: '%', highlight: true },
+        {
+          key: 'concealedPct',
+          value: (100 * concealed) / Math.max(1, packets.length),
+          unit: '%',
+          highlight: true,
+        },
         { key: 'concealedMs', value: concealed * packetMs, unit: 'ms', highlight: true },
         { key: 'concealed', value: concealed, unit: 'paq.' },
       ],

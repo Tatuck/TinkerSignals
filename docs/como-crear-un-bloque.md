@@ -4,7 +4,8 @@
 2. En `index.ts`, pon `id: '<id>'` (igual que la carpeta), la categoría, los
    puertos, los parámetros y la función `process`.
 3. Rellena `locales/es.json`: título, resumen, explicación, «Prueba esto», la
-   lista de conceptos clave y una etiqueta por cada puerto y parámetro.
+   lista de conceptos clave (`concepts`, palabras que cualquiera pueda buscar)
+   y una etiqueta por cada puerto y parámetro.
 4. Renombra `template.test.ts` y escribe al menos un test con una propiedad de
    la teoría (p. ej. «cada bit extra da unos 6 dB»).
 5. `npm test`. El test `registry.test.ts` comprueba que el bloque se descubre y
@@ -21,9 +22,16 @@ process({ inputs, params, getAsset }) => {
 }
 ```
 
-- **Tipos de cable.** `signal` (muestras en [-1, 1] + frecuencia de muestreo) y
+- **Tipos de cable.** `signal` (muestras en [-1, 1] + frecuencia de muestreo),
   `bitstream` (bytes + longitud en bits + cabecera acordada + bits de referencia
-  PCM de 16 bits para el factor de compresión).
+  PCM de 16 bits para el factor de compresión) y `packets` (el flujo de bits
+  troceado en paquetes con su instante de envío y de llegada).
+- **Familias.** Si el bloque es parte de una pareja, pon `family` y
+  `familyRole` (`encoder`/`decoder`): la paleta los agrupa en una sola tarjeta y
+  permite añadir la pareja ya conectada. El nombre de la familia va en
+  `src/i18n/es.json` → `families`.
+- **Parámetros condicionales.** `visibleIf: { param: 'law', equals: ['mu'] }`
+  muestra un ajuste solo cuando tiene sentido.
 - **Pareja codificador/decodificador.** Pon el algoritmo en
   `src/blocks/_shared/<códec>.ts` y haz dos bloques finos que lo usen. El
   codificador escribe con `BitWriter` y pone en la cabecera un `codec` único; el

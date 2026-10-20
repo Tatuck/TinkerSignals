@@ -13,7 +13,13 @@ function stream(values: number[], bits: number, tail = 0): Bitstream {
   for (const v of values) w.write(v, bits);
   if (tail) w.write(1, tail);
   const { bytes, bitLength } = w.finish();
-  return { kind: 'bitstream', bytes, bitLength, header: { codec: 'x', sampleRate: 1, numSamples: 1 }, referenceBits: 1 };
+  return {
+    kind: 'bitstream',
+    bytes,
+    bitLength,
+    header: { codec: 'x', sampleRate: 1, numSamples: 1 },
+    referenceBits: 1,
+  };
 }
 
 const rand = seededRandom(42);
@@ -21,14 +27,31 @@ const cases: Record<string, { values: number[]; bits: number; tail?: number }> =
   vacío: { values: [], bits: 8 },
   'un símbolo': { values: [7], bits: 4 },
   'todo igual': { values: Array(3000).fill(5), bits: 4 },
-  'texto repetitivo': { values: [...'abracadabra '.repeat(300)].map((c) => c.charCodeAt(0)), bits: 8, tail: 3 },
-  sesgado: { values: Array.from({ length: 5000 }, () => (rand() < 0.9 ? 0 : Math.floor(rand() * 16))), bits: 4 },
-  aleatorio: { values: Array.from({ length: 4000 }, () => Math.floor(rand() * 4096)), bits: 12, tail: 5 },
-  'aleatorio largo (vacía el diccionario LZW)': { values: Array.from({ length: 20000 }, () => Math.floor(rand() * 256)), bits: 8 },
+  'texto repetitivo': {
+    values: [...'abracadabra '.repeat(300)].map((c) => c.charCodeAt(0)),
+    bits: 8,
+    tail: 3,
+  },
+  sesgado: {
+    values: Array.from({ length: 5000 }, () => (rand() < 0.9 ? 0 : Math.floor(rand() * 16))),
+    bits: 4,
+  },
+  aleatorio: {
+    values: Array.from({ length: 4000 }, () => Math.floor(rand() * 4096)),
+    bits: 12,
+    tail: 5,
+  },
+  'aleatorio largo (vacía el diccionario LZW)': {
+    values: Array.from({ length: 20000 }, () => Math.floor(rand() * 256)),
+    bits: 8,
+  },
 };
 
 const codecs = {
-  RLE: (b: Bitstream, n: number) => rleDecode(...(Object.values(rleEncode(readSymbols(b, n), 6).writer.finish()) as [Uint8Array, number])),
+  RLE: (b: Bitstream, n: number) =>
+    rleDecode(
+      ...(Object.values(rleEncode(readSymbols(b, n), 6).writer.finish()) as [Uint8Array, number]),
+    ),
   Huffman: (b: Bitstream, n: number) => {
     const e = huffmanEncode(b.bytes, b.bitLength, n).writer.finish();
     return huffmanDecode(e.bytes, e.bitLength);
@@ -66,7 +89,10 @@ describe('comparativa', () => {
   it('RLE comprime rachas largas y LZW secuencias repetidas', () => {
     const runs = stream(Array(4000).fill(3), 4);
     expect(rleEncode(readSymbols(runs, 4), 8).writer.bitLength).toBeLessThan(runs.bitLength / 20);
-    const text = stream([...'el codec codifica el codigo '.repeat(200)].map((c) => c.charCodeAt(0)), 8);
+    const text = stream(
+      [...'el codec codifica el codigo '.repeat(200)].map((c) => c.charCodeAt(0)),
+      8,
+    );
     expect(lzwEncode(readSymbols(text, 8), 12).writer.bitLength).toBeLessThan(text.bitLength / 3);
   });
 });

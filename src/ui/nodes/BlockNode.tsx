@@ -165,7 +165,7 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
             />
           )}
           {def.id === 'output' && <OutputControls nodeId={id} />}
-        {def.id === 'sound-library' && <LibraryLoader sound={String(data.params.sound)} />}
+          {def.id === 'sound-library' && <LibraryLoader sound={String(data.params.sound)} />}
         </div>
       </ErrorBoundary>
     </div>

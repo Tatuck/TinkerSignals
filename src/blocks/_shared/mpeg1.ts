@@ -32,7 +32,10 @@ const FFT_SIZE = 512;
 const SCALE_FACTORS = Float64Array.from({ length: 63 }, (_, i) => 2 * 2 ** (-i / 3));
 
 /** SNR (dB) de un cuantizador de 2^b − 1 niveles (tabla del estándar, aproximada). */
-const SNR_TABLE = [0, 0, 7.0, 16.0, 25.28, 31.59, 37.75, 43.84, 49.89, 55.93, 61.96, 67.98, 74.01, 80.03, 86.05, 92.01];
+const SNR_TABLE = [
+  0, 0, 7.0, 16.0, 25.28, 31.59, 37.75, 43.84, 49.89, 55.93, 61.96, 67.98, 74.01, 80.03, 86.05,
+  92.01,
+];
 
 // ─── Banco de filtros (MDCT) ────────────────────────────────────────────────
 
@@ -41,7 +44,8 @@ const WINDOW = Float64Array.from({ length: N2 }, (_, n) => Math.sin((Math.PI * (
 const BASIS = Array.from({ length: BANDS }, (_, k) =>
   Float64Array.from(
     { length: N2 },
-    (_, n) => Math.sqrt(2 / BANDS) * Math.cos((Math.PI / BANDS) * (n + 0.5 + BANDS / 2) * (k + 0.5)),
+    (_, n) =>
+      Math.sqrt(2 / BANDS) * Math.cos((Math.PI / BANDS) * (n + 0.5 + BANDS / 2) * (k + 0.5)),
   ),
 );
 
@@ -117,7 +121,8 @@ export function psychoacoustic(x: Float32Array, frameStart: number, fs: number):
   fft(re, im);
   const half = FFT_SIZE / 2;
   const P = new Float64Array(half);
-  for (let k = 0; k < half; k++) P[k] = 10 * Math.log10(re[k] * re[k] + im[k] * im[k] + 1e-12) + LEVEL_OFFSET;
+  for (let k = 0; k < half; k++)
+    P[k] = 10 * Math.log10(re[k] * re[k] + im[k] * im[k] + 1e-12) + LEVEL_OFFSET;
   const freq = (k: number) => (k * fs) / FFT_SIZE;
   const z = Float64Array.from({ length: half }, (_, k) => bark(freq(k)));
 
@@ -128,9 +133,11 @@ export function psychoacoustic(x: Float32Array, frameStart: number, fs: number):
     if (P[k] <= P[k - 1] || P[k] < P[k + 1]) continue;
     const reach = k < 63 ? 2 : k < 127 ? 3 : 6;
     let tonal = true;
-    for (let j = 2; j <= reach && tonal; j++) if (P[k] - P[k - j] < 7 || P[k] - P[k + j] < 7) tonal = false;
+    for (let j = 2; j <= reach && tonal; j++)
+      if (P[k] - P[k - j] < 7 || P[k] - P[k + j] < 7) tonal = false;
     if (!tonal) continue;
-    const level = 10 * Math.log10(10 ** (P[k - 1] / 10) + 10 ** (P[k] / 10) + 10 ** (P[k + 1] / 10));
+    const level =
+      10 * Math.log10(10 ** (P[k - 1] / 10) + 10 ** (P[k] / 10) + 10 ** (P[k + 1] / 10));
     maskers.push({ k, level, tonal: true });
     for (let j = -reach; j <= reach; j++) isTonal[k + j] = 1;
   }
@@ -146,7 +153,11 @@ export function psychoacoustic(x: Float32Array, frameStart: number, fs: number):
     noise.set(band, e);
   }
   for (const e of noise.values()) {
-    maskers.push({ k: Math.round(e.kSum / e.n), level: 10 * Math.log10(e.power + 1e-12), tonal: false });
+    maskers.push({
+      k: Math.round(e.kSum / e.n),
+      level: 10 * Math.log10(e.power + 1e-12),
+      tonal: false,
+    });
   }
 
   // Umbral global = suma de potencias de los umbrales individuales + umbral absoluto.
@@ -203,7 +214,10 @@ export function mpeg1Encode(
   for (let f = 0; f < frames; f++) {
     // Las 12 muestras de cada subbanda de esta trama.
     const sub = Array.from({ length: BANDS }, (_, sb) =>
-      Float64Array.from({ length: SAMPLES_PER_BAND }, (_, j) => coeffs[f * SAMPLES_PER_BAND + j]?.[sb] ?? 0),
+      Float64Array.from(
+        { length: SAMPLES_PER_BAND },
+        (_, j) => coeffs[f * SAMPLES_PER_BAND + j]?.[sb] ?? 0,
+      ),
     );
     const scf = sub.map((s) => {
       const peak = s.reduce((m, v) => Math.max(m, Math.abs(v)), 0);
@@ -281,7 +295,13 @@ function allocate(smr: Float64Array, available: number): number[] {
 
 // ─── Decodificador ──────────────────────────────────────────────────────────
 
-export function mpeg1Decode(bytes: Uint8Array, bitLength: number, n: number, fs: number, bitrate: number): Float32Array {
+export function mpeg1Decode(
+  bytes: Uint8Array,
+  bitLength: number,
+  n: number,
+  fs: number,
+  bitrate: number,
+): Float32Array {
   const bitsPerFrame = Math.floor((bitrate * FRAME) / fs);
   const frames = Math.floor(bitLength / bitsPerFrame);
   const blocks: Float64Array[] = [];
@@ -306,7 +326,11 @@ export function mpeg1Decode(bytes: Uint8Array, bitLength: number, n: number, fs:
       blocks.push(c);
     }
     // Salta el relleno hasta el final de la trama (tasa constante).
-    for (let pad = bitsPerFrame - (startRemaining - r.remaining); pad > 0; pad -= Math.min(32, pad)) {
+    for (
+      let pad = bitsPerFrame - (startRemaining - r.remaining);
+      pad > 0;
+      pad -= Math.min(32, pad)
+    ) {
       r.read(Math.min(32, pad));
     }
   }

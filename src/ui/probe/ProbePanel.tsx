@@ -85,12 +85,18 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
             <>
               <Metric label="Tasa en la red" text={fmt(port.summary.networkBitrate, 'bps')} />
               <Metric label="Tasa del códec" text={fmt(port.summary.payloadBitrate, 'bps')} />
-              <Metric label="Paquetes por segundo" text={formatNumber(port.summary.packetsPerSecond, 1)} />
+              <Metric
+                label="Paquetes por segundo"
+                text={formatNumber(port.summary.packetsPerSecond, 1)}
+              />
               <Metric
                 label="Perdidos"
                 text={`${port.summary.lost} de ${port.summary.count} (${formatNumber((100 * port.summary.lost) / Math.max(1, port.summary.count), 1)} %)`}
               />
-              <Metric label="Audio por paquete" text={`${formatNumber(port.summary.packetMs, 1)} ms`} />
+              <Metric
+                label="Audio por paquete"
+                text={`${formatNumber(port.summary.packetMs, 1)} ms`}
+              />
               <Metric label="Protocolos" text={port.summary.protocol} />
             </>
           ) : (

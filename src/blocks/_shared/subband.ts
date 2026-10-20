@@ -63,13 +63,21 @@ function multiplier(mag: number, levels: number): number {
   return r < 0.5 ? 0.92 : 0.92 + (r - 0.5) * 2 * (0.8 + 0.12 * levels);
 }
 
-function quantizeSample(x: number, bits: number, s: BandState, a1: number): { code: number; rec: number } {
+function quantizeSample(
+  x: number,
+  bits: number,
+  s: BandState,
+  a1: number,
+): { code: number; rec: number } {
   const levels = 2 ** (bits - 1);
   const pred = a1 * s.pred;
   const e = x - pred;
   const mag = Math.min(levels - 1, Math.floor(Math.abs(e) / s.step));
   const sign = e < 0 ? 1 : 0;
-  return { code: (sign << (bits - 1)) | mag, rec: reconstruct((sign << (bits - 1)) | mag, bits, s, a1) };
+  return {
+    code: (sign << (bits - 1)) | mag,
+    rec: reconstruct((sign << (bits - 1)) | mag, bits, s, a1),
+  };
 }
 
 function reconstruct(code: number, bits: number, s: BandState, a1: number): number {
@@ -111,7 +119,13 @@ export function subbandEncode(x: Float32Array, lowBits: number, highBits: number
   };
 }
 
-export function subbandDecode(bytes: Uint8Array, bitLength: number, n: number, lowBits: number, highBits: number) {
+export function subbandDecode(
+  bytes: Uint8Array,
+  bitLength: number,
+  n: number,
+  lowBits: number,
+  highBits: number,
+) {
   const r = new BitReader(bytes, bitLength);
   const half = bandLength(n);
   const sl: BandState = { pred: 0, step: 0.01 };
@@ -155,7 +169,7 @@ function kaiserSinc(taps: number, fc: number, beta: number): Float64Array {
   for (let i = 0; i < taps; i++) {
     const t = i - m;
     const sinc = t === 0 ? 2 * fc : Math.sin(2 * Math.PI * fc * t) / (Math.PI * t);
-    h[i] = sinc * besselI0(beta * Math.sqrt(1 - (t / m) ** 2)) / besselI0(beta);
+    h[i] = (sinc * besselI0(beta * Math.sqrt(1 - (t / m) ** 2))) / besselI0(beta);
     sum += h[i];
   }
   for (let i = 0; i < taps; i++) h[i] /= sum;

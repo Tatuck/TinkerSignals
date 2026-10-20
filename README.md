@@ -8,9 +8,19 @@ enseña sus números (SNR, bps, factor de compresión, retardo) y una gráfica
 sencilla de entrada frente a salida. Cada cable se puede abrir para ver qué pasa
 por él.
 
-Los bloques cubren lo que se ve en una asignatura de codificación de audio y servicios multimedia: PCM y G.711,
-cuantización uniforme y no uniforme, DPCM, ADPCM, transformada, Huffman,
-análisis de voz, vocoder LPC y CELP.
+Los bloques cubren lo que se ve en una asignatura de codificación de audio y
+servicios multimedia:
+
+- **Digitalización**: muestreo con filtro antialiasing, cuantización uniforme y no uniforme, PCM y G.711.
+- **Códecs de forma de onda**: DPCM y ADPCM.
+- **Voz**: análisis por tramas, vocoder LPC y CELP.
+- **Transformada y perceptuales**: DCT por bloques, MPEG-1 Layer I con modelo psicoacústico y subbandas tipo G.722.
+- **Sin pérdidas**: Huffman, codificación aritmética, LZW y RLE.
+- **Canal y red**: errores de bit, ruido, paquetes RTP, red IP con pérdidas y jitter, búfer de jitter.
+
+Hay lecciones guiadas, experimentos ya montados, una biblioteca de sonidos
+(sintéticos y grabaciones de dominio público), enlaces para compartir
+circuitos y deshacer/rehacer.
 
 ## Uso
 
@@ -50,6 +60,7 @@ Ideas clave:
 
 - **Bloques atómicos.** Un bloque declara puertos, parámetros y una función
   pura `process`. Un fallo en un bloque solo marca ese nodo en rojo.
+- **Tres tipos de cable**: audio (`signal`), bits (`bitstream`) y paquetes de red (`packets`).
 - **Los cables llevan datos reales.** Un codificador produce bits empaquetados
   (`Bitstream`) y el decodificador los lee, igual que un códec de verdad. Por
   eso un bloque de errores de canal estropea lo que estropearía en la realidad.
@@ -61,3 +72,10 @@ Ideas clave:
   que hay detrás.
 
 Para añadir un bloque, lee [docs/como-crear-un-bloque.md](docs/como-crear-un-bloque.md).
+
+## Sonidos
+
+Los fragmentos de `public/sounds/` se generan con
+`node scripts/make-sound-clips.mjs <carpeta-con-los-mp3>` a partir de
+grabaciones de dominio público; los créditos están en
+[public/sounds/CREDITS.md](public/sounds/CREDITS.md).

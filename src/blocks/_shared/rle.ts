@@ -10,7 +10,7 @@ import { writeTail } from './symbols';
 export function rleEncode(s: Symbols, runBits: number) {
   const max = 2 ** runBits;
   const runs: [number, number][] = [];
-  for (let i = 0; i < s.symbols.length; ) {
+  for (let i = 0; i < s.symbols.length;) {
     let j = i + 1;
     while (j < s.symbols.length && s.symbols[j] === s.symbols[i] && j - i < max) j++;
     runs.push([s.symbols[i], j - i]);

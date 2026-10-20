@@ -22,10 +22,19 @@ export default defineBlock({
     return {
       outputs: { out },
       metrics: [
-        { key: 'gain', value: b.bitLength / Math.max(1, out.bitLength), unit: '×', highlight: true },
+        {
+          key: 'gain',
+          value: b.bitLength / Math.max(1, out.bitLength),
+          unit: '×',
+          highlight: true,
+        },
         { key: 'perSymbol', value: perSymbol, unit: 'bits', highlight: true },
         { key: 'entropy', value: enc.entropy, unit: 'bits' },
-        { key: 'efficiency', value: enc.entropy > 0 ? (100 * enc.entropy) / perSymbol : 100, unit: '%' },
+        {
+          key: 'efficiency',
+          value: enc.entropy > 0 ? (100 * enc.entropy) / perSymbol : 100,
+          unit: '%',
+        },
         { key: 'tableBits', value: enc.headerBits, unit: 'bits' },
         { key: 'compression', value: out.referenceBits / Math.max(1, out.bitLength), unit: '×' },
       ],

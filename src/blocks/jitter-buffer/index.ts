@@ -31,8 +31,18 @@ export default defineBlock({
     return {
       outputs: { out: { ...inputs.in, packets } },
       metrics: [
-        { key: 'latePct', value: (100 * late) / Math.max(1, pks.length), unit: '%', highlight: true },
-        { key: 'missingPct', value: (100 * missing) / Math.max(1, pks.length), unit: '%', highlight: true },
+        {
+          key: 'latePct',
+          value: (100 * late) / Math.max(1, pks.length),
+          unit: '%',
+          highlight: true,
+        },
+        {
+          key: 'missingPct',
+          value: (100 * missing) / Math.max(1, pks.length),
+          unit: '%',
+          highlight: true,
+        },
         { key: 'late', value: late, unit: 'paq.' },
       ],
       latencyMs: params.bufferMs,

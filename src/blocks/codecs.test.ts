@@ -211,7 +211,11 @@ describe('Voz', () => {
 describe('Red y VoIP', () => {
   const voip = (extra: { type: string; params?: Record<string, number | string | boolean> }[]) =>
     chain(
-      [{ type: 'pcm-encoder', params: { bits: 8, law: 'mu' } }, { type: 'packetizer', params: { packetMs: 20 } }, ...extra],
+      [
+        { type: 'pcm-encoder', params: { bits: 8, law: 'mu' } },
+        { type: 'packetizer', params: { packetMs: 20 } },
+        ...extra,
+      ],
       { sampleRate: '8000', duration: 2 },
     );
 
@@ -244,10 +248,10 @@ describe('Red y VoIP', () => {
 
   it('un búfer más grande descarta menos paquetes tardíos', () => {
     const late = (bufferMs: number) =>
-      voip([{ type: 'ip-network', params: { lossPct: 0, jitterMs: 40 } }, { type: 'jitter-buffer', params: { bufferMs } }]).metric(
-        'b3',
-        'latePct',
-      )!;
+      voip([
+        { type: 'ip-network', params: { lossPct: 0, jitterMs: 40 } },
+        { type: 'jitter-buffer', params: { bufferMs } },
+      ]).metric('b3', 'latePct')!;
     expect(late(0)).toBeGreaterThan(late(120));
   });
 });
@@ -255,7 +259,10 @@ describe('Red y VoIP', () => {
 describe('Subbandas (tipo G.722)', () => {
   it('reconstruye con buena calidad a 64 kbps y peor a 48', () => {
     const run = (mode: string) => {
-      const c = chain([{ type: 'subband-encoder', params: { mode } }, { type: 'subband-decoder' }], { frequency: 160 });
+      const c = chain(
+        [{ type: 'subband-encoder', params: { mode } }, { type: 'subband-decoder' }],
+        { frequency: 160 },
+      );
       expect(c.metric('b0', 'bitrate')).toBe({ '64': 64000, '48': 48000 }[mode]);
       return snr(c.input.samples, (c.output as Signal).samples);
     };

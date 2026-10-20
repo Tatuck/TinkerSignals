@@ -22,8 +22,18 @@ export default defineBlock({
     return {
       outputs: { out },
       metrics: [
-        { key: 'gain', value: b.bitLength / Math.max(1, out.bitLength), unit: '×', highlight: true },
-        { key: 'symbolsPerCode', value: s.symbols.length / Math.max(1, enc.codes), unit: 'símb.', highlight: true },
+        {
+          key: 'gain',
+          value: b.bitLength / Math.max(1, out.bitLength),
+          unit: '×',
+          highlight: true,
+        },
+        {
+          key: 'symbolsPerCode',
+          value: s.symbols.length / Math.max(1, enc.codes),
+          unit: 'símb.',
+          highlight: true,
+        },
         { key: 'codes', value: enc.codes },
         { key: 'dictionary', value: enc.dictionary, unit: 'entradas' },
         { key: 'resets', value: enc.resets },

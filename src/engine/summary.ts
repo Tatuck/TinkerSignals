@@ -21,7 +21,8 @@ export function summarize(v: PortValue): ValueSummary {
   }
   if (v.kind === 'packets') {
     const pps = 1000 / v.packetMs;
-    const payloadBits = v.packets.reduce((a, p) => a + p.payloadBits, 0) / Math.max(1, v.packets.length);
+    const payloadBits =
+      v.packets.reduce((a, p) => a + p.payloadBits, 0) / Math.max(1, v.packets.length);
     return {
       kind: 'packets',
       protocol: v.protocol,

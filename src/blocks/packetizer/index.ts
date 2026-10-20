@@ -8,9 +8,22 @@ const STACKS = {
   crtp: { bytes: 4, label: 'RTP comprimido (cRTP)' },
 } as const;
 const BREAKDOWN: Record<keyof typeof STACKS, [string, number][]> = {
-  'rtp-udp-ipv4': [['RTP', 12], ['UDP', 8], ['IPv4', 20]],
-  'rtp-udp-ipv6': [['RTP', 12], ['UDP', 8], ['IPv6', 40]],
-  'rtp-udp-ipv4-eth': [['RTP', 12], ['UDP', 8], ['IPv4', 20], ['Ethernet', 38]],
+  'rtp-udp-ipv4': [
+    ['RTP', 12],
+    ['UDP', 8],
+    ['IPv4', 20],
+  ],
+  'rtp-udp-ipv6': [
+    ['RTP', 12],
+    ['UDP', 8],
+    ['IPv6', 40],
+  ],
+  'rtp-udp-ipv4-eth': [
+    ['RTP', 12],
+    ['UDP', 8],
+    ['IPv4', 20],
+    ['Ethernet', 38],
+  ],
   crtp: [['cRTP', 4]],
 };
 
@@ -24,7 +37,11 @@ export default defineBlock({
   outputs: { out: { type: 'packets' } },
   params: {
     packetMs: { type: 'number', default: 20, min: 5, max: 120, step: 5, unit: 'ms' },
-    stack: { type: 'select', default: 'rtp-udp-ipv4', options: Object.keys(STACKS) as (keyof typeof STACKS)[] },
+    stack: {
+      type: 'select',
+      default: 'rtp-udp-ipv4',
+      options: Object.keys(STACKS) as (keyof typeof STACKS)[],
+    },
   },
   process({ inputs, params }) {
     const b = inputs.in;
@@ -36,7 +53,13 @@ export default defineBlock({
       const start = Math.round((b.bitLength * i) / count);
       const end = Math.round((b.bitLength * (i + 1)) / count);
       const sentMs = (i + 1) * params.packetMs; // sale cuando ya tiene todo su audio
-      packets.push({ seq: i, sentMs, arrivalMs: sentMs, startBit: start, payloadBits: end - start });
+      packets.push({
+        seq: i,
+        sentMs,
+        arrivalMs: sentMs,
+        startBit: start,
+        payloadBits: end - start,
+      });
     }
     const stack = STACKS[params.stack];
     const overheadBits = stack.bytes * 8;
@@ -46,11 +69,23 @@ export default defineBlock({
     const networkRate = (payloadBits + overheadBits) * pps;
     return {
       outputs: {
-        out: { kind: 'packets', payload: b, packets, packetMs: params.packetMs, overheadBits, protocol: stack.label },
+        out: {
+          kind: 'packets',
+          payload: b,
+          packets,
+          packetMs: params.packetMs,
+          overheadBits,
+          protocol: stack.label,
+        },
       },
       metrics: [
         { key: 'networkBitrate', value: networkRate, unit: 'bps', highlight: true },
-        { key: 'overhead', value: (100 * overheadBits) / (payloadBits + overheadBits), unit: '%', highlight: true },
+        {
+          key: 'overhead',
+          value: (100 * overheadBits) / (payloadBits + overheadBits),
+          unit: '%',
+          highlight: true,
+        },
         { key: 'bitrate', value: payloadRate, unit: 'bps' },
         { key: 'pps', value: pps, unit: 'paq/s' },
         { key: 'payloadBytes', value: payloadBits / 8, unit: 'B' },
@@ -62,7 +97,10 @@ export default defineBlock({
           kind: 'bars',
           title: 'packet',
           values: [payloadBits / 8, ...BREAKDOWN[params.stack].map(([, v]) => v)],
-          labels: [`Audio: ${Math.round(payloadBits / 8)} B`, ...BREAKDOWN[params.stack].map(([k, v]) => `${k}: ${v} B`)],
+          labels: [
+            `Audio: ${Math.round(payloadBits / 8)} B`,
+            ...BREAKDOWN[params.stack].map(([k, v]) => `${k}: ${v} B`),
+          ],
           highlight: [0],
         },
       ],

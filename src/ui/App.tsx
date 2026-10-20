@@ -1,29 +1,80 @@
 import { ReactFlowProvider } from '@xyflow/react';
 import { useEffect, useState } from 'react';
+import { setAsset } from '@/runtime/client';
 import { Canvas } from './canvas/Canvas';
 import { ErrorBoundary } from './ErrorBoundary';
-import { HOME_SEEN_KEY, Home } from './home/Home';
 import { examples, instantiate } from './examples';
+import { redo, startHistory, undo } from './history';
+import { HOME_SEEN_KEY, Home } from './home/Home';
 import { Inspector } from './inspector/Inspector';
+import { loadAsset, pruneAssets } from './lib/assetDb';
+import { decodeCircuit } from './lib/share';
 import { Palette } from './palette/Palette';
-import { useStore, type BlockNode, type CableEdge } from './store';
+import { registry } from './registry';
+import { invalidate, useStore, type BlockNode, type CableEdge } from './store';
 import { Toolbar } from './Toolbar';
 
 const STORAGE_KEY = 'tinkersignals:circuit';
 
-/** Restaura el último circuito del navegador o, si no hay, carga el primer ejemplo. */
-function restore() {
+/**
+ * Qué circuito se abre al entrar: el de un enlace compartido (#c=…), el
+ * último del navegador o, si no hay ninguno, el primer ejemplo.
+ * Devuelve true si venía de un enlace.
+ */
+async function restore(): Promise<boolean> {
+  const { load } = useStore.getState();
+  if (location.hash.startsWith('#c=')) {
+    try {
+      const g = await decodeCircuit(location.hash.slice(3));
+      load(g.nodes, g.edges);
+      history.replaceState(null, '', location.pathname + location.search);
+      return true;
+    } catch {
+      useStore.getState().notify('El enlace está dañado; se abre tu último circuito.');
+    }
+  }
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const { nodes, edges } = JSON.parse(raw) as { nodes: BlockNode[]; edges: CableEdge[] };
-      if (nodes.length) return useStore.getState().load(nodes, edges);
+      if (nodes.length) {
+        load(nodes, edges);
+        await restoreAssets(nodes);
+        return false;
+      }
     }
   } catch {
     /* almacenamiento no disponible: seguimos con el ejemplo */
   }
   const g = instantiate(examples[0]);
-  useStore.getState().load(g.nodes, g.edges);
+  load(g.nodes, g.edges);
+  return false;
+}
+
+/** Recupera de IndexedDB los audios que usan los bloques del circuito restaurado. */
+async function restoreAssets(nodes: BlockNode[]) {
+  const ids = new Set<string>();
+  for (const n of nodes) {
+    const def = registry.get(n.data.blockType);
+    if (!def) continue;
+    for (const [k, spec] of Object.entries(def.params)) {
+      const v = n.data.params[k];
+      if (spec.type === 'audio' && typeof v === 'string') ids.add(v);
+    }
+  }
+  for (const id of ids) {
+    const a = await loadAsset(id);
+    if (!a) continue;
+    await setAsset(id, a.samples, a.sampleRate);
+    useStore.getState().registerAsset(id, {
+      name: a.name,
+      durationS: a.samples.length / a.sampleRate,
+      sampleRate: a.sampleRate,
+      trimmedS: a.trimmedS,
+    });
+  }
+  if (ids.size) invalidate();
+  void pruneAssets(ids);
 }
 
 function firstVisit(): boolean {
@@ -33,6 +84,12 @@ function firstVisit(): boolean {
     return true;
   }
 }
+
+/** ¿El foco está en un campo donde las teclas deben escribir y no ejecutar atajos? */
+const typing = (e: KeyboardEvent) => {
+  const el = e.target as HTMLElement | null;
+  return !!el && (['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName) || el.isContentEditable);
+};
 
 export function App() {
   const [home, setHome] = useState(firstVisit);
@@ -46,9 +103,13 @@ export function App() {
   };
 
   useEffect(() => {
-    restore();
+    let stopHistory = () => {};
+    void restore().then((fromLink) => {
+      if (fromLink) setHome(false);
+      stopHistory = startHistory();
+    });
     let timer: ReturnType<typeof setTimeout>;
-    return useStore.subscribe((s) => {
+    const stopSave = useStore.subscribe((s) => {
       clearTimeout(timer);
       timer = setTimeout(() => {
         try {
@@ -64,6 +125,31 @@ export function App() {
         }
       }, 400);
     });
+
+    const onKey = (e: KeyboardEvent) => {
+      if (typing(e)) return;
+      const mod = e.ctrlKey || e.metaKey;
+      const key = e.key.toLowerCase();
+      if (mod && key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      } else if (mod && ((key === 'z' && e.shiftKey) || key === 'y')) {
+        e.preventDefault();
+        redo();
+      } else if (mod && key === 'd') {
+        const sel = useStore.getState().selection;
+        if (sel?.kind === 'node') {
+          e.preventDefault();
+          useStore.getState().duplicateNode(sel.id);
+        }
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      stopHistory();
+      stopSave();
+      window.removeEventListener('keydown', onKey);
+    };
   }, []);
 
   return (
@@ -80,7 +166,17 @@ export function App() {
           <Inspector />
         </ErrorBoundary>
       </div>
+      <Toast />
       {home && <Home onClose={closeHome} />}
     </ReactFlowProvider>
+  );
+}
+
+function Toast() {
+  const toast = useStore((s) => s.toast);
+  return (
+    <div className={`toast${toast ? ' is-visible' : ''}`} role="status" aria-live="polite">
+      {toast}
+    </div>
   );
 }

@@ -43,7 +43,8 @@ export default defineBlock({
     let y = x;
     for (let s = 0; s < params.stages; s++) for (const f of sections) y = applyBiquad(y, f);
     const resp = new Float32Array(160);
-    for (const f of sections) biquadResponseDb(f, 160).forEach((v, i) => (resp[i] += v * params.stages));
+    for (const f of sections)
+      biquadResponseDb(f, 160).forEach((v, i) => (resp[i] += v * params.stages));
     const hz = Array.from({ length: resp.length }, (_, i) => (i * fs) / 2 / (resp.length - 1));
     return {
       outputs: { out: makeSignal(y, fs) },

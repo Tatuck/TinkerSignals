@@ -1,7 +1,9 @@
-import { useRef } from 'react';
+import { useEffect, useReducer, useRef } from 'react';
 import { t } from '@/i18n';
 import { formatNumber } from './lib/format';
 import { examples, instantiate } from './examples';
+import { canRedo, canUndo, onHistoryChange, redo, undo } from './history';
+import { encodeCircuit } from './lib/share';
 import { useStore, type BlockNode, type CableEdge } from './store';
 
 const NO_ERRORS: never[] = [];
@@ -12,6 +14,38 @@ export function Toolbar({ onHome }: { onHome(): void }) {
   const graphErrors = useStore((s) => s.results?.graphErrors) ?? NO_ERRORS;
   const load = useStore((s) => s.load);
   const fileRef = useRef<HTMLInputElement>(null);
+  const menuRef = useRef<HTMLDetailsElement>(null);
+  const closeMenu = () => menuRef.current?.removeAttribute('open');
+  const [, refresh] = useReducer((x: number) => x + 1, 0);
+  useEffect(() => onHistoryChange(refresh), []);
+  // Cierra el menú «Archivo» al pulsar fuera de él.
+  useEffect(() => {
+    const onDown = (e: PointerEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node))
+        menuRef.current.removeAttribute('open');
+    };
+    document.addEventListener('pointerdown', onDown);
+    return () => document.removeEventListener('pointerdown', onDown);
+  }, []);
+
+  async function share() {
+    const { nodes, edges, notify } = useStore.getState();
+    const code = await encodeCircuit(nodes, edges);
+    const url = `${location.origin}${location.pathname}#c=${code}`;
+    const hasAudio = nodes.some(
+      (n) => n.data.blockType === 'audio-file' || n.data.blockType === 'microphone',
+    );
+    try {
+      await navigator.clipboard.writeText(url);
+      notify(
+        hasAudio
+          ? 'Enlace copiado. Tus grabaciones y archivos no viajan en él.'
+          : 'Enlace copiado.',
+      );
+    } catch {
+      window.prompt('Copia este enlace:', url);
+    }
+  }
 
   function exportGraph() {
     const { nodes, edges } = useStore.getState();
@@ -84,12 +118,67 @@ export function Toolbar({ onHome }: { onHome(): void }) {
             ))}
           </select>
         </label>
-        <button className="btn btn-quiet" onClick={exportGraph}>
-          {t('toolbar.export')}
+        <span className="toolbar-group" role="group" aria-label="Historial">
+          <button
+            className="btn btn-quiet btn-icon"
+            onClick={undo}
+            disabled={!canUndo()}
+            title="Deshacer (Ctrl+Z)"
+            aria-label="Deshacer"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
+              <path
+                d="M6 3 2.5 6.5 6 10M3 6.5h6.5a3.5 3.5 0 0 1 0 7H7"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+          <button
+            className="btn btn-quiet btn-icon"
+            onClick={redo}
+            disabled={!canRedo()}
+            title="Rehacer (Ctrl+Mayús+Z)"
+            aria-label="Rehacer"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
+              <path
+                d="M10 3l3.5 3.5L10 10M13 6.5H6.5a3.5 3.5 0 0 0 0 7H9"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </span>
+        <button className="btn btn-quiet" onClick={share}>
+          Compartir enlace
         </button>
-        <button className="btn btn-quiet" onClick={() => fileRef.current?.click()}>
-          {t('toolbar.import')}
-        </button>
+        <details className="menu" ref={menuRef}>
+          <summary className="btn btn-quiet">Archivo</summary>
+          <div className="menu-list" role="menu">
+            <button role="menuitem" onClick={() => (exportGraph(), closeMenu())}>
+              {t('toolbar.export')}
+            </button>
+            <button role="menuitem" onClick={() => (fileRef.current?.click(), closeMenu())}>
+              {t('toolbar.import')}
+            </button>
+            <button
+              role="menuitem"
+              onClick={() => {
+                load([], []);
+                closeMenu();
+              }}
+            >
+              {t('toolbar.clear')}
+            </button>
+          </div>
+        </details>
         <input
           ref={fileRef}
           type="file"
@@ -97,9 +186,6 @@ export function Toolbar({ onHome }: { onHome(): void }) {
           hidden
           onChange={(e) => e.target.files?.[0] && importGraph(e.target.files[0])}
         />
-        <button className="btn btn-quiet" onClick={() => load([], [])}>
-          {t('toolbar.clear')}
-        </button>
       </nav>
 
       <div className={`run-status${running ? ' is-running' : ''}`} aria-live="polite">

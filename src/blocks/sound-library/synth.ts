@@ -57,8 +57,7 @@ function speak(segments: Segment[], fs: number, f0: number, seed = 3): Float32Ar
   segments.forEach((seg, si) => {
     const n = Math.round((seg.ms / 1000) * fs);
     const next = segments.slice(si + 1).find((s) => s.kind === 'vowel') as
-      | Extract<Segment, { kind: 'vowel' }>
-      | undefined;
+      Extract<Segment, { kind: 'vowel' }> | undefined;
     for (let i = 0; i < n; i++, pos++) {
       const t = pos / total;
       const pitch = f0 * (1.08 - 0.22 * t) * (1 + 0.01 * Math.sin(pos * 0.002));
@@ -76,7 +75,9 @@ function speak(segments: Segment[], fs: number, f0: number, seed = 3): Float32Ar
         const k = Math.min(1, i / (0.3 * n + 1));
         const f = prevF.map((p, j) => p + (target[j] - p) * k);
         const after = next && i > 0.75 * n ? VOWELS[next.v] : null;
-        const ff = after ? f.map((v, j) => v + (after[j] - v) * ((i - 0.75 * n) / (0.25 * n)) * 0.4) : f;
+        const ff = after
+          ? f.map((v, j) => v + (after[j] - v) * ((i - 0.75 * n) / (0.25 * n)) * 0.4)
+          : f;
         s = res.reduce((acc, r, j) => r.process(acc, ff[j], 60 + 40 * j, fs), src) * 18;
         if (seg.kind === 'nasal') s *= 0.35;
         // Envolvente suave de ataque y caída.
@@ -100,7 +101,9 @@ function speak(segments: Segment[], fs: number, f0: number, seed = 3): Float32Ar
     let e = 0;
     for (let i = seg0; i < pos; i++) e += y[i] * y[i];
     const rms = Math.sqrt(e / Math.max(1, n));
-    if (rms > 0) for (let i = seg0; i < pos; i++) y[i] *= (level * (seg.kind === 'fric' ? (seg.gain ?? 1) : 1)) / rms;
+    if (rms > 0)
+      for (let i = seg0; i < pos; i++)
+        y[i] *= (level * (seg.kind === 'fric' ? (seg.gain ?? 1) : 1)) / rms;
   });
   return normalize(y, 0.85);
 }
@@ -152,10 +155,18 @@ function drums(fs: number): Float32Array {
   for (let s = 0; s < steps; s++) {
     const t0 = s * beat;
     if (s % 4 === 0 || s === 10) {
-      hit(t0, 0.35 * fs, (t) => Math.sin(2 * Math.PI * (55 + 90 * Math.exp(-t * 30)) * t) * Math.exp(-t * 9));
+      hit(
+        t0,
+        0.35 * fs,
+        (t) => Math.sin(2 * Math.PI * (55 + 90 * Math.exp(-t * 30)) * t) * Math.exp(-t * 9),
+      );
     }
     if (s % 8 === 4) {
-      hit(t0, 0.2 * fs, (t) => ((rand() * 2 - 1) * 0.7 + 0.4 * Math.sin(2 * Math.PI * 190 * t)) * Math.exp(-t * 22));
+      hit(
+        t0,
+        0.2 * fs,
+        (t) => ((rand() * 2 - 1) * 0.7 + 0.4 * Math.sin(2 * Math.PI * 190 * t)) * Math.exp(-t * 22),
+      );
     }
     hit(t0, 0.05 * fs, (t) => (rand() * 2 - 1) * 0.25 * Math.exp(-t * 80) * (s % 2 ? 0.6 : 1));
   }
@@ -168,8 +179,16 @@ function dtmf(fs: number): Float32Array {
   const high = [1209, 1336, 1477];
   const keys = '1234567890';
   const pos: Record<string, [number, number]> = {
-    '1': [0, 0], '2': [0, 1], '3': [0, 2], '4': [1, 0], '5': [1, 1],
-    '6': [1, 2], '7': [2, 0], '8': [2, 1], '9': [2, 2], '0': [3, 1],
+    '1': [0, 0],
+    '2': [0, 1],
+    '3': [0, 2],
+    '4': [1, 0],
+    '5': [1, 1],
+    '6': [1, 2],
+    '7': [2, 0],
+    '8': [2, 1],
+    '9': [2, 2],
+    '0': [3, 1],
   };
   const tone = Math.round(0.12 * fs);
   const gap = Math.round(0.08 * fs);
@@ -178,7 +197,8 @@ function dtmf(fs: number): Float32Array {
     const [r, c] = pos[k];
     for (let i = 0; i < tone; i++) {
       const t = i / fs;
-      y[n * (tone + gap) + i] = 0.4 * (Math.sin(2 * Math.PI * low[r] * t) + Math.sin(2 * Math.PI * high[c] * t));
+      y[n * (tone + gap) + i] =
+        0.4 * (Math.sin(2 * Math.PI * low[r] * t) + Math.sin(2 * Math.PI * high[c] * t));
     }
   });
   return y;
@@ -201,18 +221,66 @@ export interface SynthSound {
 export const SYNTH_SOUNDS = {
   'vowels-low': {
     sampleRate: 16000,
-    make: (fs) => speak([V('a', 300), pause(80), V('e', 300), pause(80), V('i', 300), pause(80), V('o', 300), pause(80), V('u', 300)], fs, 115),
+    make: (fs) =>
+      speak(
+        [
+          V('a', 300),
+          pause(80),
+          V('e', 300),
+          pause(80),
+          V('i', 300),
+          pause(80),
+          V('o', 300),
+          pause(80),
+          V('u', 300),
+        ],
+        fs,
+        115,
+      ),
   },
   'vowels-high': {
     sampleRate: 16000,
-    make: (fs) => speak([V('a', 300), pause(80), V('e', 300), pause(80), V('i', 300), pause(80), V('o', 300), pause(80), V('u', 300)], fs, 215, 5),
+    make: (fs) =>
+      speak(
+        [
+          V('a', 300),
+          pause(80),
+          V('e', 300),
+          pause(80),
+          V('i', 300),
+          pause(80),
+          V('o', 300),
+          pause(80),
+          V('u', 300),
+        ],
+        fs,
+        215,
+        5,
+      ),
   },
   syllables: {
     sampleRate: 16000,
     // «la casa es azul, sí» aproximado con segmentos.
     make: (fs) =>
       speak(
-        [N, V('a'), P, V('a', 120), S, V('a', 160), pause(60), V('e', 110), S, V('a', 90), S, V('u', 140), N, pause(150), S, V('i', 260)],
+        [
+          N,
+          V('a'),
+          P,
+          V('a', 120),
+          S,
+          V('a', 160),
+          pause(60),
+          V('e', 110),
+          S,
+          V('a', 90),
+          S,
+          V('u', 140),
+          N,
+          pause(150),
+          S,
+          V('i', 260),
+        ],
         fs,
         130,
         9,
@@ -220,7 +288,8 @@ export const SYNTH_SOUNDS = {
   },
   fricatives: {
     sampleRate: 16000,
-    make: (fs) => speak([S, V('a', 160), pause(120), F, V('a', 160), pause(120), J, V('a', 160)], fs, 125, 4),
+    make: (fs) =>
+      speak([S, V('a', 160), pause(120), F, V('a', 160), pause(120), J, V('a', 160)], fs, 125, 4),
   },
   chords: { sampleRate: 44100, make: chords },
   drums: { sampleRate: 44100, make: drums },

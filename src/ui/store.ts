@@ -42,6 +42,9 @@ interface State {
   assets: Record<string, AssetInfo>;
   /** Se incrementa al cargar un circuito entero: el lienzo lo usa para encuadrarlo. */
   loadCount: number;
+  /** Mensaje breve en pantalla (p. ej. «Enlace copiado»). */
+  toast: string | null;
+  notify(message: string): void;
 
   onNodesChange(changes: NodeChange<BlockNode>[]): void;
   onEdgesChange(changes: EdgeChange<CableEdge>[]): void;
@@ -58,6 +61,7 @@ interface State {
 }
 
 let counter = 0;
+let toastTimer: ReturnType<typeof setTimeout> | undefined;
 const newId = (prefix: string) => `${prefix}${Date.now().toString(36)}${(counter++).toString(36)}`;
 
 export const useStore = create<State>((set, get) => ({
@@ -68,6 +72,13 @@ export const useStore = create<State>((set, get) => ({
   running: false,
   assets: {},
   loadCount: 0,
+  toast: null,
+
+  notify(message) {
+    set({ toast: message });
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => set({ toast: null }), 3200);
+  },
 
   onNodesChange: (changes) => set({ nodes: applyNodeChanges(changes, get().nodes) }),
   onEdgesChange: (changes) => set({ edges: applyEdgeChanges(changes, get().edges) }),

@@ -1120,7 +1120,11 @@ select {
     linear-gradient(90deg, var(--grid-fine) 1px, transparent 1px),
     linear-gradient(var(--grid) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 10px 10px, 10px 10px, 50px 50px, 50px 50px;
+  background-size:
+    10px 10px,
+    10px 10px,
+    50px 50px,
+    50px 50px;
   outline: none;
 }
 .home-inner {
@@ -1247,7 +1251,9 @@ select {
   border: 1.5px solid var(--line);
   background: var(--panel);
   cursor: pointer;
-  transition: border-color 0.12s, transform 0.12s;
+  transition:
+    border-color 0.12s,
+    transform 0.12s;
 }
 .lesson-card:hover,
 .example-card:hover {
@@ -1365,7 +1371,9 @@ select {
 }
 @keyframes target-pulse {
   50% {
-    box-shadow: 0 0 0 7px color-mix(in srgb, var(--signal) 35%, transparent), var(--shadow-module);
+    box-shadow:
+      0 0 0 7px color-mix(in srgb, var(--signal) 35%, transparent),
+      var(--shadow-module);
   }
 }
 .param.is-target {
@@ -1381,4 +1389,71 @@ select {
   .node.is-target {
     box-shadow: 0 0 0 5px color-mix(in srgb, var(--signal) 35%, transparent);
   }
+}
+
+.toolbar-group {
+  display: inline-flex;
+}
+.btn-icon {
+  padding: 6px 8px;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 60;
+  transform: translate(-50%, 20px);
+  opacity: 0;
+  pointer-events: none;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-module);
+  transition:
+    opacity 0.18s,
+    transform 0.18s;
+}
+.toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.menu {
+  position: relative;
+}
+.menu summary {
+  list-style: none;
+}
+.menu summary::-webkit-details-marker {
+  display: none;
+}
+.menu-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 20;
+  min-width: 200px;
+  display: grid;
+  padding: 6px;
+  background: var(--panel);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow-module);
+}
+.menu-list button {
+  text-align: left;
+  border: 0;
+  background: none;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.menu-list button:hover {
+  background: var(--panel-2);
 }

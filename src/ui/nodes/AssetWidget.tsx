@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { t } from '@/i18n';
 import { setAsset } from '@/runtime/client';
+import { saveAsset } from '../lib/assetDb';
 import { decodeAudio, startRecording, type DecodedAudio, type Recording } from '../lib/audio';
 import { formatNumber, formatRate } from '../lib/format';
 import { invalidate, useStore } from '../store';
@@ -42,6 +43,15 @@ export function AssetWidget({
     });
     s.setParam(nodeId, paramKey, id);
     invalidate();
+    // Se guarda en el navegador para que siga disponible al recargar.
+    void saveAsset({
+      id,
+      name,
+      sampleRate: audio.sampleRate,
+      samples: audio.samples,
+      trimmedS: audio.trimmedS,
+      savedAt: Date.now(),
+    });
   }
 
   async function onFile(file: File) {

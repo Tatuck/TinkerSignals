@@ -42,7 +42,12 @@ export function wrap(codec: string, inner: Bitstream, w: BitWriter): Bitstream {
     kind: 'bitstream',
     bytes,
     bitLength,
-    header: { codec, sampleRate: inner.header.sampleRate, numSamples: inner.header.numSamples, inner: inner.header },
+    header: {
+      codec,
+      sampleRate: inner.header.sampleRate,
+      numSamples: inner.header.numSamples,
+      inner: inner.header,
+    },
     referenceBits: inner.referenceBits,
   };
 }

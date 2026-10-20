@@ -23,7 +23,12 @@ export default defineBlock({
     return {
       outputs: { out },
       metrics: [
-        { key: 'gain', value: b.bitLength / Math.max(1, out.bitLength), unit: '×', highlight: true },
+        {
+          key: 'gain',
+          value: b.bitLength / Math.max(1, out.bitLength),
+          unit: '×',
+          highlight: true,
+        },
         { key: 'avgRun', value: enc.avgRun, unit: 'símb.', highlight: true },
         { key: 'runs', value: enc.runs },
         { key: 'longest', value: enc.longest, unit: 'símb.' },

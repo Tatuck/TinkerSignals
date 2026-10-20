@@ -41,7 +41,11 @@ export function LibraryLoader({ sound }: { sound: string }) {
   if (!rec) return null;
   return (
     <p className="asset-info">
-      {error ? <span className="node-error">No se ha podido descargar el sonido.</span> : RECORDINGS[rec].credit}
+      {error ? (
+        <span className="node-error">No se ha podido descargar el sonido.</span>
+      ) : (
+        RECORDINGS[rec].credit
+      )}
     </p>
   );
 }

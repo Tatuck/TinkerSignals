@@ -10,7 +10,8 @@ import { categoryColor, categoryOrder } from '../theme';
 const OPEN_KEY = 'tinkersignals:palette-open';
 const DEFAULT_OPEN: BlockCategory[] = ['entrada', 'digitalizacion'];
 
-type Entry = { kind: 'single'; block: AnyBlock } | { kind: 'family'; id: string; blocks: AnyBlock[] };
+type Entry =
+  { kind: 'single'; block: AnyBlock } | { kind: 'family'; id: string; blocks: AnyBlock[] };
 
 const ROLE_ORDER = { analysis: 0, encoder: 1, decoder: 2 } as const;
 
@@ -35,7 +36,9 @@ export function Palette() {
       if (!q) return true;
       const tx = blockText(b.id);
       const fam = b.family ? t(`families.${b.family}`) : '';
-      return `${tx.title} ${tx.summary} ${fam} ${(tx.concepts ?? []).join(' ')}`.toLowerCase().includes(q);
+      return `${tx.title} ${tx.summary} ${fam} ${(tx.concepts ?? []).join(' ')}`
+        .toLowerCase()
+        .includes(q);
     };
     return categoryOrder
       .map((cat) => {
@@ -53,7 +56,10 @@ export function Palette() {
         }
         for (const e of entries) {
           if (e.kind === 'family') {
-            e.blocks.sort((a, b) => ROLE_ORDER[a.familyRole ?? 'encoder'] - ROLE_ORDER[b.familyRole ?? 'encoder']);
+            e.blocks.sort(
+              (a, b) =>
+                ROLE_ORDER[a.familyRole ?? 'encoder'] - ROLE_ORDER[b.familyRole ?? 'encoder'],
+            );
           }
         }
         entries.sort((a, b) => entryTitle(a).localeCompare(entryTitle(b), 'es'));
@@ -77,8 +83,13 @@ export function Palette() {
   /** Dónde poner un bloque añadido con clic: a la derecha del seleccionado o de todo. */
   function nextPosition(): { position: XYPosition; anchorId?: string } {
     const { nodes, selection } = useStore.getState();
-    const anchor = selection?.kind === 'node' ? nodes.find((n) => n.id === selection.id) : undefined;
-    if (anchor) return { position: { x: anchor.position.x + 320, y: anchor.position.y }, anchorId: anchor.id };
+    const anchor =
+      selection?.kind === 'node' ? nodes.find((n) => n.id === selection.id) : undefined;
+    if (anchor)
+      return {
+        position: { x: anchor.position.x + 320, y: anchor.position.y },
+        anchorId: anchor.id,
+      };
     if (nodes.length) {
       const right = nodes.reduce((a, b) => (b.position.x > a.position.x ? b : a));
       return { position: { x: right.position.x + 320, y: right.position.y } };
@@ -126,7 +137,13 @@ export function Palette() {
             style={{ '--cat': categoryColor[cat] } as CSSProperties}
           >
             <button className="folder-head" aria-expanded={isOpen} onClick={() => toggle(cat)}>
-              <svg className="folder-chevron" width="10" height="10" viewBox="0 0 10 10" aria-hidden>
+              <svg
+                className="folder-chevron"
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                aria-hidden
+              >
                 <path d="M3 1.5 6.5 5 3 8.5" fill="none" stroke="currentColor" strokeWidth="1.8" />
               </svg>
               <span className="folder-dot" aria-hidden />
@@ -180,7 +197,12 @@ function onDragStart(e: DragEvent, type: string) {
 function BlockItem({ block, onAdd }: { block: AnyBlock; onAdd(): void }) {
   const tx = blockText(block.id);
   return (
-    <button className="palette-item" draggable onDragStart={(e) => onDragStart(e, block.id)} onClick={onAdd}>
+    <button
+      className="palette-item"
+      draggable
+      onDragStart={(e) => onDragStart(e, block.id)}
+      onClick={onAdd}
+    >
       <span className="palette-icon" aria-hidden>
         {block.icon}
       </span>
@@ -241,6 +263,8 @@ function connect(fromId: string, toId: string) {
   const from = registry.get(nodes.find((n) => n.id === fromId)!.data.blockType)!;
   const to = registry.get(nodes.find((n) => n.id === toId)!.data.blockType)!;
   const inPort = Object.entries(to.inputs).find(([, s]) => !s.optional)?.[0];
-  const outPort = inPort && Object.entries(from.outputs).find(([, s]) => s.type === to.inputs[inPort].type)?.[0];
-  if (inPort && outPort) onConnect({ source: fromId, sourceHandle: outPort, target: toId, targetHandle: inPort });
+  const outPort =
+    inPort && Object.entries(from.outputs).find(([, s]) => s.type === to.inputs[inPort].type)?.[0];
+  if (inPort && outPort)
+    onConnect({ source: fromId, sourceHandle: outPort, target: toId, targetHandle: inPort });
 }

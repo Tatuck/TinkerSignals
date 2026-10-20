@@ -70,7 +70,8 @@ export default defineBlock({
 
     const specIn = averageSpectrumDb(x, 512);
     const specOut = averageSpectrumDb(out, 512);
-    const hz = (len: number, fs: number) => Array.from({ length: len }, (_, k) => (k * fs) / (2 * len));
+    const hz = (len: number, fs: number) =>
+      Array.from({ length: len }, (_, k) => (k * fs) / (2 * len));
     const resp = firResponseDb(h, 160);
     const series: Extract<import('@/engine/types').Plot, { kind: 'line' }>['series'] = [
       { role: 'in', x: hz(specIn.length, fsIn), y: specIn },
@@ -78,7 +79,8 @@ export default defineBlock({
       // Línea vertical en la nueva fs/2: todo lo que haya a su derecha se dobla.
       { role: 'error', x: [fsOut / 2, fsOut / 2], y: [-90, 0] },
     ];
-    if (params.antialias) series.splice(2, 0, { role: 'aux', x: hz(resp.length, fsFilter), y: resp });
+    if (params.antialias)
+      series.splice(2, 0, { role: 'aux', x: hz(resp.length, fsFilter), y: resp });
 
     return {
       outputs: { out: makeSignal(out, fsOut) },

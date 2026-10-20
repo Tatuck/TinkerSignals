@@ -6,7 +6,11 @@ import { qmfMerge, qmfSplit } from './subband';
 const fs = 32000;
 const music = Float32Array.from({ length: fs * 2 }, (_, i) => {
   const t = i / fs;
-  return 0.4 * Math.sin(2 * Math.PI * 440 * t) + 0.2 * Math.sin(2 * Math.PI * 1320 * t) + 0.1 * Math.sin(2 * Math.PI * 5000 * t) * Math.exp(-((t % 0.5) * 6));
+  return (
+    0.4 * Math.sin(2 * Math.PI * 440 * t) +
+    0.2 * Math.sin(2 * Math.PI * 1320 * t) +
+    0.1 * Math.sin(2 * Math.PI * 5000 * t) * Math.exp(-((t % 0.5) * 6))
+  );
 });
 
 describe('MPEG-1 Layer I', () => {

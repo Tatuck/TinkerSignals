@@ -97,7 +97,9 @@ function LinePlot({
           s.style === 'dots' ? (
             <g key={i} fill={roleColor(s.role, color)}>
               {Array.from(s.y, (v, j) =>
-                Number.isFinite(v) ? <circle key={j} cx={geometry.sx(s, j)} cy={geometry.sy(v)} r={1.8} /> : null,
+                Number.isFinite(v) ? (
+                  <circle key={j} cx={geometry.sx(s, j)} cy={geometry.sy(v)} r={1.8} />
+                ) : null,
               )}
             </g>
           ) : (

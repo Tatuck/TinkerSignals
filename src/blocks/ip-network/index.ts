@@ -59,7 +59,12 @@ export default defineBlock({
     return {
       outputs: { out: { ...inputs.in, packets } },
       metrics: [
-        { key: 'lostPct', value: (100 * lost) / Math.max(1, packets.length), unit: '%', highlight: true },
+        {
+          key: 'lostPct',
+          value: (100 * lost) / Math.max(1, packets.length),
+          unit: '%',
+          highlight: true,
+        },
         { key: 'meanDelay', value: mean, unit: 'ms', highlight: true },
         { key: 'jitter', value: std, unit: 'ms' },
         { key: 'lost', value: lost, unit: 'paq.' },
@@ -77,7 +82,11 @@ export default defineBlock({
               ),
               style: 'dots',
             },
-            { role: 'error', y: packets.map((pk) => (pk.arrivalMs === null ? 0 : NaN)), style: 'dots' },
+            {
+              role: 'error',
+              y: packets.map((pk) => (pk.arrivalMs === null ? 0 : NaN)),
+              style: 'dots',
+            },
           ],
           yLabel: 'ms',
         },

@@ -38,7 +38,11 @@ export function LessonPanel() {
             Anterior
           </button>
         )}
-        <button className="btn btn-primary" disabled={!done} onClick={() => (last ? exit() : go(step + 1))}>
+        <button
+          className="btn btn-primary"
+          disabled={!done}
+          onClick={() => (last ? exit() : go(step + 1))}
+        >
           {last ? 'Terminar' : 'Siguiente'}
         </button>
       </footer>

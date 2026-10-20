@@ -4,7 +4,9 @@ import { defineBlock } from '@/engine/types';
 import { RECORDINGS, recordingAssetId, type RecordingId } from './recordings';
 import { SYNTH_SOUNDS, type SynthSoundId } from './synth';
 
-const OPTIONS = [...Object.keys(RECORDINGS), ...Object.keys(SYNTH_SOUNDS)] as (RecordingId | SynthSoundId)[];
+const OPTIONS = [...Object.keys(RECORDINGS), ...Object.keys(SYNTH_SOUNDS)] as (
+  RecordingId | SynthSoundId
+)[];
 const isRecording = (id: string): id is RecordingId => id in RECORDINGS;
 
 /**
@@ -33,7 +35,12 @@ export default defineBlock({
       outputs: { out: signal },
       metrics: [
         { key: 'sampleRate', value: signal.sampleRate, unit: 'Hz', highlight: true },
-        { key: 'duration', value: signal.samples.length / signal.sampleRate, unit: 's', highlight: true },
+        {
+          key: 'duration',
+          value: signal.samples.length / signal.sampleRate,
+          unit: 's',
+          highlight: true,
+        },
       ],
     };
   },
