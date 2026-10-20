@@ -1,0 +1,26 @@
+{
+  "title": "Generador",
+  "summary": "Crea señales de prueba: tonos, barridos, ruido o una vocal sintética.",
+  "details": "Las señales sintéticas son perfectas para aprender: sabes exactamente qué contienen. Una senoidal pura deja ver el ruido de cuantización; el barrido (chirp) recorre todas las frecuencias y delata el aliasing; la vocal sintética sigue el modelo fuente-filtro de la voz (pulsos glotales + formantes).",
+  "tryThis": "Elige «Barrido» y conéctalo a un Remuestreo sin filtro antialiasing: oirás cómo la frecuencia «rebota» al pasar de fs/2.",
+  "ref": "Tema 2.1, Muestreo",
+  "ports": { "out": "Señal" },
+  "params": {
+    "waveform": { "label": "Forma de onda" },
+    "frequency": { "label": "Frecuencia", "help": "Frecuencia fundamental (o inicial en el barrido)." },
+    "amplitude": { "label": "Amplitud", "help": "Pico de la señal (1 = fondo de escala)." },
+    "duration": { "label": "Duración" },
+    "sampleRate": { "label": "Frecuencia de muestreo", "help": "Muestras por segundo (Hz)." }
+  },
+  "plots": { "wave": "Forma de onda" },
+  "options": {
+    "waveform": {
+      "sine": "Senoidal",
+      "square": "Cuadrada",
+      "chirp": "Barrido (chirp)",
+      "noise": "Ruido blanco",
+      "harmonics": "Armónicos",
+      "vowel": "Vocal «a» sintética"
+    }
+  }
+}

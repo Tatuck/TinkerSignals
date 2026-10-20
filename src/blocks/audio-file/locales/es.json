@@ -1,0 +1,9 @@
+{
+  "title": "Archivo de audio",
+  "summary": "Carga un audio de tu ordenador (WAV, MP3, OGG…). Se convierte a mono.",
+  "details": "El navegador decodifica el archivo a muestras en coma flotante a su frecuencia de muestreo original. Si es estéreo, se mezclan los dos canales.",
+  "tryThis": "Carga una canción y una grabación de voz y compara cómo les afecta el mismo códec.",
+  "ref": "Tema 2.1, Digitalización",
+  "ports": { "out": "Señal" },
+  "params": { "audio": { "label": "Archivo" } }
+}

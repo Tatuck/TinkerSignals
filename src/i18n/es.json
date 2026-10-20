@@ -1,0 +1,113 @@
+{
+  "app": {
+    "name": "TinkerSignals",
+    "tagline": "Laboratorio de codificación de audio"
+  },
+  "toolbar": {
+    "examples": "Ejemplos",
+    "export": "Exportar circuito",
+    "import": "Importar circuito",
+    "clear": "Vaciar lienzo",
+    "running": "Calculando…",
+    "ready": "Listo",
+    "computedIn": "Calculado en {ms} ms"
+  },
+  "palette": {
+    "title": "Bloques",
+    "hint": "Arrastra un bloque al lienzo o haz clic para añadirlo.",
+    "search": "Buscar bloque"
+  },
+  "categories": {
+    "entrada": "Entradas",
+    "digitalizacion": "Digitalización",
+    "diferencial": "Codificación diferencial",
+    "transformada": "Transformada",
+    "sin-perdidas": "Compresión sin pérdidas",
+    "voz": "Voz",
+    "canal": "Canal",
+    "utilidades": "Utilidades",
+    "salida": "Salidas"
+  },
+  "inspector": {
+    "emptyTitle": "Monta tu primera cadena",
+    "emptyBody": "Elige un bloque para ver qué hace y configurarlo, o haz clic en un cable para ver qué pasa por él.",
+    "emptySteps": [
+      "Empieza por una entrada: un archivo, el micrófono o el generador.",
+      "Añade un codificador y conéctalo arrastrando desde un punto de salida a uno de entrada.",
+      "Termina en una Salida para escuchar y descargar el resultado."
+    ],
+    "whatItDoes": "Qué hace",
+    "howItWorks": "Cómo funciona",
+    "params": "Ajustes",
+    "results": "Resultados",
+    "plots": "Gráficas",
+    "tryThis": "Prueba esto",
+    "reference": "En la asignatura",
+    "delete": "Eliminar bloque",
+    "duplicate": "Duplicar",
+    "computeTime": "Tiempo de cálculo: {ms} ms",
+    "fromCache": "Reutilizado (sin cambios)"
+  },
+  "probe": {
+    "title": "Cable",
+    "from": "De",
+    "to": "a",
+    "signal": "Señal de audio",
+    "bitstream": "Flujo de bits",
+    "waveform": "Forma de onda completa",
+    "spectrum": "Espectro medio",
+    "spectrogram": "Espectrograma",
+    "bits": "Primeros bits",
+    "listen": "Escuchar este cable",
+    "stop": "Parar",
+    "latency": "Retardo acumulado hasta aquí",
+    "noData": "Por este cable aún no pasa nada: revisa el bloque de origen.",
+    "delete": "Quitar cable"
+  },
+  "node": {
+    "waiting": "Esperando",
+    "connect": "Conecta: {ports}",
+    "error": "Error",
+    "latency": "Retardo",
+    "play": "Escuchar",
+    "playOriginal": "Original",
+    "playProcessed": "Procesada",
+    "download": "Descargar WAV",
+    "stop": "Parar",
+    "load": "Cargar archivo",
+    "replace": "Cambiar archivo",
+    "record": "Grabar",
+    "stopRecording": "Detener",
+    "recording": "Grabando… {s} s",
+    "trimmed": "Recortado a los primeros {s} s",
+    "micDenied": "El navegador no ha dado acceso al micrófono. Permítelo en la barra de direcciones y vuelve a intentarlo.",
+    "decodeError": "No se ha podido leer el archivo. Prueba con WAV, MP3 u OGG."
+  },
+  "latency": {
+    "total": "Retardo total",
+    "ok": "Apto para conversación",
+    "warn": "Se nota en una llamada",
+    "bad": "Demasiado para conversar",
+    "explain": "Suma de lo que cada bloque tiene que esperar para reunir sus muestras. ITU-T G.114 recomienda menos de 150 ms en una conversación."
+  },
+  "metrics": {
+    "snr": "SNR",
+    "snrSeg": "SNR segmental",
+    "bitrate": "Tasa",
+    "compression": "Compresión",
+    "bitsPerSample": "Bits/muestra",
+    "entropy": "Entropía",
+    "latency": "Retardo",
+    "duration": "Duración",
+    "sampleRate": "Frec. muestreo"
+  },
+  "plotRoles": {
+    "in": "Entrada",
+    "out": "Salida",
+    "error": "Error",
+    "aux": "Referencia"
+  },
+  "graphErrors": {
+    "title": "Hay cables que no funcionan"
+  }
+}
