@@ -92,7 +92,7 @@ export default defineBlock({
         { key: 'kept', value: K, unit: `de ${N}` },
       ],
       plots: [
-        compareWaves(x, y, fs, { ms: Math.max(6, latencyMs * 2.2) }),
+        compareWaves(x, y, fs),
         { kind: 'bars', title: 'energy', values: bars.map((v) => Math.max(0, v)), highlight },
       ],
       latencyMs,

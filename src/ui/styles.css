@@ -149,6 +149,7 @@ select {
 }
 
 .examples select {
+  width: 190px;
   padding: 6px 30px 6px 12px;
   border-radius: var(--radius-control);
   border: 1.5px solid var(--ink);
