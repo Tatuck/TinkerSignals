@@ -7,6 +7,8 @@ import { pcmDecode } from '../_shared/pcm';
 export default defineBlock({
   id: 'pcm-decoder',
   category: 'digitalizacion',
+  family: 'pcm',
+  familyRole: 'decoder',
   icon: '🔢',
   inputs: { in: { type: 'bitstream' } },
   outputs: { out: { type: 'signal' } },

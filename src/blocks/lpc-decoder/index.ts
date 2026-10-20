@@ -6,6 +6,8 @@ import { lpcDecode, type LpcConfig } from '../_shared/lpc-vocoder';
 export default defineBlock({
   id: 'lpc-decoder',
   category: 'voz',
+  family: 'lpc',
+  familyRole: 'decoder',
   icon: '🗣️',
   inputs: { in: { type: 'bitstream' } },
   outputs: { out: { type: 'signal' }, excitation: { type: 'signal' } },

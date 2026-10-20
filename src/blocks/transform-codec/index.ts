@@ -14,7 +14,7 @@ const SCALE_BITS = 16;
  */
 export default defineBlock({
   id: 'transform-codec',
-  category: 'transformada',
+  category: 'perceptual',
   icon: '🧮',
   inputs: { in: { type: 'signal' } },
   outputs: { out: { type: 'signal' } },

@@ -7,7 +7,9 @@ import { adpcmEncode } from '../_shared/adpcm';
 
 export default defineBlock({
   id: 'adpcm-encoder',
-  category: 'diferencial',
+  category: 'forma-de-onda',
+  family: 'adpcm',
+  familyRole: 'encoder',
   icon: '🎚️',
   inputs: { in: { type: 'signal' } },
   outputs: { out: { type: 'bitstream' } },

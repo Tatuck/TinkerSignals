@@ -1,0 +1,35 @@
+{
+  "title": "Biblioteca de sonidos",
+  "summary": "Voces y música reales de dominio público, y sonidos sintéticos para experimentos concretos.",
+  "details": "Las grabaciones reales son fragmentos de unos 10 s: dos voces leyendo en castellano (LibriVox) y dos piezas de música clásica (Musopen), todas de dominio público. Los sonidos sintéticos sirven para ver algo concreto: las vocales siguen el modelo fuente-filtro (pulsos glotales y formantes) y van muy bien con los códecs de voz; las fricativas son casi ruido y los vocoders sufren con ellas; la batería tiene ataques bruscos que delatan el pre-eco; los tonos DTMF son lo que suena al marcar un teléfono.",
+  "tryThis": "Pasa «Música: batería» por el codificador por transformada con bloques de 1024 muestras y escucha el «pre-eco» antes de cada golpe.",
+  "concepts": [
+    "Señales de prueba",
+    "Síntesis por formantes",
+    "Transitorios",
+    "DTMF"
+  ],
+  "ports": {
+    "out": "Sonido"
+  },
+  "params": {
+    "sound": {
+      "label": "Sonido"
+    }
+  },
+  "options": {
+    "sound": {
+      "voz-femenina": "Voz real: mujer leyendo (16 kHz)",
+      "voz-masculina": "Voz real: hombre leyendo (16 kHz)",
+      "piano-bach": "Música real: piano, Bach (32 kHz)",
+      "cuarteto-haydn": "Música real: cuarteto de cuerda, Haydn (32 kHz)",
+      "vowels-low": "Voz sintética: vocales (grave)",
+      "vowels-high": "Voz sintética: vocales (aguda)",
+      "syllables": "Voz sintética: frase",
+      "fricatives": "Voz sintética: fricativas (s, f, j)",
+      "chords": "Música: acordes de piano eléctrico",
+      "drums": "Música: batería",
+      "dtmf": "Teléfono: tonos de marcación (DTMF)"
+    }
+  }
+}

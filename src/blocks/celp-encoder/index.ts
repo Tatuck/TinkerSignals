@@ -8,6 +8,8 @@ import { celpBitsPerFrame, celpConfig, celpEncode } from '../_shared/celp';
 export default defineBlock({
   id: 'celp-encoder',
   category: 'voz',
+  family: 'celp',
+  familyRole: 'encoder',
   icon: '📚',
   inputs: { in: { type: 'signal' } },
   outputs: { out: { type: 'bitstream' } },

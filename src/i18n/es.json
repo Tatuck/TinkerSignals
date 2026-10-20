@@ -15,18 +15,19 @@
   "palette": {
     "title": "Bloques",
     "hint": "Arrastra un bloque al lienzo, o haz clic para añadirlo detrás del bloque seleccionado y conectarlo.",
-    "search": "Buscar bloque"
+    "search": "Buscar bloque",
+    "noResults": "Ningún bloque coincide con «{q}»."
   },
   "categories": {
-    "entrada": "Entradas",
+    "entrada": "Fuentes de sonido",
     "digitalizacion": "Digitalización",
-    "diferencial": "Codificación diferencial",
-    "transformada": "Transformada",
+    "forma-de-onda": "Códecs de forma de onda",
+    "voz": "Códecs de voz paramétricos",
+    "perceptual": "Transformada y perceptuales",
     "sin-perdidas": "Compresión sin pérdidas",
-    "voz": "Voz",
-    "canal": "Canal",
-    "utilidades": "Utilidades",
-    "salida": "Salidas"
+    "canal": "Canal y red",
+    "utilidades": "Herramientas",
+    "salida": "Salidas y medida"
   },
   "inspector": {
     "emptyTitle": "Monta tu primera cadena",
@@ -109,5 +110,29 @@
   },
   "graphErrors": {
     "title": "Hay cables que no funcionan"
+  },
+  "categoryHints": {
+    "entrada": "De dónde sale el audio",
+    "digitalizacion": "De analógico a números",
+    "forma-de-onda": "Copian la forma de onda con menos bits",
+    "voz": "Envían un modelo de cómo se produjo la voz",
+    "perceptual": "Quitan lo que el oído no percibe",
+    "sin-perdidas": "Comprimen bits sin perder ninguno",
+    "canal": "Lo que le pasa al audio por el camino",
+    "utilidades": "Para preparar o modificar señales",
+    "salida": "Escuchar, descargar y comparar"
+  },
+  "families": {
+    "pcm": "PCM",
+    "dpcm": "DPCM",
+    "adpcm": "ADPCM",
+    "huffman": "Huffman",
+    "lpc": "Vocoder LPC",
+    "celp": "CELP"
+  },
+  "familyRoles": {
+    "encoder": "Codificador",
+    "decoder": "Decodificador",
+    "analysis": "Análisis"
   }
 }

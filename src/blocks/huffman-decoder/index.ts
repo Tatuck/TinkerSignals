@@ -5,6 +5,8 @@ import { huffmanDecode } from '../_shared/huffman';
 export default defineBlock({
   id: 'huffman-decoder',
   category: 'sin-perdidas',
+  family: 'huffman',
+  familyRole: 'decoder',
   icon: '🌳',
   inputs: { in: { type: 'bitstream' } },
   outputs: { out: { type: 'bitstream' } },

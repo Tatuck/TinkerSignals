@@ -6,6 +6,8 @@ import { bitsPerFrame, lpcConfig, lpcEncode } from '../_shared/lpc-vocoder';
 export default defineBlock({
   id: 'lpc-encoder',
   category: 'voz',
+  family: 'lpc',
+  familyRole: 'encoder',
   icon: '🔬',
   inputs: { in: { type: 'signal' } },
   outputs: { out: { type: 'bitstream' } },

@@ -6,7 +6,9 @@ import { dpcmEncode } from '../_shared/dpcm';
 
 export default defineBlock({
   id: 'dpcm-encoder',
-  category: 'diferencial',
+  category: 'forma-de-onda',
+  family: 'dpcm',
+  familyRole: 'encoder',
   icon: '➖',
   inputs: { in: { type: 'signal' } },
   outputs: { out: { type: 'bitstream' } },

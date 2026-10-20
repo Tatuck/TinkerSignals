@@ -196,8 +196,8 @@ export interface ProcessContext<I extends PortSpecs, P extends ParamSpecs> {
 export type BlockCategory =
   | 'entrada'
   | 'digitalizacion'
-  | 'diferencial'
-  | 'transformada'
+  | 'forma-de-onda'
+  | 'perceptual'
   | 'sin-perdidas'
   | 'voz'
   | 'canal'
@@ -214,6 +214,13 @@ export interface BlockDefinition<
   category: BlockCategory;
   /** Emoji o nombre corto de icono que la UI sabe pintar. */
   icon: string;
+  /**
+   * Familia opcional: los bloques con la misma familia (p. ej. el codificador
+   * y el decodificador PCM) se agrupan en una sola carpeta de la paleta.
+   * El orden dentro de la familia lo da `familyRole`.
+   */
+  family?: string;
+  familyRole?: 'encoder' | 'decoder' | 'analysis';
   inputs: I;
   outputs: O;
   params: P;

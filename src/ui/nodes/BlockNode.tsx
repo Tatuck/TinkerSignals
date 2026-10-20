@@ -10,6 +10,7 @@ import { useStore, type BlockNode as BlockNodeType } from '../store';
 import { categoryColor, portColor } from '../theme';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { AssetWidget } from './AssetWidget';
+import { LibraryLoader } from './LibraryLoader';
 import { OutputControls } from './OutputControls';
 
 const PLOT_W = 216;
@@ -162,6 +163,7 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
             />
           )}
           {def.id === 'output' && <OutputControls nodeId={id} />}
+        {def.id === 'sound-library' && <LibraryLoader sound={String(data.params.sound)} />}
         </div>
       </ErrorBoundary>
     </div>

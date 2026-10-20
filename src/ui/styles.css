@@ -279,6 +279,7 @@ select {
 }
 .palette {
   border-right: 1px solid var(--line);
+  overflow-x: hidden;
 }
 .inspector {
   border-left: 1px solid var(--line);
@@ -304,28 +305,94 @@ select {
   margin: 8px 0 14px;
 }
 
-.palette-group h3 {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ink-2);
-  margin: 16px 0 6px;
+.folder {
+  border-bottom: 1px solid var(--line);
+}
+.folder-head {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 2px;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
 }
-.palette-group h3::before {
-  content: '';
+.folder-chevron {
+  flex: none;
+  color: var(--ink-3);
+  transition: transform 0.15s;
+}
+.folder.is-open .folder-chevron {
+  transform: rotate(90deg);
+}
+.folder-dot {
+  flex: none;
   width: 10px;
   height: 10px;
   border-radius: 3px;
   background: var(--cat);
 }
-.palette-group ul {
+.folder-name {
+  flex: 1;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.25;
+}
+.folder-name small {
+  display: block;
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.folder-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.folder-items {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 12px;
   display: grid;
   gap: 6px;
+}
+
+.palette-family {
+  border: 1.5px solid var(--line);
+  border-left: 5px solid var(--cat);
+  border-radius: 10px;
+  background: var(--panel);
+}
+.palette-family .palette-item {
+  border: 0;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+}
+.palette-family:hover {
+  border-color: var(--cat);
+}
+.family-parts {
+  display: flex;
+  gap: 6px;
+  padding: 0 10px 8px 38px;
+}
+.family-part {
+  flex: 1;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1.5px solid color-mix(in srgb, var(--cat) 35%, var(--line));
+  background: color-mix(in srgb, var(--cat) 6%, white);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink-2);
+  cursor: grab;
+}
+.family-part:hover {
+  border-color: var(--cat);
+  color: var(--ink);
 }
 
 .palette-item {

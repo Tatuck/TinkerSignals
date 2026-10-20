@@ -6,6 +6,8 @@ import { celpDecode, type CelpConfig } from '../_shared/celp';
 export default defineBlock({
   id: 'celp-decoder',
   category: 'voz',
+  family: 'celp',
+  familyRole: 'decoder',
   icon: '📚',
   inputs: { in: { type: 'bitstream' } },
   outputs: { out: { type: 'signal' }, excitation: { type: 'signal' } },
