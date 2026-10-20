@@ -1,12 +1,4 @@
-import {
-  Background,
-  BackgroundVariant,
-  Controls,
-  ReactFlow,
-  useReactFlow,
-  type Connection,
-  type Edge,
-} from '@xyflow/react';
+import { Controls, ReactFlow, useReactFlow, type Connection, type Edge } from '@xyflow/react';
 import { useCallback, useEffect, type DragEvent } from 'react';
 import { BlockNode } from '../nodes/BlockNode';
 import { useStore } from '../store';
@@ -14,6 +6,9 @@ import { CableEdge } from './CableEdge';
 import { Timeline } from './Timeline';
 import { LessonPanel } from '../lessons/LessonPanel';
 import { openInterior } from '../interior/openInterior';
+import { examples, instantiate } from '../examples';
+import { lessons } from '../lessons/lessons';
+import { useLesson } from '../lessons/lessonStore';
 
 export const nodeTypes = { block: BlockNode };
 export const edgeTypes = { cable: CableEdge };
@@ -35,7 +30,7 @@ export function Canvas() {
   useEffect(() => {
     if (!loadCount) return;
     const id = requestAnimationFrame(
-      () => void fitView({ padding: 0.2, maxZoom: 1, duration: 300 }),
+      () => void fitView({ padding: 0.12, maxZoom: 1.2, duration: 300 }),
     );
     return () => cancelAnimationFrame(id);
   }, [loadCount, fitView]);
@@ -67,17 +62,45 @@ export function Canvas() {
         onPaneClick={() => select(null)}
         defaultEdgeOptions={{ type: 'cable' }}
         fitView
-        fitViewOptions={{ padding: 0.25, maxZoom: 1 }}
+        fitViewOptions={{ padding: 0.12, maxZoom: 1.2 }}
         minZoom={0.3}
         maxZoom={1.75}
         deleteKeyCode={['Delete', 'Backspace']}
       >
-        <Background id="fine" variant={BackgroundVariant.Lines} gap={10} color="var(--grid-fine)" />
-        <Background id="coarse" variant={BackgroundVariant.Lines} gap={50} color="var(--grid)" />
         <Controls showInteractive={false} />
       </ReactFlow>
       <Timeline />
       <LessonPanel />
+      {nodes.length === 0 && <EmptyCanvas />}
+    </div>
+  );
+}
+
+/** Lienzo vacío: qué hacer primero, en el sitio donde aparecerá el circuito. */
+function EmptyCanvas() {
+  const load = useStore((s) => s.load);
+  const startLesson = useLesson((l) => l.start);
+  return (
+    <div className="canvas-empty">
+      <h2>El lienzo está vacío</h2>
+      <p>
+        Arrastra un bloque desde la izquierda, empezando por una fuente de sonido, o abre un
+        circuito ya montado.
+      </p>
+      <div className="canvas-empty-actions">
+        <button className="btn" onClick={() => startLesson(lessons[0].id)}>
+          Primera lección: {lessons[0].title}
+        </button>
+        <button
+          className="btn"
+          onClick={() => {
+            const g = instantiate(examples[0]);
+            load(g.nodes, g.edges);
+          }}
+        >
+          Abrir «{examples[0].title}»
+        </button>
+      </div>
     </div>
   );
 }

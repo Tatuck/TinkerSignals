@@ -1,11 +1,10 @@
 import { ReactFlowProvider } from '@xyflow/react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { setAsset } from '@/runtime/client';
 import { Canvas } from './canvas/Canvas';
 import { ErrorBoundary } from './ErrorBoundary';
 import { examples, instantiate } from './examples';
 import { redo, startHistory, undo } from './history';
-import { HOME_SEEN_KEY, Home } from './home/Home';
 import { Inspector } from './inspector/Inspector';
 import { InteriorView } from './interior/InteriorView';
 import { loadAsset, pruneAssets } from './lib/assetDb';
@@ -80,14 +79,6 @@ async function restoreAssets(nodes: BlockNode[]) {
   void pruneAssets(ids);
 }
 
-function firstVisit(): boolean {
-  try {
-    return !localStorage.getItem(HOME_SEEN_KEY);
-  } catch {
-    return true;
-  }
-}
-
 /** ¿El foco está en un campo donde las teclas deben escribir y no ejecutar atajos? */
 const typing = (e: KeyboardEvent) => {
   const el = e.target as HTMLElement | null;
@@ -95,20 +86,9 @@ const typing = (e: KeyboardEvent) => {
 };
 
 export function App() {
-  const [home, setHome] = useState(firstVisit);
-  const closeHome = () => {
-    setHome(false);
-    try {
-      localStorage.setItem(HOME_SEEN_KEY, '1');
-    } catch {
-      /* sin almacenamiento */
-    }
-  };
-
   useEffect(() => {
     let stopHistory = () => {};
-    void restore().then((fromLink) => {
-      if (fromLink) setHome(false);
+    void restore().then(() => {
       stopHistory = startHistory();
     });
     let timer: ReturnType<typeof setTimeout>;
@@ -158,7 +138,7 @@ export function App() {
   return (
     <ReactFlowProvider>
       <div className="app">
-        <Toolbar onHome={() => setHome(true)} />
+        <Toolbar />
         <ErrorBoundary label="la paleta">
           <Palette />
         </ErrorBoundary>
@@ -173,7 +153,6 @@ export function App() {
       <TheoryPanel />
       <BenchPanel />
       <Toast />
-      {home && <Home onClose={closeHome} />}
     </ReactFlowProvider>
   );
 }

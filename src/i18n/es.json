@@ -168,7 +168,7 @@
   },
   "plots": {
     "waveAt": "Entrada y salida en este instante",
-    "spectrumAt": "Espectro en este instante (gris: entrada)",
+    "spectrumAt": "Espectro en este instante",
     "frameAt": "Trama en este instante"
   },
   "timeline": {

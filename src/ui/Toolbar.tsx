@@ -1,32 +1,122 @@
-import { useEffect, useReducer, useRef } from 'react';
+import { useEffect, useReducer, useRef, useState, type ReactNode } from 'react';
 import { t } from '@/i18n';
+import { engine } from '@/runtime/client';
 import { formatNumber } from './lib/format';
 import { examples, instantiate } from './examples';
 import { canRedo, canUndo, onHistoryChange, redo, undo } from './history';
+import { lessons } from './lessons/lessons';
+import { useLesson } from './lessons/lessonStore';
+import { onPlaybackChange, play, stop } from './lib/audio';
 import { encodeCircuit } from './lib/share';
 import { useStore, type BlockNode, type CableEdge } from './store';
 
 const NO_ERRORS: never[] = [];
 
-export function Toolbar({ onHome }: { onHome(): void }) {
+/** Desplegable sencillo sobre <details>: se cierra al elegir una opción o al pulsar fuera. */
+function Menu({
+  label,
+  wide,
+  align = 'left',
+  children,
+}: {
+  label: string;
+  wide?: boolean;
+  align?: 'left' | 'right';
+  children: ReactNode;
+}) {
+  const ref = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    const close = () => ref.current?.removeAttribute('open');
+    const onDown = (e: PointerEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) close();
+    };
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && close();
+    document.addEventListener('pointerdown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, []);
+  return (
+    <details className="menu" ref={ref}>
+      <summary className="btn btn-quiet">
+        {label}
+        <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden className="menu-caret">
+          <path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+      </summary>
+      <div
+        className={`menu-list${wide ? ' is-wide' : ''}${align === 'right' ? ' is-right' : ''}`}
+        onClick={(e) => {
+          if ((e.target as HTMLElement).closest('button')) ref.current?.removeAttribute('open');
+        }}
+      >
+        {children}
+      </div>
+    </details>
+  );
+}
+
+const Icon = ({ d }: { d: string }) => (
+  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
+    <path
+      d={d}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+/** Botón principal: escucha lo que llega al bloque Salida del circuito. */
+function ListenButton() {
+  const output = useStore((s) => s.nodes.find((n) => n.data.blockType === 'output')?.id);
+  const ok = useStore((s) => !!output && s.results?.nodes[output]?.status === 'ok');
+  const [playing, setPlaying] = useState<string | null>(null);
+  useEffect(() => onPlaybackChange(setPlaying), []);
+  const key = `${output}:in`;
+  const isPlaying = playing === key;
+
+  async function toggle() {
+    if (!output) return;
+    if (isPlaying) return stop();
+    const s = await engine.getSignal(output, 'in', 'in');
+    if (s) play(s, key);
+  }
+
+  return (
+    <button
+      className="btn btn-primary"
+      onClick={toggle}
+      disabled={!ok}
+      title={output ? 'Escuchar lo que llega a la Salida' : 'Añade un bloque Salida para escuchar'}
+    >
+      {isPlaying ? (
+        <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden>
+          <rect x="2" y="2" width="8" height="8" rx="1.5" fill="currentColor" />
+        </svg>
+      ) : (
+        <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden>
+          <path d="M3 1.8v8.4L10 6z" fill="currentColor" strokeLinejoin="round" />
+        </svg>
+      )}
+      {isPlaying ? 'Parar' : 'Escuchar salida'}
+    </button>
+  );
+}
+
+export function Toolbar() {
   const running = useStore((s) => s.running);
   const totalMs = useStore((s) => s.results?.totalMs);
   const graphErrors = useStore((s) => s.results?.graphErrors) ?? NO_ERRORS;
   const load = useStore((s) => s.load);
+  const startLesson = useLesson((l) => l.start);
   const fileRef = useRef<HTMLInputElement>(null);
-  const menuRef = useRef<HTMLDetailsElement>(null);
-  const closeMenu = () => menuRef.current?.removeAttribute('open');
   const [, refresh] = useReducer((x: number) => x + 1, 0);
   useEffect(() => onHistoryChange(refresh), []);
-  // Cierra el menú «Archivo» al pulsar fuera de él.
-  useEffect(() => {
-    const onDown = (e: PointerEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node))
-        menuRef.current.removeAttribute('open');
-    };
-    document.addEventListener('pointerdown', onDown);
-    return () => document.removeEventListener('pointerdown', onDown);
-  }, []);
 
   async function share() {
     const { nodes, edges, notify } = useStore.getState();
@@ -68,62 +158,88 @@ export function Toolbar({ onHome }: { onHome(): void }) {
   return (
     <header className="toolbar">
       <div className="brand">
-        <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden>
-          <rect x="1" y="1" width="28" height="28" rx="8" fill="var(--ink)" />
+        <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden>
+          <rect width="28" height="28" rx="7" fill="#1A1D23" />
           <path
-            d="M5 15 Q8.5 5 12 15 T19 15"
+            d="M5 14c1.6-6 3.4-6 5 0s3.4 6 5 0"
             fill="none"
             stroke="#fff"
-            strokeWidth="2.4"
+            strokeWidth="2.2"
             strokeLinecap="round"
           />
           <path
-            d="M19 15 h2 v-4 h2 v8 h2 v-4"
+            d="M15 14h2v-4h2.5v8H22v-4h1.5"
             fill="none"
             stroke="#F2B230"
-            strokeWidth="2.4"
+            strokeWidth="2.2"
             strokeLinejoin="round"
             strokeLinecap="round"
           />
         </svg>
-        <div>
-          <h1>{t('app.name')}</h1>
-          <p>{t('app.tagline')}</p>
-        </div>
+        <h1>{t('app.name')}</h1>
+        <span className={`run-status${running ? ' is-running' : ''}`} aria-live="polite">
+          <span className="run-dot" aria-hidden />
+          {running
+            ? t('toolbar.running')
+            : totalMs !== undefined
+              ? t('toolbar.computedIn', { ms: formatNumber(totalMs, 0) })
+              : t('toolbar.ready')}
+        </span>
       </div>
 
-      <nav className="toolbar-actions">
-        <button className="btn btn-quiet" onClick={onHome}>
-          Inicio y lecciones
-        </button>
-        <label className="examples">
-          <span className="sr-only">{t('toolbar.examples')}</span>
-          <select
-            value=""
-            onChange={(e) => {
-              const ex = examples.find((x) => x.id === e.target.value);
-              if (ex) {
-                const g = instantiate(ex);
-                load(g.nodes, g.edges);
-              }
-            }}
-          >
-            <option value="" disabled>
-              {t('toolbar.examples')}
-            </option>
-            {examples.map((ex) => (
-              <option key={ex.id} value={ex.id} title={ex.description}>
-                {ex.title}
-              </option>
-            ))}
-          </select>
-        </label>
+      <nav className="toolbar-nav" aria-label="Aprender">
+        <Menu label="Lecciones" wide>
+          {
+            <ol className="menu-rich">
+              {lessons.map((l) => (
+                <li key={l.id}>
+                  <button
+                    onClick={() => {
+                      startLesson(l.id);
+                    }}
+                  >
+                    <strong>{l.title}</strong>
+                    <span>{l.summary}</span>
+                    <small>
+                      {l.steps.length} pasos · unos {l.minutes} min
+                    </small>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          }
+        </Menu>
+        <Menu label={t('toolbar.examples')} wide>
+          {
+            <ul className="menu-rich">
+              {examples.map((ex) => (
+                <li key={ex.id}>
+                  <button
+                    onClick={() => {
+                      const g = instantiate(ex);
+                      load(g.nodes, g.edges);
+                      useLesson.getState().exit();
+                    }}
+                  >
+                    <strong>{ex.title}</strong>
+                    <span>{ex.description}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          }
+        </Menu>
         <button className="btn btn-quiet" onClick={() => useStore.setState({ theory: 'muestreo' })}>
           Teoría
         </button>
         <button className="btn btn-quiet" onClick={() => useStore.setState({ bench: true })}>
-          Comparar códecs
+          <span>
+            Comparar<span className="hide-sm"> códecs</span>
+          </span>
         </button>
+      </nav>
+
+      <div className="toolbar-actions">
         <span className="toolbar-group" role="group" aria-label="Historial">
           <button
             className="btn btn-quiet btn-icon"
@@ -132,16 +248,7 @@ export function Toolbar({ onHome }: { onHome(): void }) {
             title="Deshacer (Ctrl+Z)"
             aria-label="Deshacer"
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
-              <path
-                d="M6 3 2.5 6.5 6 10M3 6.5h6.5a3.5 3.5 0 0 1 0 7H7"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Icon d="M6 3 2.5 6.5 6 10M3 6.5h6.5a3.5 3.5 0 0 1 0 7H7" />
           </button>
           <button
             className="btn btn-quiet btn-icon"
@@ -150,41 +257,31 @@ export function Toolbar({ onHome }: { onHome(): void }) {
             title="Rehacer (Ctrl+Mayús+Z)"
             aria-label="Rehacer"
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
-              <path
-                d="M10 3l3.5 3.5L10 10M13 6.5H6.5a3.5 3.5 0 0 0 0 7H9"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Icon d="M10 3l3.5 3.5L10 10M13 6.5H6.5a3.5 3.5 0 0 0 0 7H9" />
           </button>
         </span>
-        <button className="btn btn-quiet" onClick={share}>
-          Compartir enlace
+        <span className="toolbar-divider" aria-hidden />
+        <Menu label="Archivo" align="right">
+          {
+            <>
+              <button onClick={exportGraph}>{t('toolbar.export')}</button>
+              <button onClick={() => fileRef.current?.click()}>{t('toolbar.import')}</button>
+              <button
+                className="is-danger"
+                onClick={() => {
+                  load([], []);
+                  useLesson.getState().exit();
+                }}
+              >
+                {t('toolbar.clear')}
+              </button>
+            </>
+          }
+        </Menu>
+        <button className="btn" onClick={share}>
+          Compartir
         </button>
-        <details className="menu" ref={menuRef}>
-          <summary className="btn btn-quiet">Archivo</summary>
-          <div className="menu-list" role="menu">
-            <button role="menuitem" onClick={() => (exportGraph(), closeMenu())}>
-              {t('toolbar.export')}
-            </button>
-            <button role="menuitem" onClick={() => (fileRef.current?.click(), closeMenu())}>
-              {t('toolbar.import')}
-            </button>
-            <button
-              role="menuitem"
-              onClick={() => {
-                load([], []);
-                closeMenu();
-              }}
-            >
-              {t('toolbar.clear')}
-            </button>
-          </div>
-        </details>
+        <ListenButton />
         <input
           ref={fileRef}
           type="file"
@@ -192,15 +289,6 @@ export function Toolbar({ onHome }: { onHome(): void }) {
           hidden
           onChange={(e) => e.target.files?.[0] && importGraph(e.target.files[0])}
         />
-      </nav>
-
-      <div className={`run-status${running ? ' is-running' : ''}`} aria-live="polite">
-        <span className="run-dot" aria-hidden />
-        {running
-          ? t('toolbar.running')
-          : totalMs !== undefined
-            ? t('toolbar.computedIn', { ms: formatNumber(totalMs, 0) })
-            : t('toolbar.ready')}
       </div>
 
       {graphErrors.length > 0 && (

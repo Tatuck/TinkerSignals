@@ -5,6 +5,7 @@ import { blockText } from '@/i18n';
 import { conceptById, concepts, type Concept } from '@/theory/es';
 import { registry } from '../registry';
 import { useStore } from '../store';
+import { BlockGlyph } from '../BlockGlyph';
 
 /** Fórmula renderizada con KaTeX (el texto es nuestro, no del usuario). */
 function Formula({ tex }: { tex: string }) {
@@ -130,7 +131,7 @@ function TryIt({ concept, onDone }: { concept: Concept; onDone(): void }) {
           return (
             <li key={b}>
               <button className="btn" onClick={() => add(b)}>
-                <span aria-hidden>{def.icon}</span> {blockText(b).title}
+                <BlockGlyph category={def.category} size={22} /> {blockText(b).title}
               </button>
             </li>
           );

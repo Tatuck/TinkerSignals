@@ -1,17 +1,34 @@
 import type { BlockCategory, PortType } from '@/engine/types';
 
-/** Color de cada categoría: cabecera del bloque, trazo de "salida" en sus gráficas. */
+/**
+ * Color de cada categoría. Solo marca la identidad del bloque: el glifo de su
+ * ficha y el borde cuando está seleccionado. Las gráficas usan un único color.
+ */
 export const categoryColor: Record<BlockCategory, string> = {
-  entrada: '#2E9E68',
-  digitalizacion: '#2F6FEB',
-  'forma-de-onda': '#7C4DDB',
-  voz: '#C2255C',
-  perceptual: '#D9480F',
-  'sin-perdidas': '#0B8A8A',
-  canal: '#5C6B80',
-  piezas: '#5F3DC4',
-  utilidades: '#8C6D1F',
-  salida: '#1F2A44',
+  entrada: '#1E7F52',
+  digitalizacion: '#2563D9',
+  'forma-de-onda': '#0B7F8C',
+  voz: '#BE2459',
+  perceptual: '#B25F00',
+  'sin-perdidas': '#557A17',
+  canal: '#566273',
+  piezas: '#9A4777',
+  utilidades: '#8A6A12',
+  salida: '#1A1D23',
+};
+
+/** Fondo pálido de la ficha de cada categoría (el mismo en la paleta y en el lienzo). */
+export const categoryTint: Record<BlockCategory, string> = {
+  entrada: '#DDF3E6',
+  digitalizacion: '#E0EAFC',
+  'forma-de-onda': '#D9F1F3',
+  voz: '#FBE1EA',
+  perceptual: '#FCEBD6',
+  'sin-perdidas': '#E8F1D6',
+  canal: '#E6E9EE',
+  piezas: '#F5E1EC',
+  utilidades: '#F6EDCF',
+  salida: '#E4E6EA',
 };
 
 export const categoryOrder: BlockCategory[] = [
@@ -29,11 +46,13 @@ export const categoryOrder: BlockCategory[] = [
 
 /** Color de cable por tipo de dato. La forma del conector también cambia (círculo/cuadrado). */
 export const portColor: Record<PortType, string> = {
-  signal: '#2F6FEB',
-  bitstream: '#E09A00',
-  packets: '#0E9F6E',
-  frames: '#9C36B5',
+  signal: '#2563D9',
+  bitstream: '#C98A00',
+  packets: '#16895C',
+  frames: '#B8336A',
 };
 
-export const inputSeriesColor = '#9AA6B8';
-export const errorSeriesColor = '#D6336C';
+/** El único color de datos: la salida de cada bloque en sus gráficas. */
+export const outputSeriesColor = '#2563D9';
+export const inputSeriesColor = '#A9B1BD';
+export const errorSeriesColor = '#C4242A';

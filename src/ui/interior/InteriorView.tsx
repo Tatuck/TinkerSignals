@@ -1,6 +1,4 @@
 import {
-  Background,
-  BackgroundVariant,
   Controls,
   ReactFlow,
   ReactFlowProvider,
@@ -18,6 +16,7 @@ import { formatNumber } from '../lib/format';
 import { registry } from '../registry';
 import { ScopeContext, useStore } from '../store';
 import { closeInterior, interiorStore } from './openInterior';
+import { BlockGlyph } from '../BlockGlyph';
 
 type Comparison = Awaited<ReturnType<typeof engine.compareInterior>>;
 
@@ -71,7 +70,8 @@ export function InteriorView() {
           </button>
           <span aria-hidden>›</span>
           <strong>
-            {def?.icon} {text.title} por dentro
+            {def && <BlockGlyph category={def.category} size={24} />}
+            {text.title} por dentro
           </strong>
         </nav>
         <p>
@@ -159,8 +159,6 @@ function InteriorCanvas() {
         maxZoom={1.75}
         deleteKeyCode={null}
       >
-        <Background id="fine" variant={BackgroundVariant.Lines} gap={10} color="var(--grid-fine)" />
-        <Background id="coarse" variant={BackgroundVariant.Lines} gap={50} color="var(--grid)" />
         <Controls showInteractive={false} />
       </ReactFlow>
     </div>

@@ -67,7 +67,7 @@ export function Timeline() {
           if (e.key === 'Escape') setCursor(null);
         }}
       >
-        <Envelope env={source.preview} width={W} height={H} color="var(--ink-3)" />
+        <Envelope env={source.preview} width={W} height={H} color="#AEB5C0" />
         {cursor !== null && (
           <i
             className="timeline-cursor"

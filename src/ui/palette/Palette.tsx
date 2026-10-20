@@ -6,6 +6,7 @@ import { DRAG_MIME } from '../canvas/Canvas';
 import { registry } from '../registry';
 import { useStore } from '../store';
 import { categoryColor, categoryOrder } from '../theme';
+import { BlockGlyph } from '../BlockGlyph';
 
 const OPEN_KEY = 'tinkersignals:palette-open';
 const DEFAULT_OPEN: BlockCategory[] = ['entrada', 'digitalizacion'];
@@ -203,9 +204,7 @@ function BlockItem({ block, onAdd }: { block: AnyBlock; onAdd(): void }) {
       onDragStart={(e) => onDragStart(e, block.id)}
       onClick={onAdd}
     >
-      <span className="palette-icon" aria-hidden>
-        {block.icon}
-      </span>
+      <BlockGlyph category={block.category} size={26} />
       <span className="palette-text">
         <strong>{tx.title}</strong>
         <small>{tx.summary}</small>
@@ -231,9 +230,7 @@ function FamilyItem({
   return (
     <div className="palette-family">
       <button className="palette-item" onClick={onAddAll} title="Añadir la pareja ya conectada">
-        <span className="palette-icon" aria-hidden>
-          {main.icon}
-        </span>
+        <BlockGlyph category={main.category} size={26} />
         <span className="palette-text">
           <strong>{t(`families.${family}`)}</strong>
           <small>{tx.summary}</small>

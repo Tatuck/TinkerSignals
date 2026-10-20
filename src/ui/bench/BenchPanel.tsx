@@ -7,7 +7,7 @@ import { formatNumber } from '../lib/format';
 import { useStore } from '../store';
 
 /** Color fijo por familia (orden fijo de la paleta categórica validada). */
-const SERIES = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#6250d6'];
+const SERIES = ['#2563D9', '#C98A00', '#16895C', '#BE2459', '#0B7F8C', '#566273', '#9A4777'];
 const colorOf = (familyId: string) =>
   SERIES[BENCH_FAMILIES.findIndex((f) => f.id === familyId) % SERIES.length];
 

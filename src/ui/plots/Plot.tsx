@@ -19,7 +19,7 @@ const roleColor = (role: PlotRole, color: string) =>
     : role === 'error'
       ? errorSeriesColor
       : role === 'aux'
-        ? '#C6CFDB'
+        ? '#C3C9D2'
         : color;
 
 /**
@@ -41,7 +41,12 @@ function LinePlot({
   height,
   detailed,
 }: Omit<Props, 'plot'> & { plot: Extract<PlotData, { kind: 'line' }> }) {
+  // Con marcas de ejes se reserva sitio a la izquierda (dB) y abajo (frecuencia).
+  const axes = detailed && !!(plot.xTicks || plot.yTicks);
   const pad = detailed ? 6 : 3;
+  const m = axes
+    ? { l: plot.yTicks ? 46 : pad, r: 10, t: 6, b: plot.xTicks ? 20 : pad }
+    : { l: pad, r: pad, t: pad, b: pad };
   const geometry = useMemo(() => {
     let yMin = Infinity;
     let yMax = -Infinity;
@@ -60,16 +65,18 @@ function LinePlot({
         }
     }
     if (plot.yRange) [yMin, yMax] = plot.yRange;
+    if (plot.xRange) [xMin, xMax] = plot.xRange;
     if (!Number.isFinite(yMin) || yMin === yMax) {
       yMin = (Number.isFinite(yMin) ? yMin : 0) - 1;
       yMax = yMin + 2;
     }
+    const iw = width - m.l - m.r;
+    const ih = height - m.t - m.b;
+    const fx = (v: number) => m.l + ((v - xMin) / (xMax - xMin)) * iw;
     const sx = (s: LineSeries, i: number) =>
-      s.x && xMax > xMin
-        ? pad + ((s.x[i] - xMin) / (xMax - xMin)) * (width - 2 * pad)
-        : pad + (i / Math.max(1, s.y.length - 1)) * (width - 2 * pad);
-    const sy = (v: number) => pad + (1 - (v - yMin) / (yMax - yMin)) * (height - 2 * pad);
-    const zeroY = yMin < 0 && yMax > 0 ? sy(0) : null;
+      s.x && xMax > xMin ? fx(s.x[i]) : m.l + (i / Math.max(1, s.y.length - 1)) * iw;
+    const sy = (v: number) => m.t + (1 - (v - yMin) / (yMax - yMin)) * ih;
+    const zeroY = !axes && yMin < 0 && yMax > 0 ? sy(0) : null;
 
     const paths = plot.series.map((s) => {
       let d = '';
@@ -82,14 +89,41 @@ function LinePlot({
       }
       return { d, s };
     });
-    return { paths, zeroY, sx, sy };
-  }, [plot, width, height, pad]);
+    return { paths, zeroY, sx, sy, fx };
+  }, [plot, width, height, m.l, m.r, m.t, m.b, axes]);
 
   const roles = [...new Set(plot.series.map((s) => s.role))];
 
   return (
     <figure className="plot">
       <svg width={width} height={height} role="img" aria-label={plot.title}>
+        {axes &&
+          plot.yTicks?.map((tk, i) => (
+            <g key={`y${tk.value}`}>
+              <line
+                x1={m.l}
+                x2={width - m.r}
+                y1={geometry.sy(tk.value)}
+                y2={geometry.sy(tk.value)}
+                className={i === 0 ? 'plot-base' : 'plot-grid'}
+              />
+              <text x={m.l - 6} y={geometry.sy(tk.value) + 4} textAnchor="end" className="tick">
+                {tk.label}
+              </text>
+            </g>
+          ))}
+        {axes &&
+          plot.xTicks?.map((tk, i, all) => (
+            <text
+              key={`x${tk.value}`}
+              x={geometry.fx(tk.value)}
+              y={height - 5}
+              textAnchor={i === 0 ? 'start' : i === all.length - 1 ? 'end' : 'middle'}
+              className="tick"
+            >
+              {tk.label}
+            </text>
+          ))}
         {geometry.zeroY !== null && (
           <line x1={0} x2={width} y1={geometry.zeroY} y2={geometry.zeroY} className="plot-zero" />
         )}
@@ -108,7 +142,7 @@ function LinePlot({
               d={d}
               fill="none"
               stroke={roleColor(s.role, color)}
-              strokeWidth={s.role === 'in' ? 3.5 : s.role === 'aux' ? 1 : 1.5}
+              strokeWidth={s.role === 'in' ? (axes ? 2.5 : 3.5) : s.role === 'aux' ? 1 : 1.5}
               strokeOpacity={s.role === 'in' ? 0.75 : 1}
               strokeLinejoin="round"
               strokeDasharray={s.role === 'aux' ? '3 3' : undefined}
@@ -124,7 +158,7 @@ function LinePlot({
               {t(`plotRoles.${r}`)}
             </span>
           ))}
-          {(plot.xLabel || plot.yLabel) && (
+          {!axes && (plot.xLabel || plot.yLabel) && (
             <span className="plot-axes">
               {plot.yLabel} frente a {plot.xLabel}
             </span>

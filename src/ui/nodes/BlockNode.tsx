@@ -7,7 +7,8 @@ import { Envelope } from '../plots/Envelope';
 import { Plot } from '../plots/Plot';
 import { registry } from '../registry';
 import { useGraphStore, type BlockNode as BlockNodeType } from '../store';
-import { categoryColor, portColor } from '../theme';
+import { categoryColor, outputSeriesColor, portColor } from '../theme';
+import { BlockGlyph } from '../BlockGlyph';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { useLessonTarget } from '../lessons/LessonPanel';
 import { AssetWidget } from './AssetWidget';
@@ -35,7 +36,8 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
   if (!def) return <div className="node node-unknown">{data.blockType}</div>;
 
   const text = blockText(def.id);
-  const color = categoryColor[def.category];
+  const cat = categoryColor[def.category];
+  const color = outputSeriesColor;
   const inputs = Object.entries(def.inputs);
   const outputs = Object.entries(def.outputs);
   const rows = Math.max(inputs.length, outputs.length);
@@ -49,12 +51,10 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
   return (
     <div
       className={`node status-${status}${selected ? ' is-selected' : ''}${isTarget ? ' is-target' : ''}`}
-      style={{ '--cat': color } as CSSProperties}
+      style={{ '--cat': cat } as CSSProperties}
     >
       <header className="node-head">
-        <span className="node-icon" aria-hidden>
-          {def.icon}
-        </span>
+        <BlockGlyph category={def.category} />
         <span className="node-title">{text.title}</span>
         {def.interior && scope === 'main' && (
           <button
@@ -199,8 +199,7 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
 
           {status === 'ok' && result!.ownLatencyMs > 0 && (
             <p className="node-latency" title={t('latency.explain')}>
-              <span aria-hidden>⏱</span> {t('node.latency')}{' '}
-              {formatMetric(result!.ownLatencyMs, 'ms').value} ms
+              {t('node.latency')} {formatMetric(result!.ownLatencyMs, 'ms').value} ms
             </p>
           )}
 

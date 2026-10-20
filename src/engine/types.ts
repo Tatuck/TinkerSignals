@@ -197,6 +197,11 @@ export interface Metric {
 
 export type PlotRole = 'in' | 'out' | 'aux' | 'error';
 
+export interface PlotTick {
+  value: number;
+  label: string;
+}
+
 export interface LineSeries {
   role: PlotRole;
   /** Valores Y. Si no hay `x`, se reparten uniformemente. */
@@ -220,6 +225,11 @@ export type Plot =
       yLabel?: string;
       /** Rango fijo de Y. Si no se da, se ajusta a los datos. */
       yRange?: [number, number];
+      /** Rango fijo de X (en las unidades de `x`). */
+      xRange?: [number, number];
+      /** Marcas de los ejes, solo en la vista detallada (en las unidades de x e y). */
+      xTicks?: PlotTick[];
+      yTicks?: PlotTick[];
     }
   | {
       kind: 'bars';

@@ -25,7 +25,27 @@ export function LessonPanel() {
       <p>{s.text}</p>
       {s.task && (
         <p className={`lesson-task${done ? ' is-done' : ''}`}>
-          <span aria-hidden>{done ? '✓' : '○'}</span> {s.task}
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden className="lesson-check">
+            <circle
+              cx="7"
+              cy="7"
+              r="6"
+              fill={done ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              strokeWidth="1.5"
+            />
+            {done && (
+              <path
+                d="M4.2 7.2 6.2 9.1 9.8 5.2"
+                fill="none"
+                stroke="#fff"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            )}
+          </svg>{' '}
+          {s.task}
         </p>
       )}
       <footer>

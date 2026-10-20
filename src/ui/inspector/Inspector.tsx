@@ -6,9 +6,12 @@ import { ProbePanel } from '../probe/ProbePanel';
 import { registry } from '../registry';
 import { useGraphStore, useStore } from '../store';
 import { conceptFor } from '@/theory/es';
-import { categoryColor } from '../theme';
+import { categoryColor, outputSeriesColor } from '../theme';
+import { BlockGlyph } from '../BlockGlyph';
 import { ParamControl } from './ParamControl';
 import { useLessonTarget } from '../lessons/LessonPanel';
+import { lessons } from '../lessons/lessons';
+import { useLesson } from '../lessons/lessonStore';
 import { openInterior } from '../interior/openInterior';
 import { useInstant } from '../lib/useInstant';
 
@@ -32,15 +35,39 @@ export function Inspector() {
 }
 
 function Welcome() {
+  const scope = useGraphStore()((s) => s.scope);
+  const startLesson = useLesson((l) => l.start);
+  const current = useLesson((l) => l.lesson?.id);
   return (
     <div className="welcome">
       <h2>{t('inspector.emptyTitle')}</h2>
       <p>{t('inspector.emptyBody')}</p>
-      <ol>
+      <ol className="welcome-steps">
         {tList('inspector.emptySteps').map((s) => (
           <li key={s}>{s}</li>
         ))}
       </ol>
+      {scope === 'main' && (
+        <section>
+          <h3>Lecciones guiadas</h3>
+          <p className="welcome-lead">Pasos cortos que te dicen qué tocar y en qué fijarte.</p>
+          <ol className="lesson-list">
+            {lessons.map((l) => (
+              <li key={l.id}>
+                <button
+                  className={l.id === current ? 'is-current' : ''}
+                  onClick={() => startLesson(l.id)}
+                >
+                  <strong>{l.title}</strong>
+                  <small>
+                    {l.steps.length} pasos · {l.minutes} min
+                  </small>
+                </button>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
     </div>
   );
 }
@@ -59,7 +86,8 @@ function NodeInspector({ id }: { id: string }) {
   if (!node || !def) return <Welcome />;
 
   const text = blockText(def.id);
-  const color = categoryColor[def.category];
+  const cat = categoryColor[def.category];
+  const color = outputSeriesColor;
   const params = Object.entries(def.params).filter(
     ([, s]) =>
       s.type !== 'audio' &&
@@ -73,11 +101,9 @@ function NodeInspector({ id }: { id: string }) {
   );
 
   return (
-    <div className="node-inspector" style={{ '--cat': color } as CSSProperties}>
+    <div className="node-inspector" style={{ '--cat': cat } as CSSProperties}>
       <header className="insp-head">
-        <span className="insp-icon" aria-hidden>
-          {def.icon}
-        </span>
+        <BlockGlyph category={def.category} size={40} />
         <div>
           <h2>{text.title}</h2>
           <p className="insp-cat">{t(`categories.${def.category}`)}</p>
@@ -153,7 +179,7 @@ function NodeInspector({ id }: { id: string }) {
                 plot={p}
                 color={color}
                 width={PLOT_W}
-                height={p.kind === 'bars' ? 90 : 120}
+                height={p.kind === 'bars' ? 90 : p.kind === 'line' && p.xTicks ? 150 : 120}
                 detailed
               />
             </div>
@@ -171,7 +197,7 @@ function NodeInspector({ id }: { id: string }) {
                 plot={p}
                 color={color}
                 width={PLOT_W}
-                height={p.kind === 'bars' ? 90 : 120}
+                height={p.kind === 'bars' ? 90 : p.kind === 'line' && p.xTicks ? 150 : 120}
                 detailed
               />
             </div>
