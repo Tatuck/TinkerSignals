@@ -128,7 +128,10 @@
     "adpcm": "ADPCM",
     "huffman": "Huffman",
     "lpc": "Vocoder LPC",
-    "celp": "CELP"
+    "celp": "CELP",
+    "rle": "RLE (rachas)",
+    "arithmetic": "Codificación aritmética",
+    "lzw": "LZW (diccionario)"
   },
   "familyRoles": {
     "encoder": "Codificador",

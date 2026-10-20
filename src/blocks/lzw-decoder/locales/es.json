@@ -1,0 +1,14 @@
+{
+  "title": "Decodificador LZW",
+  "summary": "Reconstruye el diccionario a medida que lee los códigos y devuelve las secuencias.",
+  "details": "Va un paso por detrás del codificador: cada código recibido le permite añadir la entrada que el codificador creó en el paso anterior. Hay un caso especial (cuando llega justo el código que aún no conoce) que se resuelve con la propia secuencia anterior.",
+  "tryThis": "Mira en el inspector del cable cómo los bits de salida coinciden con los de entrada del codificador.",
+  "concepts": [
+    "Lempel-Ziv-Welch"
+  ],
+  "ports": {
+    "in": "Bits comprimidos",
+    "out": "Bits"
+  },
+  "params": {}
+}

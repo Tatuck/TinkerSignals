@@ -1,0 +1,43 @@
+{
+  "title": "Codificador LZW",
+  "summary": "Aprende un diccionario de secuencias repetidas mientras comprime. La base de GIF y del antiguo compress.",
+  "details": "LZW no necesita conocer las probabilidades: empieza con un diccionario que contiene cada símbolo suelto y, cada vez que ve una secuencia nueva, la añade. Lo que envía es el número de la secuencia conocida más larga. El decodificador construye el mismo diccionario a la vez, así que no hace falta transmitirlo. Brilla con texto y datos repetitivos; con audio, cuyas muestras casi nunca se repiten exactas, gana poco. Cuando el diccionario llega a 2^n entradas se vacía y vuelve a empezar.",
+  "tryThis": "Compara LZW, Huffman y aritmética detrás del mismo PCM. Luego prueba con la batería de la Biblioteca, que tiene silencios.",
+  "concepts": [
+    "Lempel-Ziv-Welch",
+    "Diccionario adaptativo",
+    "Compresión universal"
+  ],
+  "ports": {
+    "in": "Bits",
+    "out": "Bits comprimidos"
+  },
+  "params": {
+    "symbolBits": {
+      "label": "Tamaño de símbolo",
+      "help": "«Automático» usa los bits por muestra del codificador anterior."
+    },
+    "maxBits": {
+      "label": "Tamaño máximo del diccionario",
+      "help": "2^n entradas antes de vaciarlo."
+    }
+  },
+  "options": {
+    "symbolBits": {
+      "auto": "Automático",
+      "1": "1 bit",
+      "2": "2 bits",
+      "4": "4 bits",
+      "8": "8 bits",
+      "12": "12 bits",
+      "16": "16 bits"
+    }
+  },
+  "metrics": {
+    "gain": "Compresión de LZW",
+    "symbolsPerCode": "Símbolos por código",
+    "codes": "Códigos enviados",
+    "dictionary": "Diccionario",
+    "resets": "Vaciados"
+  }
+}

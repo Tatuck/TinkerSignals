@@ -1,0 +1,14 @@
+{
+  "title": "Decodificador RLE",
+  "summary": "Expande cada pareja (símbolo, longitud) a la racha original.",
+  "details": "Lee las parejas y repite cada símbolo tantas veces como indique su longitud. Un error de canal en una longitud alarga o acorta todo lo que viene después.",
+  "tryThis": "Mete «Errores de bit» antes de este bloque y mira cómo cambia la duración de la señal.",
+  "concepts": [
+    "RLE"
+  ],
+  "ports": {
+    "in": "Bits comprimidos",
+    "out": "Bits"
+  },
+  "params": {}
+}

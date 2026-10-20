@@ -1,0 +1,14 @@
+{
+  "title": "Decodificador aritmético",
+  "summary": "Repite el estrechamiento de intervalos para averiguar qué símbolos produjeron el número recibido.",
+  "details": "Con la misma tabla de frecuencias, el decodificador mira en qué trozo del intervalo cae el número recibido, emite ese símbolo y vuelve a estrechar. Es muy eficiente, pero un solo bit erróneo cambia el número y desbarata todo lo que sigue.",
+  "tryThis": "Compara su fragilidad ante «Errores de bit» con la de Huffman.",
+  "concepts": [
+    "Codificación aritmética"
+  ],
+  "ports": {
+    "in": "Bits comprimidos",
+    "out": "Bits"
+  },
+  "params": {}
+}

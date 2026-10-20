@@ -1,0 +1,38 @@
+{
+  "title": "Codificador aritmético",
+  "summary": "Convierte todo el mensaje en un único número entre 0 y 1. Se acerca a la entropía mejor que Huffman.",
+  "details": "Cada símbolo estrecha un intervalo dentro de [0, 1) en proporción a su probabilidad; al final basta con enviar un número que caiga dentro del último intervalo. Como no asigna un número entero de bits a cada símbolo, puede gastar 0,2 bits por símbolo si uno es muy probable, algo imposible para Huffman (nunca baja de 1 bit). La eficiencia compara la entropía con los bits reales por símbolo. Aquí el modelo es estático: se cuentan las frecuencias y se envían al principio.",
+  "tryThis": "Pon un Cuantizador uniforme de 1 bit, PCM de 1 bit y compara Huffman con aritmética: Huffman se queda en 1 bit/símbolo.",
+  "concepts": [
+    "Codificación aritmética",
+    "Entropía",
+    "Intervalos"
+  ],
+  "ports": {
+    "in": "Bits",
+    "out": "Bits comprimidos"
+  },
+  "params": {
+    "symbolBits": {
+      "label": "Tamaño de símbolo",
+      "help": "«Automático» usa los bits por muestra del codificador anterior."
+    }
+  },
+  "options": {
+    "symbolBits": {
+      "auto": "Automático",
+      "1": "1 bit",
+      "2": "2 bits",
+      "4": "4 bits",
+      "8": "8 bits",
+      "12": "12 bits",
+      "16": "16 bits"
+    }
+  },
+  "metrics": {
+    "gain": "Compresión aritmética",
+    "perSymbol": "Bits por símbolo",
+    "efficiency": "Eficiencia",
+    "tableBits": "Bits de la tabla"
+  }
+}

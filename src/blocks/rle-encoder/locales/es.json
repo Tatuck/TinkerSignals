@@ -1,0 +1,42 @@
+{
+  "title": "Codificador RLE",
+  "summary": "Sustituye cada racha de símbolos iguales por el símbolo y cuántas veces se repite.",
+  "details": "Run-Length Encoding es el compresor más sencillo: «0000000011» se convierte en (0, 8) (1, 2). No necesita conocer probabilidades y es rapidísimo, pero solo gana si hay rachas largas: silencios, imágenes con zonas planas o señales cuantizadas con muy pocos bits. Con audio normal de 8 o 16 bits casi nunca se repite una muestra, así que el flujo crece. Es un buen ejemplo de que no existe un compresor bueno para todo.",
+  "tryThis": "Pon RLE detrás de un PCM de 8 bits y verás que expande. Ahora prueba con un Cuantizador de 1 bit delante del PCM o con «Tamaño de símbolo» de 1 bit.",
+  "concepts": [
+    "RLE",
+    "Rachas",
+    "Expansión de datos"
+  ],
+  "ports": {
+    "in": "Bits",
+    "out": "Bits comprimidos"
+  },
+  "params": {
+    "symbolBits": {
+      "label": "Tamaño de símbolo",
+      "help": "«Automático» usa los bits por muestra del codificador anterior."
+    },
+    "runBits": {
+      "label": "Bits para la longitud",
+      "help": "Rachas más largas que 2^n se parten en varias."
+    }
+  },
+  "options": {
+    "symbolBits": {
+      "auto": "Automático",
+      "1": "1 bit",
+      "2": "2 bits",
+      "4": "4 bits",
+      "8": "8 bits",
+      "12": "12 bits",
+      "16": "16 bits"
+    }
+  },
+  "metrics": {
+    "gain": "Compresión de RLE",
+    "avgRun": "Racha media",
+    "runs": "Rachas",
+    "longest": "Racha más larga"
+  }
+}
