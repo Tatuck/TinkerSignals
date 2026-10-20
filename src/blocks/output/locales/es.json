@@ -3,8 +3,13 @@
   "summary": "Escucha el resultado y descárgalo como WAV.",
   "details": "Conecta aquí el final de tu cadena. Si además conectas la señal original a «Referencia», podrás alternar A/B entre original y procesada y ver la SNR total. El retardo total es la suma de los retardos algorítmicos de cada bloque del camino.",
   "tryThis": "Conecta la señal original a «Referencia» y usa el botón A/B para notar la diferencia.",
-  "ref": "",
-  "ports": { "in": "Audio", "reference": "Referencia" },
+  "ports": {
+    "in": "Audio",
+    "reference": "Referencia"
+  },
   "params": {},
-  "metrics": { "duration": "Duración", "sampleRate": "Frec. muestreo" }
+  "metrics": {
+    "duration": "Duración",
+    "sampleRate": "Frec. muestreo"
+  }
 }

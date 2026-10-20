@@ -4,7 +4,7 @@
 2. En `index.ts`, pon `id: '<id>'` (igual que la carpeta), la categoría, los
    puertos, los parámetros y la función `process`.
 3. Rellena `locales/es.json`: título, resumen, explicación, «Prueba esto», la
-   referencia al temario y una etiqueta por cada puerto y parámetro.
+   lista de conceptos clave y una etiqueta por cada puerto y parámetro.
 4. Renombra `template.test.ts` y escribe al menos un test con una propiedad de
    la teoría (p. ej. «cada bit extra da unos 6 dB»).
 5. `npm test`. El test `registry.test.ts` comprueba que el bloque se descubre y

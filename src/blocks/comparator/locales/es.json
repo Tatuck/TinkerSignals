@@ -3,9 +3,21 @@
   "summary": "Compara la original con la procesada: SNR, SNR segmental y la señal de error.",
   "details": "La SNR global mide la potencia de la señal frente a la del error en todo el audio. La SNR segmental hace la media por tramas cortas y descarta los silencios, por eso se parece más a lo que oímos. La salida «Error» es la diferencia entre las dos señales: conéctala a una Salida para escuchar exactamente lo que el códec ha estropeado.",
   "tryThis": "Escucha el error de un cuantizador de 8 bits y el de uno de 3: el primero es un siseo, el segundo ya se parece a la voz.",
-  "ref": "Práctica 3, Comparación de errores",
-  "ports": { "reference": "Original", "test": "Procesada", "error": "Error" },
+  "concepts": [
+    "SNR",
+    "SNR segmental",
+    "Medida de calidad"
+  ],
+  "ports": {
+    "reference": "Original",
+    "test": "Procesada",
+    "error": "Error"
+  },
   "params": {},
-  "metrics": { "maxError": "Error máximo" },
-  "plots": { "wave": "Original, procesada y error" }
+  "metrics": {
+    "maxError": "Error máximo"
+  },
+  "plots": {
+    "wave": "Original, procesada y error"
+  }
 }

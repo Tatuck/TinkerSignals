@@ -3,9 +3,22 @@
   "summary": "DPCM con un cuantizador que adapta su paso a la señal: 4 bits por muestra.",
   "details": "Es la variante IMA de ADPCM, de la misma familia que G.726. Cada muestra se codifica con 4 bits: 1 de signo y 3 de magnitud del error respecto a la predicción. Si el código sale grande, el paso crece para la siguiente muestra; si sale pequeño, encoge. Así sigue a la señal tanto en los fragmentos fuertes como en los suaves sin enviar información extra. La segunda gráfica enseña la envolvente de la señal (gris) y el paso del cuantizador (color): van de la mano.",
   "tryThis": "Compara a 8 kHz: PCM ley μ de 8 bits (64 kbps) frente a ADPCM (32 kbps). ¿Notas la diferencia?",
-  "ref": "Tema 2.1, ADPCM, G.726, Práctica 1",
-  "ports": { "in": "Señal", "out": "Bits" },
+  "concepts": [
+    "ADPCM",
+    "Cuantización adaptativa",
+    "IMA ADPCM",
+    "ITU-T G.726"
+  ],
+  "ports": {
+    "in": "Señal",
+    "out": "Bits"
+  },
   "params": {},
-  "metrics": { "snrExpected": "SNR al decodificar" },
-  "plots": { "wave": "Entrada vs reconstruida", "step": "Envolvente vs paso del cuantizador" }
+  "metrics": {
+    "snrExpected": "SNR al decodificar"
+  },
+  "plots": {
+    "wave": "Entrada vs reconstruida",
+    "step": "Envolvente vs paso del cuantizador"
+  }
 }

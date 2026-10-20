@@ -8,7 +8,7 @@ enseña sus números (SNR, bps, factor de compresión, retardo) y una gráfica
 sencilla de entrada frente a salida. Cada cable se puede abrir para ver qué pasa
 por él.
 
-Los bloques siguen el temario de Servicios Telemáticos Multimedia: PCM y G.711,
+Los bloques cubren lo que se ve en una asignatura de codificación de audio y servicios multimedia: PCM y G.711,
 cuantización uniforme y no uniforme, DPCM, ADPCM, transformada, Huffman,
 análisis de voz, vocoder LPC y CELP.
 

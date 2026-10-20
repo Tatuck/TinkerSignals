@@ -3,7 +3,13 @@
   "summary": "Lee los códigos de n bits y reconstruye las muestras (expandiendo si era ley μ o A).",
   "details": "Hace exactamente lo contrario que el codificador: cada grupo de n bits es un índice de la escalera de cuantización; se toma el nivel correspondiente y se aplica la curva inversa (expansión). El error de cuantización no se recupera: es lo que se ha perdido.",
   "tryThis": "Pon un bloque «Errores de bit» entre codificador y decodificador: verás chasquidos sueltos, porque cada error solo estropea una muestra.",
-  "ref": "Tema 2.1, PCM",
-  "ports": { "in": "Bits", "out": "Señal" },
+  "concepts": [
+    "PCM",
+    "ITU-T G.711"
+  ],
+  "ports": {
+    "in": "Bits",
+    "out": "Señal"
+  },
   "params": {}
 }

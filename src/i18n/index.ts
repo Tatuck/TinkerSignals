@@ -12,7 +12,8 @@ export interface BlockText {
   summary: string;
   details?: string;
   tryThis?: string;
-  ref?: string;
+  /** Conceptos clave (palabras que el visitante puede buscar para saber más). */
+  concepts?: string[];
   ports?: Record<string, string>;
   params?: Record<string, { label: string; help?: string }>;
   options?: Record<string, Record<string, string>>;

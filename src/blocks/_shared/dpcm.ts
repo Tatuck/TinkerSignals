@@ -3,7 +3,7 @@ import { autocorrelation, levinson } from '@/engine/dsp/lpc';
 import { uniformIndex, uniformValue } from '@/engine/dsp/quantize';
 
 /**
- * DPCM con predictor lineal (como `dpcm_enco_lpc.m` de la Práctica 1).
+ * DPCM con predictor lineal.
  * El predictor trabaja en lazo cerrado: predice a partir de la señal
  * *reconstruida*, igual que hará el decodificador, para que el error de
  * cuantización no se acumule.

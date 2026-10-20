@@ -24,7 +24,7 @@ export interface PitchResult {
 
 /**
  * Detector de tono clásico: recorte central al 30 % y autocorrelación en el
- * rango de tonos de la voz. Es el método de `lpcpitch.m` de la Práctica 2.
+ * rango de tonos de la voz.
  */
 export function detectPitch(
   frame: ArrayLike<number>,

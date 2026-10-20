@@ -153,10 +153,15 @@ function NodeInspector({ id }: { id: string }) {
         </section>
       )}
 
-      {text.ref && (
-        <p className="insp-ref">
-          {t('inspector.reference')}: {text.ref}
-        </p>
+      {text.concepts && text.concepts.length > 0 && (
+        <section>
+          <h3>{t('inspector.concepts')}</h3>
+          <ul className="concepts">
+            {text.concepts.map((c) => (
+              <li key={c}>{c}</li>
+            ))}
+          </ul>
+        </section>
       )}
 
       <footer className="insp-actions">

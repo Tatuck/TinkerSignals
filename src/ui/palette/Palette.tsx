@@ -6,7 +6,7 @@ import { registry } from '../registry';
 import { useStore } from '../store';
 import { categoryColor, categoryOrder } from '../theme';
 
-/** Biblioteca de bloques agrupados por tema del temario. */
+/** Biblioteca de bloques agrupados por familia. */
 export function Palette() {
   const [query, setQuery] = useState('');
   const addBlock = useStore((s) => s.addBlock);

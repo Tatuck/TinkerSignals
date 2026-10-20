@@ -3,7 +3,15 @@
   "summary": "Graba tu voz y úsala como entrada del circuito.",
   "details": "La grabación se guarda en el navegador (no se sube a ningún sitio). Cada vez que grabas, todo el circuito se vuelve a calcular con el nuevo audio.",
   "tryThis": "Graba una vocal sostenida y luego una «s»: compara su espectro y cómo las trata un vocoder LPC.",
-  "ref": "Práctica 2, Análisis de voz",
-  "ports": { "out": "Señal" },
-  "params": { "audio": { "label": "Grabación" } }
+  "concepts": [
+    "Captura de audio"
+  ],
+  "ports": {
+    "out": "Señal"
+  },
+  "params": {
+    "audio": {
+      "label": "Grabación"
+    }
+  }
 }

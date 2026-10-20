@@ -3,12 +3,25 @@
   "summary": "Una frase que diga qué hace el bloque, en lenguaje llano.",
   "details": "Explicación más larga para «Cómo funciona»: la idea, la fórmula clave y por qué importa.",
   "tryThis": "Un experimento concreto que se pueda hacer en un minuto con este bloque.",
-  "ref": "Tema y práctica de la asignatura donde aparece",
-  "ports": { "in": "Entrada", "out": "Salida" },
+  "concepts": [
+    "Concepto clave",
+    "Norma o algoritmo de referencia"
+  ],
+  "ports": {
+    "in": "Entrada",
+    "out": "Salida"
+  },
   "params": {
-    "gain": { "label": "Ganancia", "help": "Texto de ayuda opcional bajo el control." },
-    "invert": { "label": "Invertir" }
+    "gain": {
+      "label": "Ganancia",
+      "help": "Texto de ayuda opcional bajo el control."
+    },
+    "invert": {
+      "label": "Invertir"
+    }
   },
   "metrics": {},
-  "plots": { "wave": "Entrada vs salida" }
+  "plots": {
+    "wave": "Entrada vs salida"
+  }
 }

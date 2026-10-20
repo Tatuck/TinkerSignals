@@ -3,7 +3,13 @@
   "summary": "Repite la misma adaptación del paso que el codificador y reconstruye la señal.",
   "details": "Codificador y decodificador arrancan en el mismo estado y aplican las mismas reglas a los mismos códigos, así que su paso de cuantización evoluciona igual sin tener que transmitirlo. Si un error de canal cambia un código, los dos estados se desincronizan durante un tiempo.",
   "tryThis": "Añade «Errores de bit» con BER de 0,001 y escucha cómo se recupera tras cada error.",
-  "ref": "Tema 2.1, ADPCM",
-  "ports": { "in": "Bits", "out": "Señal" },
+  "concepts": [
+    "ADPCM",
+    "Cuantización adaptativa"
+  ],
+  "ports": {
+    "in": "Bits",
+    "out": "Señal"
+  },
   "params": {}
 }

@@ -89,7 +89,7 @@ export default defineBlock({
 
 /**
  * "A" sintética: tren de pulsos glotales filtrado por tres resonadores
- * (formantes ~730, 1090, 2440 Hz). Es el modelo fuente-filtro del Tema 3,
+ * (formantes ~730, 1090, 2440 Hz). Es el modelo fuente-filtro de la voz,
  * así que viene muy bien para probar LPC y CELP sin micrófono.
  */
 function synthVowel(x: Float32Array, fs: number, f0: number): void {

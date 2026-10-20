@@ -15,7 +15,7 @@ export function autocorrelation(
 }
 
 /**
- * Levinson-Durbin (equivalente a `durbin.m` de las prácticas).
+ * Levinson-Durbin.
  * Devuelve los coeficientes a[1..p] del predictor x̂[n] = Σ a_k·x[n−k],
  * los coeficientes de reflexión y el error de predicción final.
  */

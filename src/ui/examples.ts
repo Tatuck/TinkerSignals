@@ -4,7 +4,7 @@ import { registry } from './registry';
 import type { BlockNode, CableEdge } from './store';
 
 /**
- * Circuitos de ejemplo. Cada uno es una pequeña práctica guiada: se cargan
+ * Circuitos de ejemplo. Cada uno es un pequeño experimento guiado: se cargan
  * desde el menú "Ejemplos" de la barra superior.
  */
 export interface Example {
@@ -189,8 +189,8 @@ export const examples: Example[] = [
     ],
   },
   {
-    id: 'practica2-lpc',
-    title: 'Práctica 2: vocoder LPC',
+    id: 'vocoder-lpc',
+    title: 'Vocoder LPC: voz a 3 kbps',
     description: 'Análisis de voz y vocoder LPC: voz inteligible a unos 3 kbps.',
     nodes: [
       {
@@ -214,8 +214,8 @@ export const examples: Example[] = [
     ],
   },
   {
-    id: 'practica3-celp',
-    title: 'Práctica 3: CELP frente a LPC',
+    id: 'celp-vs-lpc',
+    title: 'CELP frente a vocoder LPC',
     description: 'La misma voz por un vocoder LPC y por CELP: tasa, error y cómo suenan.',
     nodes: [
       {

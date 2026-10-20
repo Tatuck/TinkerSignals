@@ -3,13 +3,36 @@
   "summary": "Redondea cada muestra al nivel más cercano de una escalera de 2ⁿ escalones iguales.",
   "details": "Con n bits hay L = 2ⁿ niveles separados Δ = 2/L. El error de cuantización es como un ruido de potencia Δ²/12: cada bit extra divide el escalón por 2 y mejora la SNR unos 6 dB (SNR ≈ 6,02·n + 1,76 dB para una senoidal a fondo de escala). Mid-rise no tiene nivel en cero; mid-tread sí, y así el silencio se queda en silencio.",
   "tryThis": "Baja a 3 bits con una voz grabada: oirás el ruido granular. Prueba después mid-tread y escucha los silencios.",
-  "ref": "Tema 2.1, Cuantización, Práctica 1",
-  "ports": { "in": "Entrada", "out": "Cuantizada" },
-  "params": {
-    "bits": { "label": "Bits por muestra", "help": "n bits → 2ⁿ niveles." },
-    "mode": { "label": "Tipo de escalera" }
+  "concepts": [
+    "Cuantización",
+    "Ruido de cuantización",
+    "SNR ≈ 6 dB por bit"
+  ],
+  "ports": {
+    "in": "Entrada",
+    "out": "Cuantizada"
   },
-  "options": { "mode": { "midrise": "Mid-rise (sin cero)", "midtread": "Mid-tread (con cero)" } },
-  "metrics": { "snrTheory": "SNR teórica (seno)", "levels": "Niveles" },
-  "plots": { "wave": "Entrada vs cuantizada", "transfer": "Escalera de cuantización" }
+  "params": {
+    "bits": {
+      "label": "Bits por muestra",
+      "help": "n bits → 2ⁿ niveles."
+    },
+    "mode": {
+      "label": "Tipo de escalera"
+    }
+  },
+  "options": {
+    "mode": {
+      "midrise": "Mid-rise (sin cero)",
+      "midtread": "Mid-tread (con cero)"
+    }
+  },
+  "metrics": {
+    "snrTheory": "SNR teórica (seno)",
+    "levels": "Niveles"
+  },
+  "plots": {
+    "wave": "Entrada vs cuantizada",
+    "transfer": "Escalera de cuantización"
+  }
 }

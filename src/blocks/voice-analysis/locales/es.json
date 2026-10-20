@@ -3,9 +3,26 @@
   "summary": "Mide por tramas la energía, los cruces por cero y si cada trama es sonora o sorda.",
   "details": "La voz cambia cada pocos milisegundos, así que se analiza en tramas cortas (10–30 ms) en las que se puede considerar estacionaria. Las vocales son sonoras: mucha energía, pocos cruces por cero y periodicidad (tono). Las fricativas como la «s» son sordas: poca energía y muchos cruces por cero, como el ruido. En la gráfica, la energía va en color, los cruces por cero en gris y los escalones discontinuos marcan las tramas sonoras. La señal pasa sin cambios, así que puedes ponerlo en cualquier punto de la cadena.",
   "tryThis": "Graba «casa» y mira cómo la «s» sube los cruces por cero y apaga la marca de sonora.",
-  "ref": "Tema 3, Análisis de voz, Práctica 2",
-  "ports": { "in": "Voz", "out": "Voz (sin cambios)" },
-  "params": { "frameMs": { "label": "Duración de trama" } },
-  "metrics": { "voicedPct": "Tramas sonoras", "f0": "Tono medio (F0)", "frames": "Tramas" },
-  "plots": { "features": "Energía (color), cruces por cero (gris) y tramas sonoras" }
+  "concepts": [
+    "Análisis por tramas",
+    "Sonoras y sordas",
+    "Tono (F0)"
+  ],
+  "ports": {
+    "in": "Voz",
+    "out": "Voz (sin cambios)"
+  },
+  "params": {
+    "frameMs": {
+      "label": "Duración de trama"
+    }
+  },
+  "metrics": {
+    "voicedPct": "Tramas sonoras",
+    "f0": "Tono medio (F0)",
+    "frames": "Tramas"
+  },
+  "plots": {
+    "features": "Energía (color), cruces por cero (gris) y tramas sonoras"
+  }
 }

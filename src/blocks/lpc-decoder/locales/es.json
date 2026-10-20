@@ -3,7 +3,14 @@
   "summary": "Sintetiza voz: pulsos o ruido pasados por el filtro del tracto vocal.",
   "details": "Para cada trama genera la excitación (un tren de pulsos con el periodo del tono si es sonora, ruido blanco si es sorda), la escala con la ganancia y la pasa por el filtro 1/A(z). El resultado se entiende pero suena «robótico»: la forma de onda no se parece a la original, solo su envolvente espectral. Por eso la SNR de un vocoder es muy mala aunque sea inteligible: aquí la SNR no sirve para medir calidad. La salida «Excitación» te deja escuchar la fuente antes del filtro.",
   "tryThis": "Conecta la salida «Excitación» a otra Salida: oirás el zumbido de pulsos y el siseo de ruido, sin formantes.",
-  "ref": "Tema 3, Vocoder LPC, Práctica 2",
-  "ports": { "in": "Parámetros", "out": "Voz sintética", "excitation": "Excitación" },
+  "concepts": [
+    "Vocoder LPC",
+    "Síntesis de voz"
+  ],
+  "ports": {
+    "in": "Parámetros",
+    "out": "Voz sintética",
+    "excitation": "Excitación"
+  },
   "params": {}
 }

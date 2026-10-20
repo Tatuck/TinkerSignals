@@ -3,7 +3,15 @@
   "summary": "Reconstruye la excitación con los mismos diccionarios y la pasa por el filtro LPC.",
   "details": "El decodificador tiene una copia idéntica del libro estocástico (se genera con la misma semilla) y va guardando su propia excitación pasada para el libro adaptativo. Con los índices y ganancias recibidos rehace exactamente la excitación que eligió el codificador y la filtra con 1/A(z). La salida «Excitación» permite escuchar qué se ha enviado antes del filtro.",
   "tryThis": "Compara en dos Salidas este decodificador y el del vocoder LPC con la misma voz. ¿Cuál suena más natural y a qué tasa?",
-  "ref": "Tema 3, CELP, Práctica 3",
-  "ports": { "in": "Parámetros", "out": "Voz sintetizada", "excitation": "Excitación" },
+  "concepts": [
+    "CELP",
+    "Libro adaptativo",
+    "Libro estocástico"
+  ],
+  "ports": {
+    "in": "Parámetros",
+    "out": "Voz sintetizada",
+    "excitation": "Excitación"
+  },
   "params": {}
 }

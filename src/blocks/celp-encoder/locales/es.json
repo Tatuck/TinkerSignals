@@ -2,21 +2,60 @@
   "title": "Codificador CELP",
   "summary": "Busca, entre miles de excitaciones posibles, la que mejor reproduce la voz al pasar por el filtro LPC.",
   "details": "CELP mantiene el filtro LPC del vocoder pero cambia la excitación: en vez de pulsos o ruido, prueba los vectores de dos diccionarios (análisis por síntesis). El libro adaptativo copia la excitación de hace T muestras y captura el tono; el estocástico, un diccionario fijo de ruido, aporta el resto. Para cada subtrama se sintetiza cada candidato y se elige el que da menos error ponderado. La ponderación W(z) = A(z)/A(z/γ) relaja el error en los formantes, donde el oído no lo percibe: con γ = 1 no se pondera nada; con γ más bajo se pondera más. La segunda gráfica muestra la envolvente LPC (gris) y la del filtro ponderado 1/A(z/γ) (color). A diferencia del vocoder LPC, la forma de onda sí se parece a la original.",
-  "tryThis": "Prueba tres codebooks (16, 256 y 1024), tres órdenes (4, 10 y 16) y tres γ (0,6, 0,85 y 1), como en la Práctica 3. Anota tasa y SNR segmental de cada caso.",
-  "ref": "Tema 3, CELP, Práctica 3",
-  "ports": { "in": "Voz", "out": "Parámetros" },
+  "tryThis": "Prueba tres codebooks (16, 256 y 1024), tres órdenes (4, 10 y 16) y tres γ (0,6, 0,85 y 1). Anota tasa y SNR segmental de cada caso.",
+  "concepts": [
+    "CELP",
+    "Análisis por síntesis",
+    "Ponderación perceptual"
+  ],
+  "ports": {
+    "in": "Voz",
+    "out": "Parámetros"
+  },
   "params": {
-    "order": { "label": "Orden del predictor LP" },
-    "codebookSize": { "label": "Tamaño del codebook estocástico", "help": "Más vectores, más bits por subtrama y mejor ajuste." },
-    "gamma": { "label": "Peso del error (γ)", "help": "1 = sin ponderación perceptual." },
-    "frameMs": { "label": "Duración de trama" },
-    "subframes": { "label": "Subtramas por trama" },
-    "adaptive": { "label": "Libro adaptativo (tono)", "help": "Desactívalo para oír lo que aporta." }
+    "order": {
+      "label": "Orden del predictor LP"
+    },
+    "codebookSize": {
+      "label": "Tamaño del codebook estocástico",
+      "help": "Más vectores, más bits por subtrama y mejor ajuste."
+    },
+    "gamma": {
+      "label": "Peso del error (γ)",
+      "help": "1 = sin ponderación perceptual."
+    },
+    "frameMs": {
+      "label": "Duración de trama"
+    },
+    "subframes": {
+      "label": "Subtramas por trama"
+    },
+    "adaptive": {
+      "label": "Libro adaptativo (tono)",
+      "help": "Desactívalo para oír lo que aporta."
+    }
   },
   "options": {
-    "codebookSize": { "16": "16 (4 bits)", "64": "64 (6 bits)", "256": "256 (8 bits)", "512": "512 (9 bits)", "1024": "1024 (10 bits)" },
-    "subframes": { "1": "1", "2": "2", "4": "4", "8": "8" }
+    "codebookSize": {
+      "16": "16 (4 bits)",
+      "64": "64 (6 bits)",
+      "256": "256 (8 bits)",
+      "512": "512 (9 bits)",
+      "1024": "1024 (10 bits)"
+    },
+    "subframes": {
+      "1": "1",
+      "2": "2",
+      "4": "4",
+      "8": "8"
+    }
   },
-  "metrics": { "bitsPerFrame": "Bits por trama", "subframeMs": "Subtrama" },
-  "plots": { "wave": "Original vs sintetizada", "weighting": "Envolvente LPC vs filtro de ponderación" }
+  "metrics": {
+    "bitsPerFrame": "Bits por trama",
+    "subframeMs": "Subtrama"
+  },
+  "plots": {
+    "wave": "Original vs sintetizada",
+    "weighting": "Envolvente LPC vs filtro de ponderación"
+  }
 }

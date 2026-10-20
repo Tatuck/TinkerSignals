@@ -3,7 +3,13 @@
   "summary": "Rehace la misma predicción que el codificador y le suma el error recibido.",
   "details": "Lee los coeficientes del predictor de la cabecera del flujo y, muestra a muestra, predice con lo ya reconstruido y suma el error cuantizado. Como cada muestra depende de las anteriores, un error de canal no se queda en una muestra: se arrastra durante un rato.",
   "tryThis": "Mete «Errores de bit» antes de este bloque y compara con PCM: los errores duran más.",
-  "ref": "Tema 2.1, DPCM",
-  "ports": { "in": "Bits", "out": "Señal" },
+  "concepts": [
+    "Predicción lineal",
+    "Propagación de errores"
+  ],
+  "ports": {
+    "in": "Bits",
+    "out": "Señal"
+  },
   "params": {}
 }
