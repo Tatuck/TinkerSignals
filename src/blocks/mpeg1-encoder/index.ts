@@ -1,6 +1,6 @@
 import { makeBitstream, referenceBitsFor } from '@/engine/dsp/bitstream';
 import { defineBlock, type Plot, type InteriorGraph } from '@/engine/types';
-import { BANDS, FRAME, mpeg1Encode } from '../_shared/mpeg1';
+import { BANDS, FRAME, mpeg1Encode, psychoacoustic } from '../_shared/mpeg1';
 
 const RATES = ['32', '64', '96', '128', '192', '256', '384'] as const;
 
@@ -34,6 +34,26 @@ export default defineBlock({
     inputs: { in: 'in' },
     outputs: {},
   }),
+  inspectAt({ inputs, timeS }) {
+    const { samples: x, sampleRate: fs } = inputs.in;
+    const frame = Math.floor((timeS * fs) / FRAME);
+    const pa = psychoacoustic(x, frame * FRAME, fs);
+    const hz = Array.from({ length: pa.spectrum.length }, (_, k) => (k * fs) / (2 * pa.spectrum.length));
+    return [
+      {
+        kind: 'line',
+        title: 'maskingAt',
+        series: [
+          { role: 'in', x: hz, y: Array.from(pa.spectrum) },
+          { role: 'out', x: hz, y: Array.from(pa.threshold) },
+        ],
+        xLabel: 'f',
+        yLabel: 'dB',
+        yRange: [-10, 100],
+      },
+      { kind: 'bars', title: 'smrAt', values: Array.from(pa.smr, (v) => Math.max(0, v)) },
+    ];
+  },
   process({ inputs, params }) {
     const { samples: x, sampleRate: fs } = inputs.in;
     const bitrate = Number(params.bitrate) * 1000;

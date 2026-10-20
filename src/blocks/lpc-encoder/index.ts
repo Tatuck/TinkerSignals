@@ -1,5 +1,12 @@
 import { makeBitstream, referenceBitsFor } from '@/engine/dsp/bitstream';
-import { frameAt, frameSpectrumDb, lpcEnvelopeDb } from '@/engine/dsp/voice';
+import {
+  detectPitch,
+  frameAt,
+  frameSpectrumDb,
+  lpcEnvelopeDb,
+  lpcFrame,
+  residualRms,
+} from '@/engine/dsp/voice';
 import { defineBlock, type InteriorGraph } from '@/engine/types';
 import { bitsPerFrame, lpcConfig, lpcEncode } from '../_shared/lpc-vocoder';
 
@@ -36,6 +43,32 @@ export default defineBlock({
       inputs: { in: 'in' },
       outputs: {},
     };
+  },
+  inspectAt({ inputs, params, timeS }) {
+    const { samples: x, sampleRate: fs } = inputs.in;
+    const cfg = lpcConfig(fs, params.frameMs, params.order, params.kBits);
+    const start = Math.max(0, Math.floor((timeS * fs) / cfg.frameLen) * cfg.frameLen);
+    const look = Math.round(cfg.frameLen * 0.25);
+    const win = frameAt(x, start - look, Math.round(cfg.frameLen * 1.5));
+    const { a } = lpcFrame(win, params.order);
+    const gain = residualRms(x, start, cfg.frameLen, a);
+    const pitch = detectPitch(win, fs);
+    const spec = frameSpectrumDb(frameAt(x, start, cfg.frameLen), 160);
+    const env = lpcEnvelopeDb(a, gain, 160);
+    const shift = Math.max(...spec) - Math.max(...env);
+    const hz = Array.from({ length: 160 }, (_, i) => (i * fs) / 2 / 159);
+    return [
+      {
+        kind: 'line',
+        title: pitch.voiced ? 'envelopeVoiced' : 'envelopeUnvoiced',
+        series: [
+          { role: 'in', x: hz, y: spec },
+          { role: 'out', x: hz, y: env.map((v) => v + shift) },
+        ],
+        xLabel: 'f',
+        yLabel: 'dB',
+      },
+    ];
   },
   process({ inputs, params }) {
     const { samples: x, sampleRate: fs } = inputs.in;

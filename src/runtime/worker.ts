@@ -34,6 +34,8 @@ const api = {
     const v = side === 'out' ? e.getValue(nodeId, port) : e.getInputValue(nodeId, port);
     return v?.kind === 'signal' ? v : null;
   },
+  /** Lupa temporal: gráficas de un nodo en un instante. */
+  inspectAt: (nodeId: string, timeS: number, scope: Scope = 'main') => engines[scope].inspectAt(nodeId, timeS),
   /**
    * Prepara el interior de un bloque: le pasa los mismos valores que entran
    * al bloque en el circuito principal (como valores inyectados `inner:<puerto>`).

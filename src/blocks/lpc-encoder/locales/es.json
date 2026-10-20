@@ -33,6 +33,8 @@
   },
   "plots": {
     "envelope": "Espectro de una trama vs envolvente LPC",
-    "pitch": "Tono por trama (0 = sorda)"
+    "pitch": "Tono por trama (0 = sorda)",
+    "envelopeVoiced": "Esta trama (sonora): espectro y envolvente LPC",
+    "envelopeUnvoiced": "Esta trama (sorda): espectro y envolvente LPC"
   }
 }

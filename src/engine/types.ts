@@ -291,6 +291,12 @@ export interface BlockDefinition<
    * bloque. Es solo didáctico: el motor sigue usando `process`.
    */
   interior?: (params: ParamValues<P>, inputs: InteriorInputs) => InteriorGraph;
+  /**
+   * Gráficas del bloque en un instante concreto (lupa temporal): por ejemplo,
+   * la envolvente LPC o el umbral de enmascaramiento de esa trama. Se llama
+   * solo cuando el usuario elige un instante.
+   */
+  inspectAt?: (ctx: ProcessContext<I, P> & { timeS: number }) => Plot[];
   inputs: I;
   outputs: O;
   params: P;

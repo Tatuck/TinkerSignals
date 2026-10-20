@@ -1,5 +1,6 @@
 import { BlockWaiting } from './errors';
 import { validateGraph } from './graph';
+import { inspectValues } from './inspect';
 import { resolveParams, type BlockRegistry } from './registry';
 import { summarize } from './summary';
 import type { Graph, GraphNode, NodeResult, PortValue, RunResult, Signal } from './types';
@@ -53,6 +54,39 @@ export class Engine {
   getInputValue(nodeId: string, port: string): PortValue | undefined {
     const edge = this.lastIncoming.get(nodeId)?.get(port);
     return edge ? this.getValue(edge.source, edge.sourcePort) : undefined;
+  }
+
+  /** Parámetros (ya saneados) y tipo de cada nodo en la última ejecución. */
+  private lastNodes = new Map<string, { type: string; params: Record<string, unknown> }>();
+
+  getNode(nodeId: string): { type: string; params: Record<string, unknown> } | undefined {
+    return this.lastNodes.get(nodeId);
+  }
+
+  /** Lupa temporal: gráficas de un nodo en el instante `timeS`. */
+  inspectAt(nodeId: string, timeS: number): ReturnType<typeof inspectValues> | null {
+    const node = this.lastNodes.get(nodeId);
+    const def = node && this.registry.get(node.type);
+    if (!node || !def) return null;
+    const inputs = Object.keys(def.inputs).map((p) => this.getInputValue(nodeId, p));
+    const outputs = Object.keys(def.outputs).map((p) => this.getValue(nodeId, p));
+    const res = inspectValues(inputs, outputs, timeS);
+    if (def.inspectAt && inputs.every((v, i) => v || def.inputs[Object.keys(def.inputs)[i]].optional)) {
+      try {
+        res.detail.push(
+          ...def.inspectAt({
+            inputs: Object.fromEntries(Object.keys(def.inputs).map((p, i) => [p, inputs[i]])) as never,
+            params: node.params as never,
+            getAsset: () => undefined,
+            getExternal: () => undefined,
+            timeS,
+          }),
+        );
+      } catch {
+        /* una gráfica que falla no debe romper la lupa */
+      }
+    }
+    return res;
   }
 
   private lastIncoming = new Map<string, Map<string, { source: string; sourcePort: string }>>();
@@ -130,6 +164,7 @@ export class Engine {
     }
 
     const params = resolveParams(def.params, node.params);
+    this.lastNodes.set(node.id, { type: node.type, params });
     const assetVersions = Object.entries(def.params)
       .filter(([, s]) => s.type === 'audio' || s.type === 'external')
       .map(([k]) => {

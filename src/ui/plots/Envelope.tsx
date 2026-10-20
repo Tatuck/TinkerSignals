@@ -25,7 +25,14 @@ export const Envelope = memo(function Envelope({
     bottom = `L${x.toFixed(1)},${y(env.min[i]).toFixed(1)}` + bottom;
   }
   return (
-    <svg width={width} height={height} className="envelope" aria-hidden>
+    <svg
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      preserveAspectRatio="none"
+      className="envelope"
+      aria-hidden
+    >
       <line x1={0} x2={width} y1={height / 2} y2={height / 2} className="plot-zero" />
       <path
         d={top + bottom + 'Z'}

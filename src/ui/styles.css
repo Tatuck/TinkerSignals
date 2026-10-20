@@ -1552,3 +1552,73 @@ select {
 .node-inside:hover {
   background: rgba(255, 255, 255, 0.32);
 }
+
+/* ─── Lupa temporal ──────────────────────────────────────────────────────── */
+
+.timeline {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  width: min(560px, calc(100% - 32px));
+  padding: 8px 12px 10px;
+  background: var(--panel);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow-module);
+}
+.timeline.is-on {
+  border-color: var(--signal);
+}
+.timeline-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+  margin-bottom: 4px;
+}
+.timeline-head strong {
+  color: var(--ink);
+}
+.timeline-head .btn {
+  margin-left: auto;
+  padding: 2px 8px;
+  font-size: 12px;
+}
+.timeline-track {
+  position: relative;
+  cursor: crosshair;
+  touch-action: none;
+  line-height: 0;
+}
+.timeline-track svg {
+  width: 100%;
+  height: 40px;
+}
+.timeline-cursor {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--signal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--signal) 25%, transparent);
+}
+.node-plot.is-instant {
+  position: relative;
+  outline: 2px solid color-mix(in srgb, var(--signal) 40%, transparent);
+}
+.instant-tag {
+  position: absolute;
+  right: 6px;
+  top: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--signal);
+  background: var(--panel);
+  padding: 1px 5px;
+  border-radius: 4px;
+}

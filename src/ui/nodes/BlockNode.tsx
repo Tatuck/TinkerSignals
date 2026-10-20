@@ -12,6 +12,7 @@ import { ErrorBoundary } from '../ErrorBoundary';
 import { useLessonTarget } from '../lessons/LessonPanel';
 import { AssetWidget } from './AssetWidget';
 import { LibraryLoader } from './LibraryLoader';
+import { useInstant } from '../lib/useInstant';
 import { openInterior } from '../interior/openInterior';
 import { OutputControls } from './OutputControls';
 
@@ -29,6 +30,8 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
   const result = useS((s) => s.results?.nodes[id]);
   const isTarget = useLessonTarget().node === id;
   const scope = useS((s) => s.scope);
+  const instant = useInstant(id);
+  const instantPlot = instant?.data?.mini;
   if (!def) return <div className="node node-unknown">{data.blockType}</div>;
 
   const text = blockText(def.id);
@@ -121,12 +124,18 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
             </p>
           )}
 
-          {status === 'ok' && firstPlot && (
+          {status === 'ok' && instantPlot && (
+          <div className="node-plot is-instant">
+            <Plot plot={instantPlot} color={color} width={PLOT_W} height={PLOT_H} />
+            <span className="instant-tag">t = {formatMetric(instant!.time, 's').value} s</span>
+          </div>
+        )}
+        {status === 'ok' && !instantPlot && firstPlot && (
             <div className="node-plot">
               <Plot plot={firstPlot} color={color} width={PLOT_W} height={PLOT_H} />
             </div>
           )}
-          {status === 'ok' && !firstPlot && firstOut?.summary.kind === 'signal' && (
+          {status === 'ok' && !instantPlot && !firstPlot && firstOut?.summary.kind === 'signal' && (
             <div className="node-plot">
               {/* Las entradas enseñan la grabación entera; el resto, un trozo de forma de onda. */}
               {def.category === 'entrada' ? (
@@ -151,7 +160,7 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
             </div>
           )}
 
-          {status === 'ok' && !firstPlot && firstOut?.summary.kind === 'frames' && (
+          {status === 'ok' && !instantPlot && !firstPlot && firstOut?.summary.kind === 'frames' && (
           <div className="node-plot">
             <Plot
               plot={{ kind: 'bars', title: '', values: Array.from(firstOut.summary.profile) }}

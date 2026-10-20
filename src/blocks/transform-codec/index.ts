@@ -46,6 +46,30 @@ export default defineBlock({
     inputs: { in: 'in' },
     outputs: { out: ['join', 'out'] },
   }),
+  inspectAt({ inputs, params, timeS }) {
+    const { samples: x, sampleRate: fs } = inputs.in;
+    const N = Number(params.blockSize);
+    const start = Math.floor((timeS * fs) / N) * N;
+    const c = dct(Float64Array.from({ length: N }, (_, i) => x[start + i] ?? 0));
+    const K = Math.max(1, Math.round((N * params.keep) / 100));
+    const kept = new Set(
+      params.selection === 'low'
+        ? Array.from({ length: K }, (_, k) => k)
+        : Array.from({ length: N }, (_, k) => k)
+            .sort((a, b) => Math.abs(c[b]) - Math.abs(c[a]))
+            .slice(0, K),
+    );
+    const show = Math.min(N, 64);
+    return [
+      {
+        kind: 'bars',
+        title: 'coefficientsAt',
+        values: Array.from({ length: show }, (_, k) => Math.abs(c[k])),
+        highlight: [...kept].filter((k) => k < show),
+        labels: Array.from({ length: show }, (_, k) => `Coeficiente ${k}: ${c[k].toFixed(3)}${kept.has(k) ? ' (se conserva)' : ''}`),
+      },
+    ];
+  },
   process({ inputs, params }) {
     const { samples: x, sampleRate: fs } = inputs.in;
     const N = Number(params.blockSize);

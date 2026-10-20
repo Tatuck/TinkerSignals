@@ -42,6 +42,8 @@
   },
   "plots": {
     "masking": "Espectro (gris) y umbral de enmascaramiento (color)",
-    "allocation": "Bits por muestra en cada subbanda (media)"
+    "allocation": "Bits por muestra en cada subbanda (media)",
+    "maskingAt": "Esta trama: espectro y umbral de enmascaramiento",
+    "smrAt": "SMR de cada subbanda en esta trama"
   }
 }

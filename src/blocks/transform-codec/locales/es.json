@@ -50,6 +50,7 @@
   },
   "plots": {
     "wave": "Entrada vs reconstruida",
-    "energy": "Energía media por coeficiente (resaltados: los que se conservan)"
+    "energy": "Energía media por coeficiente (resaltados: los que se conservan)",
+    "coefficientsAt": "Coeficientes de este bloque (resaltados: los que se conservan)"
   }
 }

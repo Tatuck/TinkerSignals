@@ -9,6 +9,7 @@ import { categoryColor } from '../theme';
 import { ParamControl } from './ParamControl';
 import { useLessonTarget } from '../lessons/LessonPanel';
 import { openInterior } from '../interior/openInterior';
+import { useInstant } from '../lib/useInstant';
 
 const PLOT_W = 292;
 
@@ -52,6 +53,7 @@ function NodeInspector({ id }: { id: string }) {
   const duplicateNode = useS((s) => s.duplicateNode);
   const target = useLessonTarget();
   const scope = useS((s) => s.scope);
+  const instant = useInstant(id);
   const def = node && registry.get(node.data.blockType);
   if (!node || !def) return <Welcome />;
 
@@ -136,6 +138,18 @@ function NodeInspector({ id }: { id: string }) {
       )}
 
       {result?.status === 'error' && <p className="node-msg node-error">{result.error}</p>}
+
+      {instant?.data && instant.data.detail.length > 0 && (
+        <section className="insp-instant">
+          <h3>{t('timeline.at', { t: formatNumber(instant.time, 3) })}</h3>
+          {instant.data.detail.map((p, i) => (
+            <div key={i} className="insp-plot">
+              <h4>{text.plots?.[p.title] ?? (t(`plots.${p.title}`) !== `plots.${p.title}` ? t(`plots.${p.title}`) : p.title)}</h4>
+              <Plot plot={p} color={color} width={PLOT_W} height={p.kind === 'bars' ? 90 : 120} detailed />
+            </div>
+          ))}
+        </section>
+      )}
 
       {result?.status === 'ok' && result.plots.length > 0 && (
         <section>

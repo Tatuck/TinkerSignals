@@ -165,5 +165,16 @@
       "encoder": "Análisis",
       "decoder": "Síntesis"
     }
+  },
+  "plots": {
+    "waveAt": "Entrada y salida en este instante",
+    "spectrumAt": "Espectro en este instante (gris: entrada)",
+    "frameAt": "Trama en este instante"
+  },
+  "timeline": {
+    "label": "Lupa temporal",
+    "hint": "Haz clic o arrastra sobre la onda para ver un instante concreto en todos los bloques.",
+    "off": "Quitar lupa",
+    "at": "Instante: {t} s"
   }
 }
