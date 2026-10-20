@@ -28,7 +28,9 @@ export function TheoryPanel() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [openId]);
-  useEffect(() => bodyRef.current?.scrollTo(0, 0), [openId]);
+  useEffect(() => {
+    bodyRef.current?.scrollTo(0, 0);
+  }, [openId]);
 
   if (openId === null) return null;
   const concept = conceptById(openId) ?? concepts[0];
