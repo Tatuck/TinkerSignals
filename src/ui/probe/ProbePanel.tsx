@@ -60,8 +60,8 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
         <div>
           <h2>{kind === 'signal' ? t('probe.signal') : t('probe.bitstream')}</h2>
           <p className="insp-cat">
-            {t('probe.from')} {srcText?.title} ({srcText?.ports?.[edge.sourceHandle ?? '']}) {t('probe.to')}{' '}
-            {dstText?.title} ({dstText?.ports?.[edge.targetHandle ?? '']})
+            {t('probe.from')} {srcText?.title} ({srcText?.ports?.[edge.sourceHandle ?? '']}){' '}
+            {t('probe.to')} {dstText?.title} ({dstText?.ports?.[edge.targetHandle ?? '']})
           </p>
         </div>
       </header>
@@ -73,7 +73,10 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
           {port.summary.kind === 'signal' ? (
             <>
               <Metric label={t('metrics.sampleRate')} text={formatRate(port.summary.sampleRate)} />
-              <Metric label={t('metrics.duration')} text={`${formatNumber(port.summary.durationS, 2)} s`} />
+              <Metric
+                label={t('metrics.duration')}
+                text={`${formatNumber(port.summary.durationS, 2)} s`}
+              />
               <Metric label="Pico" text={formatNumber(port.summary.peak, 3)} />
               <Metric label="Valor eficaz (RMS)" text={formatNumber(port.summary.rms, 3)} />
             </>
@@ -85,7 +88,11 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
               <Metric label="Formato" text={port.summary.codec} />
             </>
           )}
-          <Metric label={t('probe.latency')} text={`${formatMetric(port.latencyMs, 'ms').value} ms`} wide />
+          <Metric
+            label={t('probe.latency')}
+            text={`${formatMetric(port.latencyMs, 'ms').value} ms`}
+            wide
+          />
         </dl>
       )}
 
@@ -100,7 +107,13 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
           </section>
           <section>
             <h3>{t('probe.spectrum')}</h3>
-            <Spectrum db={data.spectrum} sampleRate={data.sampleRate} width={W} height={100} color={color} />
+            <Spectrum
+              db={data.spectrum}
+              sampleRate={data.sampleRate}
+              width={W}
+              height={100}
+              color={color}
+            />
           </section>
           <section>
             <h3>{t('probe.spectrogram')}</h3>
@@ -114,8 +127,12 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
           <h3>{t('probe.bits')}</h3>
           <p className="bits">{data.bits}</p>
           <p className="param-help">
-            Unos: {formatNumber(data.onesRatio * 100, 1)} %. Lo que no viaja por el canal (la cabecera
-            acordada) es: {Object.entries(data.header).map(([k, v]) => `${k} = ${String(v)}`).join(', ')}.
+            Unos: {formatNumber(data.onesRatio * 100, 1)} %. Lo que no viaja por el canal (la
+            cabecera acordada) es:{' '}
+            {Object.entries(data.header)
+              .map(([k, v]) => `${k} = ${String(v)}`)
+              .join(', ')}
+            .
           </p>
         </section>
       )}

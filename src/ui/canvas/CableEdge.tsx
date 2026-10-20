@@ -22,7 +22,8 @@ export const CableEdge = memo(function CableEdge({
 }: EdgeProps<CableEdgeType>) {
   const blockType = useStore((s) => s.nodes.find((n) => n.id === source)?.data.blockType);
   const port = useStore((s) => s.results?.nodes[source]?.outputs[sourceHandleId ?? '']);
-  const type = (blockType && registry.get(blockType)?.outputs[sourceHandleId ?? '']?.type) || 'signal';
+  const type =
+    (blockType && registry.get(blockType)?.outputs[sourceHandleId ?? '']?.type) || 'signal';
 
   const dx = Math.abs(targetX - sourceX);
   const dist = Math.hypot(targetX - sourceX, targetY - sourceY);
@@ -55,7 +56,12 @@ export const CableEdge = memo(function CableEdge({
         <EdgeLabelRenderer>
           <div
             className={`cable-label${selected ? ' is-selected' : ''}`}
-            style={{ transform: `translate(-50%, -50%) translate(${mx}px, ${my}px)`, '--cable': color } as CSSProperties}
+            style={
+              {
+                transform: `translate(-50%, -50%) translate(${mx}px, ${my}px)`,
+                '--cable': color,
+              } as CSSProperties
+            }
           >
             {label}
           </div>

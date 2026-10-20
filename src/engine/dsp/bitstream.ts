@@ -2,7 +2,11 @@ import type { Bitstream, BitstreamHeader } from '../types';
 import type { BitWriter } from './bits';
 
 /** Empaqueta lo escrito en un BitWriter como valor de cable. */
-export function makeBitstream(w: BitWriter, header: BitstreamHeader, referenceBits: number): Bitstream {
+export function makeBitstream(
+  w: BitWriter,
+  header: BitstreamHeader,
+  referenceBits: number,
+): Bitstream {
   const { bytes, bitLength } = w.finish();
   return { kind: 'bitstream', bytes, bitLength, header, referenceBits };
 }

@@ -30,13 +30,40 @@ export function Palette() {
       .filter((g) => g.blocks.length);
   }, [query]);
 
-  function addAtCenter(type: string) {
-    const canvas = document.querySelector('.canvas')!.getBoundingClientRect();
-    const jitter = () => (Math.random() - 0.5) * 80;
-    addBlock(
-      type,
-      screenToFlowPosition({ x: canvas.left + canvas.width / 2 - 120 + jitter(), y: canvas.top + canvas.height / 2 - 80 + jitter() }),
-    );
+  /**
+   * Clic en la paleta: si hay un bloque seleccionado, el nuevo se coloca a su
+   * derecha y se conecta a él si los tipos encajan (así se monta una cadena
+   * solo con clics). Si no, se coloca a la derecha de todo lo que haya.
+   */
+  function addByClick(type: string) {
+    const { nodes, selection, onConnect } = useStore.getState();
+    const anchor =
+      selection?.kind === 'node' ? nodes.find((n) => n.id === selection.id) : undefined;
+    let position;
+    if (anchor) {
+      position = { x: anchor.position.x + 320, y: anchor.position.y };
+    } else if (nodes.length) {
+      const right = nodes.reduce((a, b) => (b.position.x > a.position.x ? b : a));
+      position = { x: right.position.x + 320, y: right.position.y };
+    } else {
+      const canvas = document.querySelector('.canvas')!.getBoundingClientRect();
+      position = screenToFlowPosition({
+        x: canvas.left + canvas.width / 2 - 120,
+        y: canvas.top + canvas.height / 2 - 100,
+      });
+    }
+    const id = addBlock(type, position);
+    if (anchor) {
+      const from = registry.get(anchor.data.blockType)!;
+      const to = registry.get(type)!;
+      const inPort = Object.entries(to.inputs).find(([, s]) => !s.optional)?.[0];
+      const outPort =
+        inPort &&
+        Object.entries(from.outputs).find(([, s]) => s.type === to.inputs[inPort].type)?.[0];
+      if (inPort && outPort) {
+        onConnect({ source: anchor.id, sourceHandle: outPort, target: id, targetHandle: inPort });
+      }
+    }
   }
 
   return (
@@ -51,7 +78,11 @@ export function Palette() {
       />
       <p className="hint">{t('palette.hint')}</p>
       {groups.map(({ cat, blocks }) => (
-        <section key={cat} className="palette-group" style={{ '--cat': categoryColor[cat] } as CSSProperties}>
+        <section
+          key={cat}
+          className="palette-group"
+          style={{ '--cat': categoryColor[cat] } as CSSProperties}
+        >
           <h3>{t(`categories.${cat}`)}</h3>
           <ul>
             {blocks.map((b) => {
@@ -65,7 +96,7 @@ export function Palette() {
                       e.dataTransfer.setData(DRAG_MIME, b.id);
                       e.dataTransfer.effectAllowed = 'move';
                     }}
-                    onClick={() => addAtCenter(b.id)}
+                    onClick={() => addByClick(b.id)}
                     title={tx.summary}
                   >
                     <span className="palette-icon" aria-hidden>

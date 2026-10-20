@@ -11,7 +11,13 @@ export function LatencyMeter({ ms }: { ms: number }) {
         <span>{t('latency.total')}</span>
         <strong>{formatMetric(ms, 'ms').value} ms</strong>
       </div>
-      <div className="latency-bar" role="meter" aria-valuemin={0} aria-valuemax={max} aria-valuenow={ms}>
+      <div
+        className="latency-bar"
+        role="meter"
+        aria-valuemin={0}
+        aria-valuemax={max}
+        aria-valuenow={ms}
+      >
         <span style={{ width: `${Math.min(100, (ms / max) * 100)}%` }} />
         <i style={{ left: `${(150 / max) * 100}%` }} />
       </div>

@@ -232,10 +232,10 @@ export function defineBlock<
   const I extends PortSpecs,
   const O extends PortSpecs,
   const P extends ParamSpecs,
->(
-  def: BlockDefinition<I, O, P>,
-): AnyBlock {
-  return def as unknown as AnyBlock;
+>(def: BlockDefinition<I, O, P>): BlockDefinition<I, O, P> & AnyBlock {
+  // El tipo concreto sirve para los tests del bloque; el "borrado" (AnyBlock),
+  // para que el motor pueda guardar todos los bloques en el mismo registro.
+  return def as BlockDefinition<I, O, P> & AnyBlock;
 }
 
 // ─── Grafo ──────────────────────────────────────────────────────────────────

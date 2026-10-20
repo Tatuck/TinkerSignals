@@ -5,7 +5,8 @@ export function encodeWav(signal: Signal): Uint8Array {
   const n = signal.samples.length;
   const buf = new ArrayBuffer(44 + n * 2);
   const v = new DataView(buf);
-  const str = (o: number, s: string) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+  const str = (o: number, s: string) =>
+    [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
   str(0, 'RIFF');
   v.setUint32(4, 36 + n * 2, true);
   str(8, 'WAVE');

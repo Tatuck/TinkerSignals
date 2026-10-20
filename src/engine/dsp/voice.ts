@@ -99,7 +99,12 @@ export class SynthesisFilter {
 }
 
 /** Error de predicción (residuo) de una trama usando las muestras anteriores reales. */
-export function residualRms(x: Float32Array, start: number, length: number, a: ArrayLike<number>): number {
+export function residualRms(
+  x: Float32Array,
+  start: number,
+  length: number,
+  a: ArrayLike<number>,
+): number {
   let s = 0;
   for (let n = start; n < start + length; n++) {
     let e = x[n] ?? 0;

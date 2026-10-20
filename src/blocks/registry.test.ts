@@ -15,12 +15,18 @@ describe('bloques reales', () => {
     });
     for (const b of registry.list()) {
       const t = locales[`./${b.id}/locales/es.json`]?.default as
-        | { title?: string; summary?: string; params?: Record<string, unknown>; ports?: Record<string, unknown> }
+        | {
+            title?: string;
+            summary?: string;
+            params?: Record<string, unknown>;
+            ports?: Record<string, unknown>;
+          }
         | undefined;
       expect(t, `falta locales/es.json en ${b.id}`).toBeDefined();
       expect(t!.title, b.id).toBeTruthy();
       expect(t!.summary, b.id).toBeTruthy();
-      for (const p of Object.keys(b.params)) expect(t!.params?.[p], `${b.id}.params.${p}`).toBeDefined();
+      for (const p of Object.keys(b.params))
+        expect(t!.params?.[p], `${b.id}.params.${p}`).toBeDefined();
       for (const p of [...Object.keys(b.inputs), ...Object.keys(b.outputs)]) {
         expect(t!.ports?.[p], `${b.id}.ports.${p}`).toBeDefined();
       }

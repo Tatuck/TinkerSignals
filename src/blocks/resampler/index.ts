@@ -38,7 +38,8 @@ export default defineBlock({
 
     const specIn = averageSpectrumDb(x, 512);
     const specOut = averageSpectrumDb(out, 512);
-    const hz = (len: number, fs: number) => Array.from({ length: len }, (_, k) => (k * fs) / (2 * len));
+    const hz = (len: number, fs: number) =>
+      Array.from({ length: len }, (_, k) => (k * fs) / (2 * len));
     return {
       outputs: { out: makeSignal(out, fsOut) },
       metrics: [
@@ -48,7 +49,8 @@ export default defineBlock({
       ],
       // Un FIR de TAPS coeficientes retrasa (TAPS-1)/2 muestras en un sistema real.
       // El filtro trabaja a la frecuencia más alta de las dos.
-      latencyMs: params.antialias && ratio !== 1 ? (((TAPS - 1) / 2) * 1000) / Math.max(fsIn, fsOut) : 0,
+      latencyMs:
+        params.antialias && ratio !== 1 ? (((TAPS - 1) / 2) * 1000) / Math.max(fsIn, fsOut) : 0,
       plots: [
         {
           kind: 'line',

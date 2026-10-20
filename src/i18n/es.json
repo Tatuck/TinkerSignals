@@ -14,7 +14,7 @@
   },
   "palette": {
     "title": "Bloques",
-    "hint": "Arrastra un bloque al lienzo o haz clic para añadirlo.",
+    "hint": "Arrastra un bloque al lienzo, o haz clic para añadirlo detrás del bloque seleccionado y conectarlo.",
     "search": "Buscar bloque"
   },
   "categories": {

@@ -68,7 +68,10 @@ export function validateGraph(graph: Graph, registry: BlockRegistry): ValidatedG
   }
   for (const id of nodes.keys()) {
     if (!order.includes(id)) {
-      errors.push({ nodeId: id, message: 'El bloque forma parte de un bucle; no se puede ejecutar' });
+      errors.push({
+        nodeId: id,
+        message: 'El bloque forma parte de un bucle; no se puede ejecutar',
+      });
     }
   }
 

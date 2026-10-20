@@ -24,6 +24,7 @@ export function quantizeUniform(
   mode: 'midrise' | 'midtread',
 ): Float32Array {
   const y = new Float32Array(x.length);
-  for (let i = 0; i < x.length; i++) y[i] = uniformValue(uniformIndex(x[i], bits, mode), bits, mode);
+  for (let i = 0; i < x.length; i++)
+    y[i] = uniformValue(uniformIndex(x[i], bits, mode), bits, mode);
   return y;
 }

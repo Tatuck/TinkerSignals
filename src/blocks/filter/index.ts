@@ -11,7 +11,15 @@ export default defineBlock({
   outputs: { out: { type: 'signal' } },
   params: {
     type: { type: 'select', default: 'lowpass', options: ['lowpass', 'highpass', 'bandpass'] },
-    cutoff: { type: 'number', default: 3400, min: 50, max: 20000, step: 1, unit: 'Hz', scale: 'log' },
+    cutoff: {
+      type: 'number',
+      default: 3400,
+      min: 50,
+      max: 20000,
+      step: 1,
+      unit: 'Hz',
+      scale: 'log',
+    },
     q: { type: 'number', default: 0.71, min: 0.3, max: 10, step: 0.01 },
     stages: { type: 'number', default: 2, min: 1, max: 4, step: 1 },
   },

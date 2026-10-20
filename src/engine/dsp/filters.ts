@@ -48,10 +48,16 @@ export function biquad(
 
 export function applyBiquad(x: Float32Array, { b, a }: ReturnType<typeof biquad>): Float32Array {
   const y = new Float32Array(x.length);
-  let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+  let x1 = 0,
+    x2 = 0,
+    y1 = 0,
+    y2 = 0;
   for (let n = 0; n < x.length; n++) {
     const v = b[0] * x[n] + b[1] * x1 + b[2] * x2 - a[0] * y1 - a[1] * y2;
-    x2 = x1; x1 = x[n]; y2 = y1; y1 = v;
+    x2 = x1;
+    x1 = x[n];
+    y2 = y1;
+    y1 = v;
     y[n] = v;
   }
   return y;
@@ -62,7 +68,8 @@ export function biquadResponseDb(f: ReturnType<typeof biquad>, points = 128): Fl
   const out = new Float32Array(points);
   for (let i = 0; i < points; i++) {
     const w = (Math.PI * i) / (points - 1);
-    const re = (c0: number, c1: number, c2: number) => c0 + c1 * Math.cos(-w) + c2 * Math.cos(-2 * w);
+    const re = (c0: number, c1: number, c2: number) =>
+      c0 + c1 * Math.cos(-w) + c2 * Math.cos(-2 * w);
     const im = (c1: number, c2: number) => c1 * Math.sin(-w) + c2 * Math.sin(-2 * w);
     const nr = re(f.b[0], f.b[1], f.b[2]);
     const ni = im(f.b[1], f.b[2]);

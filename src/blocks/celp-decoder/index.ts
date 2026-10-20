@@ -16,7 +16,10 @@ export default defineBlock({
     const h = b.header as typeof b.header & CelpConfig;
     const { y, excitation } = celpDecode(b.bytes, b.bitLength, h.numSamples, h);
     return {
-      outputs: { out: makeSignal(y, h.sampleRate), excitation: makeSignal(excitation, h.sampleRate) },
+      outputs: {
+        out: makeSignal(y, h.sampleRate),
+        excitation: makeSignal(excitation, h.sampleRate),
+      },
     };
   },
 });

@@ -19,7 +19,13 @@ export default defineBlock({
     const enc = dpcmEncode(x, params.order, params.bits);
     const out = makeBitstream(
       enc.writer,
-      { codec: 'dpcm', sampleRate, numSamples: x.length, bits: params.bits, symbolBits: params.bits },
+      {
+        codec: 'dpcm',
+        sampleRate,
+        numSamples: x.length,
+        bits: params.bits,
+        symbolBits: params.bits,
+      },
       referenceBitsFor(x.length),
     );
     let px = 0;
@@ -31,8 +37,18 @@ export default defineBlock({
     return {
       outputs: { out },
       metrics: [
-        { key: 'predGain', value: 10 * Math.log10((px + 1e-20) / (pe + 1e-20)), unit: 'dB', highlight: true },
-        { key: 'bitrate', value: (out.bitLength * sampleRate) / x.length, unit: 'bps', highlight: true },
+        {
+          key: 'predGain',
+          value: 10 * Math.log10((px + 1e-20) / (pe + 1e-20)),
+          unit: 'dB',
+          highlight: true,
+        },
+        {
+          key: 'bitrate',
+          value: (out.bitLength * sampleRate) / x.length,
+          unit: 'bps',
+          highlight: true,
+        },
         { key: 'snrExpected', value: snr(x, enc.reconstructed), unit: 'dB' },
         { key: 'compression', value: out.referenceBits / out.bitLength, unit: '×' },
         { key: 'sideBits', value: enc.sideBits, unit: 'bits' },

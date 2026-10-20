@@ -70,7 +70,9 @@ export function lpcEncode(x: Float32Array, fs: number, c: LpcConfig) {
     const gain = residualRms(x, start, Math.min(c.frameLen, x.length - start), a);
     const p = detectPitch(frameAt(x, start - look, win), fs);
     const lagQ = p.voiced ? Math.min(2 ** c.pitchBits - 1, Math.max(0, p.lag - c.minLag)) : 0;
-    const gq = Math.round(Math.max(0, (20 * Math.log10(gain + 1e-12) - GAIN_MIN_DB) / GAIN_STEP_DB));
+    const gq = Math.round(
+      Math.max(0, (20 * Math.log10(gain + 1e-12) - GAIN_MIN_DB) / GAIN_STEP_DB),
+    );
 
     w.write(p.voiced ? 1 : 0, 1);
     w.write(lagQ, c.pitchBits);
@@ -94,7 +96,9 @@ export function lpcDecode(bytes: Uint8Array, bitLength: number, n: number, c: Lp
     const voiced = r.read(1) === 1;
     const lag = r.read(c.pitchBits) + c.minLag;
     const gain = Math.pow(10, (r.read(GAIN_BITS) * GAIN_STEP_DB + GAIN_MIN_DB) / 20);
-    const a = reflectionToLpc(Array.from({ length: c.order }, () => dequantK(r.read(c.kBits), c.kBits)));
+    const a = reflectionToLpc(
+      Array.from({ length: c.order }, () => dequantK(r.read(c.kBits), c.kBits)),
+    );
     for (let i = start; i < Math.min(n, start + c.frameLen); i++) {
       let e: number;
       if (voiced) {

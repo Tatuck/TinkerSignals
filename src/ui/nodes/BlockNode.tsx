@@ -8,6 +8,7 @@ import { Plot } from '../plots/Plot';
 import { registry } from '../registry';
 import { useStore, type BlockNode as BlockNodeType } from '../store';
 import { categoryColor, portColor } from '../theme';
+import { ErrorBoundary } from '../ErrorBoundary';
 import { AssetWidget } from './AssetWidget';
 import { OutputControls } from './OutputControls';
 
@@ -34,8 +35,7 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
   const firstPlot = result?.plots[0];
   const firstOut = outputs[0] && result?.outputs[outputs[0][0]];
   const audioParam = Object.entries(def.params).find(([, s]) => s.type === 'audio') as
-    | [string, AudioParam]
-    | undefined;
+    [string, AudioParam] | undefined;
 
   return (
     <div
@@ -85,73 +85,85 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
         ))}
       </div>
 
-      <div className="node-body">
-        {status === 'error' && <p className="node-msg node-error">{result?.error}</p>}
-        {status === 'waiting' && (
-          <p className="node-msg">
-            {result?.error ??
-              (result?.missingInputs?.length
-                ? t('node.connect', {
-                    ports: result.missingInputs.map((p) => text.ports?.[p] ?? p).join(', '),
-                  })
-                : t('node.waiting'))}
-          </p>
-        )}
+      <ErrorBoundary label="este bloque">
+        <div className="node-body">
+          {status === 'error' && <p className="node-msg node-error">{result?.error}</p>}
+          {status === 'waiting' && (
+            <p className="node-msg">
+              {result?.error ??
+                (result?.missingInputs?.length
+                  ? t('node.connect', {
+                      ports: result.missingInputs.map((p) => text.ports?.[p] ?? p).join(', '),
+                    })
+                  : t('node.waiting'))}
+            </p>
+          )}
 
-        {status === 'ok' && firstPlot && (
-          <div className="node-plot">
-            <Plot plot={firstPlot} color={color} width={PLOT_W} height={PLOT_H} />
-          </div>
-        )}
-        {status === 'ok' && !firstPlot && firstOut?.summary.kind === 'signal' && (
-          <div className="node-plot">
-            {/* Las entradas enseñan la grabación entera; el resto, un trozo de forma de onda. */}
-            {def.category === 'entrada' ? (
-              <Envelope env={firstOut.summary.preview} width={PLOT_W} height={PLOT_H} color={color} />
-            ) : (
-              <Plot
-                plot={{ kind: 'line', title: '', series: [{ role: 'out', y: firstOut.summary.snippet }] }}
-                color={color}
-                width={PLOT_W}
-                height={PLOT_H}
-              />
-            )}
-          </div>
-        )}
+          {status === 'ok' && firstPlot && (
+            <div className="node-plot">
+              <Plot plot={firstPlot} color={color} width={PLOT_W} height={PLOT_H} />
+            </div>
+          )}
+          {status === 'ok' && !firstPlot && firstOut?.summary.kind === 'signal' && (
+            <div className="node-plot">
+              {/* Las entradas enseñan la grabación entera; el resto, un trozo de forma de onda. */}
+              {def.category === 'entrada' ? (
+                <Envelope
+                  env={firstOut.summary.preview}
+                  width={PLOT_W}
+                  height={PLOT_H}
+                  color={color}
+                />
+              ) : (
+                <Plot
+                  plot={{
+                    kind: 'line',
+                    title: '',
+                    series: [{ role: 'out', y: firstOut.summary.snippet }],
+                  }}
+                  color={color}
+                  width={PLOT_W}
+                  height={PLOT_H}
+                />
+              )}
+            </div>
+          )}
 
-        {status === 'ok' && highlights.length > 0 && (
-          <dl className="node-metrics">
-            {highlights.map((m) => {
-              const f = formatMetric(m.value, m.unit);
-              return (
-                <div key={m.key}>
-                  <dt>{metricLabel(def.id, m.key)}</dt>
-                  <dd>
-                    {f.value}
-                    <small>{f.unit}</small>
-                  </dd>
-                </div>
-              );
-            })}
-          </dl>
-        )}
+          {status === 'ok' && highlights.length > 0 && (
+            <dl className="node-metrics">
+              {highlights.map((m) => {
+                const f = formatMetric(m.value, m.unit);
+                return (
+                  <div key={m.key}>
+                    <dt>{metricLabel(def.id, m.key)}</dt>
+                    <dd>
+                      {f.value}
+                      <small>{f.unit}</small>
+                    </dd>
+                  </div>
+                );
+              })}
+            </dl>
+          )}
 
-        {status === 'ok' && result!.ownLatencyMs > 0 && (
-          <p className="node-latency" title={t('latency.explain')}>
-            <span aria-hidden>⏱</span> {t('node.latency')} {formatMetric(result!.ownLatencyMs, 'ms').value} ms
-          </p>
-        )}
+          {status === 'ok' && result!.ownLatencyMs > 0 && (
+            <p className="node-latency" title={t('latency.explain')}>
+              <span aria-hidden>⏱</span> {t('node.latency')}{' '}
+              {formatMetric(result!.ownLatencyMs, 'ms').value} ms
+            </p>
+          )}
 
-        {audioParam && (
-          <AssetWidget
-            nodeId={id}
-            paramKey={audioParam[0]}
-            widget={audioParam[1].widget}
-            assetId={data.params[audioParam[0]] as string | null}
-          />
-        )}
-        {def.id === 'output' && <OutputControls nodeId={id} />}
-      </div>
+          {audioParam && (
+            <AssetWidget
+              nodeId={id}
+              paramKey={audioParam[0]}
+              widget={audioParam[1].widget}
+              assetId={data.params[audioParam[0]] as string | null}
+            />
+          )}
+          {def.id === 'output' && <OutputControls nodeId={id} />}
+        </div>
+      </ErrorBoundary>
     </div>
   );
 });

@@ -56,7 +56,8 @@ function NodeInspector({ id }: { id: string }) {
       s.type !== 'audio' &&
       (!s.visibleIf ||
         s.visibleIf.equals.includes(
-          (node.data.params[s.visibleIf.param] ?? def.params[s.visibleIf.param]?.default) as string | boolean,
+          (node.data.params[s.visibleIf.param] ?? def.params[s.visibleIf.param]?.default) as
+            string | boolean,
         )),
   );
 
@@ -133,7 +134,13 @@ function NodeInspector({ id }: { id: string }) {
           {result.plots.map((p, i) => (
             <div key={i} className="insp-plot">
               <h4>{text.plots?.[p.title] ?? p.title}</h4>
-              <Plot plot={p} color={color} width={PLOT_W} height={p.kind === 'bars' ? 90 : 120} detailed />
+              <Plot
+                plot={p}
+                color={color}
+                width={PLOT_W}
+                height={p.kind === 'bars' ? 90 : 120}
+                detailed
+              />
             </div>
           ))}
         </section>

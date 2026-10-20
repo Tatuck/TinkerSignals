@@ -14,7 +14,12 @@ export default defineBlock({
     const b = inputs.in;
     expectCodec(b, 'adpcm-ima', 'El decodificador ADPCM');
     return {
-      outputs: { out: makeSignal(adpcmDecode(b.bytes, b.bitLength, b.header.numSamples), b.header.sampleRate) },
+      outputs: {
+        out: makeSignal(
+          adpcmDecode(b.bytes, b.bitLength, b.header.numSamples),
+          b.header.sampleRate,
+        ),
+      },
     };
   },
 });

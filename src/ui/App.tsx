@@ -1,6 +1,7 @@
 import { ReactFlowProvider } from '@xyflow/react';
 import { useEffect } from 'react';
 import { Canvas } from './canvas/Canvas';
+import { ErrorBoundary } from './ErrorBoundary';
 import { examples, instantiate } from './examples';
 import { Inspector } from './inspector/Inspector';
 import { Palette } from './palette/Palette';
@@ -32,7 +33,12 @@ export function App() {
       clearTimeout(timer);
       timer = setTimeout(() => {
         try {
-          const nodes = s.nodes.map(({ id, type, position, data }) => ({ id, type, position, data }));
+          const nodes = s.nodes.map(({ id, type, position, data }) => ({
+            id,
+            type,
+            position,
+            data,
+          }));
           localStorage.setItem(STORAGE_KEY, JSON.stringify({ nodes, edges: s.edges }));
         } catch {
           /* sin almacenamiento: no pasa nada */
@@ -45,9 +51,15 @@ export function App() {
     <ReactFlowProvider>
       <div className="app">
         <Toolbar />
-        <Palette />
-        <Canvas />
-        <Inspector />
+        <ErrorBoundary label="la paleta">
+          <Palette />
+        </ErrorBoundary>
+        <ErrorBoundary label="el lienzo">
+          <Canvas />
+        </ErrorBoundary>
+        <ErrorBoundary label="el panel lateral">
+          <Inspector />
+        </ErrorBoundary>
       </div>
     </ReactFlowProvider>
   );

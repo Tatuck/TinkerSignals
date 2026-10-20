@@ -36,8 +36,16 @@ export function OutputControls({ nodeId }: { nodeId: string }) {
   return (
     <div className="output-controls nodrag">
       <div className="ab">
-        <button className="btn btn-primary" disabled={disabled} onClick={() => toggle('in', keyOut)}>
-          {playing === keyOut ? t('node.stop') : hasReference ? t('node.playProcessed') : t('node.play')}
+        <button
+          className="btn btn-primary"
+          disabled={disabled}
+          onClick={() => toggle('in', keyOut)}
+        >
+          {playing === keyOut
+            ? t('node.stop')
+            : hasReference
+              ? t('node.playProcessed')
+              : t('node.play')}
         </button>
         {hasReference && (
           <button className="btn" disabled={disabled} onClick={() => toggle('reference', keyRef)}>

@@ -1,5 +1,10 @@
 /** Autocorrelación r[0..order] de x (sesgada, como `xcorr(...,'biased')` de MATLAB). */
-export function autocorrelation(x: ArrayLike<number>, order: number, start = 0, length = x.length): Float64Array {
+export function autocorrelation(
+  x: ArrayLike<number>,
+  order: number,
+  start = 0,
+  length = x.length,
+): Float64Array {
   const r = new Float64Array(order + 1);
   for (let k = 0; k <= order; k++) {
     let s = 0;
@@ -14,7 +19,10 @@ export function autocorrelation(x: ArrayLike<number>, order: number, start = 0, 
  * Devuelve los coeficientes a[1..p] del predictor x̂[n] = Σ a_k·x[n−k],
  * los coeficientes de reflexión y el error de predicción final.
  */
-export function levinson(r: ArrayLike<number>, order: number): { a: Float64Array; k: Float64Array; error: number } {
+export function levinson(
+  r: ArrayLike<number>,
+  order: number,
+): { a: Float64Array; k: Float64Array; error: number } {
   const a = new Float64Array(order + 1);
   const k = new Float64Array(order + 1);
   let err = r[0];

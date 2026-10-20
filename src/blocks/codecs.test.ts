@@ -10,9 +10,16 @@ import { BitWriter } from '@/engine/dsp/bits';
 const registry = createRegistry();
 
 /** Monta una cadena lineal generador → bloques… y devuelve el motor ya ejecutado. */
-function chain(blocks: { type: string; params?: Record<string, number | string | boolean> }[], gen = {}) {
+function chain(
+  blocks: { type: string; params?: Record<string, number | string | boolean> }[],
+  gen = {},
+) {
   const nodes: Graph['nodes'] = [
-    { id: 'g', type: 'generator', params: { waveform: 'vowel', frequency: 140, duration: 1, ...gen } },
+    {
+      id: 'g',
+      type: 'generator',
+      params: { waveform: 'vowel', frequency: 140, duration: 1, ...gen },
+    },
     ...blocks.map((b, i) => ({ id: `b${i}`, type: b.type, params: b.params ?? {} })),
   ];
   const edges: Graph['edges'] = blocks.map((_, i) => {
@@ -28,13 +35,17 @@ function chain(blocks: { type: string; params?: Record<string, number | string |
     result,
     input: engine.getValue('g', 'out') as Signal,
     output: engine.getValue(last, lastPort),
-    metric: (node: string, key: string) => result.nodes[node].metrics.find((m) => m.key === key)?.value,
+    metric: (node: string, key: string) =>
+      result.nodes[node].metrics.find((m) => m.key === key)?.value,
   };
 }
 
 describe('PCM', () => {
   it('ley μ de 8 bits da SNR de calidad telefónica', () => {
-    const c = chain([{ type: 'pcm-encoder', params: { bits: 8, law: 'mu' } }, { type: 'pcm-decoder' }]);
+    const c = chain([
+      { type: 'pcm-encoder', params: { bits: 8, law: 'mu' } },
+      { type: 'pcm-decoder' },
+    ]);
     expect(c.result.nodes.b1.status).toBe('ok');
     expect(snr(c.input.samples, (c.output as Signal).samples)).toBeGreaterThan(30);
     expect(c.metric('b0', 'bitrate')).toBe(8 * 16000);
@@ -42,7 +53,10 @@ describe('PCM', () => {
 
   it('con señal débil, ley μ supera a la lineal', () => {
     const run = (law: string) => {
-      const c = chain([{ type: 'pcm-encoder', params: { bits: 6, law } }, { type: 'pcm-decoder' }], { amplitude: 0.05 });
+      const c = chain(
+        [{ type: 'pcm-encoder', params: { bits: 6, law } }, { type: 'pcm-decoder' }],
+        { amplitude: 0.05 },
+      );
       return snr(c.input.samples, (c.output as Signal).samples);
     };
     expect(run('mu')).toBeGreaterThan(run('linear') + 10);
@@ -51,8 +65,14 @@ describe('PCM', () => {
 
 describe('DPCM', () => {
   it('a igualdad de bits mejora la SNR de PCM en una vocal', () => {
-    const d = chain([{ type: 'dpcm-encoder', params: { bits: 4, order: 4 } }, { type: 'dpcm-decoder' }]);
-    const p = chain([{ type: 'pcm-encoder', params: { bits: 4, law: 'linear' } }, { type: 'pcm-decoder' }]);
+    const d = chain([
+      { type: 'dpcm-encoder', params: { bits: 4, order: 4 } },
+      { type: 'dpcm-decoder' },
+    ]);
+    const p = chain([
+      { type: 'pcm-encoder', params: { bits: 4, law: 'linear' } },
+      { type: 'pcm-decoder' },
+    ]);
     const sd = snr(d.input.samples, (d.output as Signal).samples);
     const sp = snr(p.input.samples, (p.output as Signal).samples);
     expect(sd).toBeGreaterThan(sp + 6);
@@ -60,8 +80,14 @@ describe('DPCM', () => {
   });
 
   it('el decodificador reproduce exactamente la reconstrucción del codificador', () => {
-    const d = chain([{ type: 'dpcm-encoder', params: { bits: 5, order: 3 } }, { type: 'dpcm-decoder' }]);
-    expect(snr(d.input.samples, (d.output as Signal).samples)).toBeCloseTo(d.metric('b0', 'snrExpected')!, 3);
+    const d = chain([
+      { type: 'dpcm-encoder', params: { bits: 5, order: 3 } },
+      { type: 'dpcm-decoder' },
+    ]);
+    expect(snr(d.input.samples, (d.output as Signal).samples)).toBeCloseTo(
+      d.metric('b0', 'snrExpected')!,
+      3,
+    );
   });
 });
 
@@ -102,7 +128,10 @@ describe('Huffman', () => {
 
 describe('Canal', () => {
   it('la BER real se acerca a la pedida', () => {
-    const c = chain([{ type: 'pcm-encoder', params: { bits: 16 } }, { type: 'bit-errors', params: { ber: 0.01 } }]);
+    const c = chain([
+      { type: 'pcm-encoder', params: { bits: 16 } },
+      { type: 'bit-errors', params: { ber: 0.01 } },
+    ]);
     expect(c.metric('b1', 'berReal')).toBeGreaterThan(0.008);
     expect(c.metric('b1', 'berReal')).toBeLessThan(0.012);
     expect((c.output as Bitstream).bitLength).toBe(16 * 16000);
@@ -122,7 +151,9 @@ describe('Canal', () => {
 
 describe('Transformada', () => {
   it('con todos los coeficientes y muchos bits es casi transparente', () => {
-    const c = chain([{ type: 'transform-codec', params: { keep: 100, bits: 16, blockSize: '64' } }]);
+    const c = chain([
+      { type: 'transform-codec', params: { keep: 100, bits: 16, blockSize: '64' } },
+    ]);
     expect(c.metric('b0', 'snr')).toBeGreaterThan(60);
   });
 
@@ -158,9 +189,15 @@ describe('Voz', () => {
   });
 
   it('CELP: el decodificador reproduce la síntesis del codificador', () => {
-    const c = chain([{ type: 'celp-encoder', params: { codebookSize: '64' } }, { type: 'celp-decoder' }], voice);
+    const c = chain(
+      [{ type: 'celp-encoder', params: { codebookSize: '64' } }, { type: 'celp-decoder' }],
+      voice,
+    );
     expect(c.result.nodes.b1.status).toBe('ok');
-    expect(snr(c.input.samples, (c.output as Signal).samples)).toBeCloseTo(c.metric('b0', 'snr')!, 3);
+    expect(snr(c.input.samples, (c.output as Signal).samples)).toBeCloseTo(
+      c.metric('b0', 'snr')!,
+      3,
+    );
   });
 
   it('CELP: un codebook mayor no empeora y el libro adaptativo ayuda', () => {

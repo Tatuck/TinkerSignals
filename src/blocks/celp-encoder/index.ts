@@ -38,7 +38,11 @@ export default defineBlock({
     const bpf = celpBitsPerFrame(cfg);
     const hz = Array.from({ length: 128 }, (_, i) => (i * fs) / 2 / 127);
     const env = lpcEnvelopeDb(enc.lastA, 1, 128);
-    const weighted = lpcEnvelopeDb(enc.lastA.map((v, i) => v * params.gamma ** (i + 1)), 1, 128);
+    const weighted = lpcEnvelopeDb(
+      enc.lastA.map((v, i) => v * params.gamma ** (i + 1)),
+      1,
+      128,
+    );
     return {
       outputs: { out },
       metrics: [

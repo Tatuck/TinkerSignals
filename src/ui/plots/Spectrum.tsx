@@ -21,12 +21,15 @@ export const Spectrum = memo(function Spectrum({
   top = Math.max(top, floor + 20);
   const y = (v: number) => 2 + (1 - (Math.max(floor, v) - floor) / (top - floor)) * (height - 18);
   let d = `M0,${height - 16}`;
-  for (let k = 0; k < db.length; k++) d += `L${((k / (db.length - 1)) * width).toFixed(1)},${y(db[k]).toFixed(1)}`;
+  for (let k = 0; k < db.length; k++)
+    d += `L${((k / (db.length - 1)) * width).toFixed(1)},${y(db[k]).toFixed(1)}`;
   d += `L${width},${height - 16}Z`;
   return (
     <svg width={width} height={height} className="spectrum" aria-hidden>
       <path d={d} fill={color} fillOpacity={0.18} stroke={color} strokeWidth={1.4} />
-      <text x={0} y={height - 3} className="axis-label">0 Hz</text>
+      <text x={0} y={height - 3} className="axis-label">
+        0 Hz
+      </text>
       <text x={width / 2} y={height - 3} className="axis-label" textAnchor="middle">
         {formatRate(sampleRate / 4)}
       </text>
@@ -88,7 +91,11 @@ function ramp(v: number): [number, number, number] {
       const [a, ...ca] = stops[i - 1];
       const [b, ...cb] = stops[i];
       const f = (v - a) / (b - a);
-      return [0, 1, 2].map((j) => Math.round(ca[j] + (cb[j] - ca[j]) * f)) as [number, number, number];
+      return [0, 1, 2].map((j) => Math.round(ca[j] + (cb[j] - ca[j]) * f)) as [
+        number,
+        number,
+        number,
+      ];
     }
   }
   return [240, 170, 20];

@@ -2,14 +2,7 @@ import { BlockWaiting } from './errors';
 import { validateGraph } from './graph';
 import { resolveParams, type BlockRegistry } from './registry';
 import { summarize } from './summary';
-import type {
-  Graph,
-  GraphNode,
-  NodeResult,
-  PortValue,
-  RunResult,
-  Signal,
-} from './types';
+import type { Graph, GraphNode, NodeResult, PortValue, RunResult, Signal } from './types';
 
 interface CacheEntry {
   key: string;

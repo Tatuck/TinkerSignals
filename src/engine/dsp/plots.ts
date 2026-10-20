@@ -10,7 +10,12 @@ export function compareWaves(
   input: Float32Array,
   output: Float32Array,
   sampleRate: number,
-  opts: { ms?: number; outStyle?: 'line' | 'step' | 'dots'; title?: string; withError?: boolean } = {},
+  opts: {
+    ms?: number;
+    outStyle?: 'line' | 'step' | 'dots';
+    title?: string;
+    withError?: boolean;
+  } = {},
 ): Plot {
   const len = Math.max(16, Math.round(((opts.ms ?? 6) / 1000) * sampleRate));
   const win = interestingWindow(input, len);

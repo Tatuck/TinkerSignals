@@ -13,9 +13,35 @@ export interface DecodedAudio {
   trimmedS?: number;
 }
 
+/**
+ * Frecuencia de muestreo declarada en la cabecera de un WAV, o null si no lo es.
+ * Hace falta porque `decodeAudioData` remuestrea a la frecuencia del contexto
+ * de audio (normalmente 48 kHz) y perderíamos la original del archivo.
+ */
+function wavSampleRate(data: ArrayBuffer): number | null {
+  if (data.byteLength < 44) return null;
+  const v = new DataView(data);
+  const tag = (o: number) =>
+    String.fromCharCode(v.getUint8(o), v.getUint8(o + 1), v.getUint8(o + 2), v.getUint8(o + 3));
+  if (tag(0) !== 'RIFF' || tag(8) !== 'WAVE') return null;
+  for (let o = 12; o + 8 <= data.byteLength; o += 8 + v.getUint32(o + 4, true)) {
+    if (tag(o) === 'fmt ') return v.getUint32(o + 12, true);
+  }
+  return null;
+}
+
 /** Decodifica cualquier formato que entienda el navegador y lo pasa a mono. */
 export async function decodeAudio(data: ArrayBuffer): Promise<DecodedAudio> {
-  const buf = await audioCtx().decodeAudioData(data);
+  const rate = wavSampleRate(data);
+  let decoder: BaseAudioContext = audioCtx();
+  if (rate && rate >= 3000 && rate <= 384000) {
+    try {
+      decoder = new OfflineAudioContext(1, 1, rate);
+    } catch {
+      /* frecuencia no admitida por el navegador: se usa la del contexto */
+    }
+  }
+  const buf = await decoder.decodeAudioData(data);
   const max = Math.min(buf.length, Math.round(MAX_SECONDS * buf.sampleRate));
   const mono = new Float32Array(max);
   for (let c = 0; c < buf.numberOfChannels; c++) {

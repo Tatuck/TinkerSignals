@@ -56,7 +56,12 @@ export function dpcmEncode(x: Float32Array, order: number, bits: number): DpcmEn
   return { writer: w, coeffs: a, error: e, reconstructed: xr, sideBits };
 }
 
-export function dpcmDecode(bytes: Uint8Array, bitLength: number, n: number, bits: number): Float32Array {
+export function dpcmDecode(
+  bytes: Uint8Array,
+  bitLength: number,
+  n: number,
+  bits: number,
+): Float32Array {
   const rd = new BitReader(bytes, bitLength);
   const order = rd.read(4);
   const a = Float64Array.from({ length: order }, () => readFloat32(rd));
@@ -68,7 +73,8 @@ export function dpcmDecode(bytes: Uint8Array, bitLength: number, n: number, bits
   return xr;
 }
 
-const expand = (a: ArrayLike<number>, g: number) => Float64Array.from(a, (c, k) => Math.fround(c * g ** (k + 1)));
+const expand = (a: ArrayLike<number>, g: number) =>
+  Float64Array.from(a, (c, k) => Math.fround(c * g ** (k + 1)));
 const sumAbs = (a: Float64Array) => a.reduce((s, v) => s + Math.abs(v), 0);
 
 /** Recorte común a codificador y decodificador: evita que un error de canal haga diverger el predictor. */

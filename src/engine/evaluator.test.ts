@@ -26,7 +26,12 @@ const double = defineBlock({
   outputs: { out: { type: 'signal' } },
   params: { delay: { type: 'number', default: 10, min: 0, max: 100 } },
   process: ({ inputs, params }) => ({
-    outputs: { out: makeSignal(inputs.in.samples.map((v) => v * 2), 8000) },
+    outputs: {
+      out: makeSignal(
+        inputs.in.samples.map((v) => v * 2),
+        8000,
+      ),
+    },
     latencyMs: params.delay,
   }),
 });

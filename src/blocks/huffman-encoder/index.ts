@@ -15,7 +15,11 @@ export default defineBlock({
     const b = inputs.in;
     const fromHeader = Number(b.header.symbolBits);
     const symbolBits =
-      params.symbolBits === 'auto' ? (fromHeader >= 1 && fromHeader <= 16 ? fromHeader : 8) : Number(params.symbolBits);
+      params.symbolBits === 'auto'
+        ? fromHeader >= 1 && fromHeader <= 16
+          ? fromHeader
+          : 8
+        : Number(params.symbolBits);
     const { writer, stats } = huffmanEncode(b.bytes, b.bitLength, symbolBits);
     const out = makeBitstream(
       writer,

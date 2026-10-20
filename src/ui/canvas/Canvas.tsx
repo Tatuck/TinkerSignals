@@ -31,7 +31,9 @@ export function Canvas() {
   // Al cargar un ejemplo o un circuito importado, encuádralo entero.
   useEffect(() => {
     if (!loadCount) return;
-    const id = requestAnimationFrame(() => void fitView({ padding: 0.2, maxZoom: 1, duration: 300 }));
+    const id = requestAnimationFrame(
+      () => void fitView({ padding: 0.2, maxZoom: 1, duration: 300 }),
+    );
     return () => cancelAnimationFrame(id);
   }, [loadCount, fitView]);
 
@@ -65,7 +67,6 @@ export function Canvas() {
         minZoom={0.3}
         maxZoom={1.75}
         deleteKeyCode={['Delete', 'Backspace']}
-        proOptions={{ hideAttribution: true }}
       >
         <Background id="fine" variant={BackgroundVariant.Lines} gap={10} color="var(--grid-fine)" />
         <Background id="coarse" variant={BackgroundVariant.Lines} gap={50} color="var(--grid)" />

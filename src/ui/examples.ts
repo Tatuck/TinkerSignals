@@ -71,9 +71,27 @@ export const examples: Example[] = [
     title: 'Aliasing al remuestrear',
     description: 'Un barrido bajado a 4 kHz con y sin filtro antialiasing.',
     nodes: [
-      { id: 'gen', type: 'generator', x: 0, y: 140, params: { waveform: 'chirp', frequency: 100, duration: 4, amplitude: 0.5 } },
-      { id: 'aa', type: 'resampler', x: 340, y: 0, params: { sampleRate: '4000', antialias: true } },
-      { id: 'noaa', type: 'resampler', x: 340, y: 300, params: { sampleRate: '4000', antialias: false } },
+      {
+        id: 'gen',
+        type: 'generator',
+        x: 0,
+        y: 140,
+        params: { waveform: 'chirp', frequency: 100, duration: 4, amplitude: 0.5 },
+      },
+      {
+        id: 'aa',
+        type: 'resampler',
+        x: 340,
+        y: 0,
+        params: { sampleRate: '4000', antialias: true },
+      },
+      {
+        id: 'noaa',
+        type: 'resampler',
+        x: 340,
+        y: 300,
+        params: { sampleRate: '4000', antialias: false },
+      },
       { id: 'o1', type: 'output', x: 700, y: 0 },
       { id: 'o2', type: 'output', x: 700, y: 300 },
     ],
@@ -130,7 +148,8 @@ export const examples: Example[] = [
   {
     id: 'huffman',
     title: 'DPCM + Huffman',
-    description: 'El error de predicción se concentra en pocos valores: Huffman lo aprovecha sin perder nada.',
+    description:
+      'El error de predicción se concentra en pocos valores: Huffman lo aprovecha sin perder nada.',
     nodes: [
       { id: 'gen', type: 'generator', x: 0, y: 80 },
       { id: 'enc', type: 'dpcm-encoder', x: 320, y: 40, params: { bits: 6, order: 2 } },
@@ -154,13 +173,99 @@ export const examples: Example[] = [
     description: 'Bloques grandes comprimen mejor, pero hay que esperar a llenarlos.',
     nodes: [
       { id: 'gen', type: 'generator', x: 0, y: 80 },
-      { id: 'tc', type: 'transform-codec', x: 320, y: 20, params: { blockSize: '256', keep: 20, bits: 6 } },
+      {
+        id: 'tc',
+        type: 'transform-codec',
+        x: 320,
+        y: 20,
+        params: { blockSize: '256', keep: 20, bits: 6 },
+      },
       { id: 'out', type: 'output', x: 680, y: 60 },
     ],
     edges: [
       ['gen', 'out', 'tc', 'in'],
       ['tc', 'out', 'out', 'in'],
       ['gen', 'out', 'out', 'reference'],
+    ],
+  },
+  {
+    id: 'practica2-lpc',
+    title: 'Práctica 2: vocoder LPC',
+    description: 'Análisis de voz y vocoder LPC: voz inteligible a unos 3 kbps.',
+    nodes: [
+      {
+        id: 'gen',
+        type: 'generator',
+        x: 0,
+        y: 120,
+        params: { sampleRate: '8000', frequency: 120 },
+      },
+      { id: 'va', type: 'voice-analysis', x: 320, y: 100 },
+      { id: 'enc', type: 'lpc-encoder', x: 640, y: 40 },
+      { id: 'dec', type: 'lpc-decoder', x: 960, y: 80 },
+      { id: 'out', type: 'output', x: 1280, y: 60 },
+    ],
+    edges: [
+      ['gen', 'out', 'va', 'in'],
+      ['va', 'out', 'enc', 'in'],
+      ['enc', 'out', 'dec', 'in'],
+      ['dec', 'out', 'out', 'in'],
+      ['gen', 'out', 'out', 'reference'],
+    ],
+  },
+  {
+    id: 'practica3-celp',
+    title: 'Práctica 3: CELP frente a LPC',
+    description: 'La misma voz por un vocoder LPC y por CELP: tasa, error y cómo suenan.',
+    nodes: [
+      {
+        id: 'gen',
+        type: 'generator',
+        x: 0,
+        y: 200,
+        params: { sampleRate: '8000', frequency: 120 },
+      },
+      { id: 'cenc', type: 'celp-encoder', x: 320, y: 0 },
+      { id: 'cdec', type: 'celp-decoder', x: 660, y: 40 },
+      { id: 'lenc', type: 'lpc-encoder', x: 320, y: 440 },
+      { id: 'ldec', type: 'lpc-decoder', x: 660, y: 480 },
+      { id: 'c1', type: 'comparator', x: 980, y: 0 },
+      { id: 'c2', type: 'comparator', x: 980, y: 440 },
+      { id: 'o1', type: 'output', x: 1300, y: 0 },
+      { id: 'o2', type: 'output', x: 1300, y: 440 },
+    ],
+    edges: [
+      ['gen', 'out', 'cenc', 'in'],
+      ['cenc', 'out', 'cdec', 'in'],
+      ['gen', 'out', 'lenc', 'in'],
+      ['lenc', 'out', 'ldec', 'in'],
+      ['gen', 'out', 'c1', 'reference'],
+      ['cdec', 'out', 'c1', 'test'],
+      ['gen', 'out', 'c2', 'reference'],
+      ['ldec', 'out', 'c2', 'test'],
+      ['cdec', 'out', 'o1', 'in'],
+      ['gen', 'out', 'o1', 'reference'],
+      ['ldec', 'out', 'o2', 'in'],
+      ['gen', 'out', 'o2', 'reference'],
+    ],
+  },
+  {
+    id: 'tu-voz-celp',
+    title: 'Tu voz por CELP a 8 kHz',
+    description: 'Graba tu voz, pásala a 8 kHz y codifícala con CELP.',
+    nodes: [
+      { id: 'mic', type: 'microphone', x: 0, y: 80 },
+      { id: 'rs', type: 'resampler', x: 320, y: 60, params: { sampleRate: '8000' } },
+      { id: 'enc', type: 'celp-encoder', x: 640, y: 20 },
+      { id: 'dec', type: 'celp-decoder', x: 980, y: 60 },
+      { id: 'out', type: 'output', x: 1300, y: 40 },
+    ],
+    edges: [
+      ['mic', 'out', 'rs', 'in'],
+      ['rs', 'out', 'enc', 'in'],
+      ['enc', 'out', 'dec', 'in'],
+      ['dec', 'out', 'out', 'in'],
+      ['rs', 'out', 'out', 'reference'],
     ],
   },
 ];
@@ -173,7 +278,10 @@ export function instantiate(ex: Example): { nodes: BlockNode[]; edges: CableEdge
       id: n.id,
       type: 'block',
       position: { x: n.x, y: n.y },
-      data: { blockType: n.type, params: { ...defaultParams(registry.get(n.type)!.params), ...n.params } },
+      data: {
+        blockType: n.type,
+        params: { ...defaultParams(registry.get(n.type)!.params), ...n.params },
+      },
     }));
   const ids = new Set(nodes.map((n) => n.id));
   const edges: CableEdge[] = ex.edges

@@ -27,7 +27,15 @@ export default defineBlock({
   process({ inputs, params }) {
     const { samples: x, sampleRate: fs } = inputs.in;
     const q = (v: number) =>
-      expand(uniformValue(uniformIndex(compress(v, params.law, params.mu), params.bits, 'midrise'), params.bits, 'midrise'), params.law, params.mu);
+      expand(
+        uniformValue(
+          uniformIndex(compress(v, params.law, params.mu), params.bits, 'midrise'),
+          params.bits,
+          'midrise',
+        ),
+        params.law,
+        params.mu,
+      );
     const y = x.map(q);
     const ramp = Float32Array.from({ length: 400 }, (_, i) => -1 + (2 * i) / 399);
     return {

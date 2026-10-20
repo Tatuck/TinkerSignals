@@ -9,7 +9,10 @@ export interface PcmConfig {
   mu: number;
 }
 
-export function pcmEncode(x: Float32Array, c: PcmConfig): { writer: BitWriter; codes: Uint32Array } {
+export function pcmEncode(
+  x: Float32Array,
+  c: PcmConfig,
+): { writer: BitWriter; codes: Uint32Array } {
   const w = new BitWriter();
   const codes = new Uint32Array(x.length);
   for (let i = 0; i < x.length; i++) {
@@ -23,7 +26,12 @@ export function pcmDecodeValue(code: number, c: PcmConfig): number {
   return expand(uniformValue(code, c.bits, 'midrise'), c.law, c.mu);
 }
 
-export function pcmDecode(bytes: Uint8Array, bitLength: number, n: number, c: PcmConfig): Float32Array {
+export function pcmDecode(
+  bytes: Uint8Array,
+  bitLength: number,
+  n: number,
+  c: PcmConfig,
+): Float32Array {
   const r = new BitReader(bytes, bitLength);
   const y = new Float32Array(n);
   for (let i = 0; i < n; i++) y[i] = pcmDecodeValue(r.read(c.bits), c);

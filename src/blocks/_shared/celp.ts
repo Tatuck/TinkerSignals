@@ -36,7 +36,14 @@ const GS_STEP_DB = 90 / (2 ** (GS_BITS - 1) - 1);
 
 export function celpConfig(
   fs: number,
-  p: { frameMs: number; subframes: number; order: number; codebookSize: number; gamma: number; adaptive: boolean },
+  p: {
+    frameMs: number;
+    subframes: number;
+    order: number;
+    codebookSize: number;
+    gamma: number;
+    adaptive: boolean;
+  },
 ): CelpConfig {
   const minLag = Math.floor(fs / 400);
   const maxLag = Math.ceil(fs / 60);
@@ -66,7 +73,8 @@ const quantK = (k: number) => {
   return Math.min(L - 1, Math.max(0, Math.floor(t)));
 };
 const dequantK = (q: number) => Math.sin(((q + 0.5) / 2 ** K_BITS - 0.5) * Math.PI);
-const quantGA = (g: number) => Math.min(2 ** GA_BITS - 1, Math.max(0, Math.round((g / GA_MAX) * (2 ** GA_BITS - 1))));
+const quantGA = (g: number) =>
+  Math.min(2 ** GA_BITS - 1, Math.max(0, Math.round((g / GA_MAX) * (2 ** GA_BITS - 1))));
 const dequantGA = (q: number) => (q * GA_MAX) / (2 ** GA_BITS - 1);
 const quantGS = (g: number) => {
   const mag = Math.round((20 * Math.log10(Math.abs(g) + 1e-12) - GS_MIN_DB) / GS_STEP_DB);
@@ -144,7 +152,12 @@ const dot = (a: Float64Array, b: Float64Array) => {
 };
 
 /** Filtro todo-polos con estado explícito (para poder calcular la respuesta a entrada cero). */
-function allPole(a: ArrayLike<number>, input: Float64Array, mem: Float64Array, updateMem: boolean): Float64Array {
+function allPole(
+  a: ArrayLike<number>,
+  input: Float64Array,
+  mem: Float64Array,
+  updateMem: boolean,
+): Float64Array {
   const m = updateMem ? mem : mem.slice();
   const y = new Float64Array(input.length);
   for (let n = 0; n < input.length; n++) {

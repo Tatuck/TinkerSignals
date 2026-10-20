@@ -77,13 +77,19 @@ export const useStore = create<State>((set, get) => ({
     const src = nodes.find((n) => n.id === c.source);
     const dst = nodes.find((n) => n.id === c.target);
     if (!src || !dst || !c.sourceHandle || !c.targetHandle || src.id === dst.id) return false;
-    return canConnect(
-      registry,
-      src.data.blockType,
-      c.sourceHandle,
-      dst.data.blockType,
-      c.targetHandle,
-    ) && !edges.some((e) => e.target === c.target && e.targetHandle === c.targetHandle && e.id !== (c as Edge).id);
+    return (
+      canConnect(
+        registry,
+        src.data.blockType,
+        c.sourceHandle,
+        dst.data.blockType,
+        c.targetHandle,
+      ) &&
+      !edges.some(
+        (e) =>
+          e.target === c.target && e.targetHandle === c.targetHandle && e.id !== (c as Edge).id,
+      )
+    );
   },
 
   onConnect(c) {
@@ -133,7 +139,9 @@ export const useStore = create<State>((set, get) => ({
   setParam(nodeId, key, value) {
     set({
       nodes: get().nodes.map((n) =>
-        n.id === nodeId ? { ...n, data: { ...n.data, params: { ...n.data.params, [key]: value } } } : n,
+        n.id === nodeId
+          ? { ...n, data: { ...n.data, params: { ...n.data.params, [key]: value } } }
+          : n,
       ),
     });
   },

@@ -40,8 +40,18 @@ export default defineBlock({
     return {
       outputs: { out },
       metrics: [
-        { key: 'bitrate', value: (bitsPerFrame(cfg) * fs) / cfg.frameLen, unit: 'bps', highlight: true },
-        { key: 'compression', value: out.referenceBits / out.bitLength, unit: '×', highlight: true },
+        {
+          key: 'bitrate',
+          value: (bitsPerFrame(cfg) * fs) / cfg.frameLen,
+          unit: 'bps',
+          highlight: true,
+        },
+        {
+          key: 'compression',
+          value: out.referenceBits / out.bitLength,
+          unit: '×',
+          highlight: true,
+        },
         { key: 'bitsPerFrame', value: bitsPerFrame(cfg), unit: 'bits' },
         { key: 'voicedPct', value: (100 * voiced) / Math.max(1, frames.length), unit: '%' },
       ],
@@ -60,7 +70,9 @@ export default defineBlock({
         {
           kind: 'line',
           title: 'pitch',
-          series: [{ role: 'out', y: frames.map((f) => (f.voiced ? fs / f.lag : 0)), style: 'step' }],
+          series: [
+            { role: 'out', y: frames.map((f) => (f.voiced ? fs / f.lag : 0)), style: 'step' },
+          ],
           yLabel: 'Hz',
         },
       ],

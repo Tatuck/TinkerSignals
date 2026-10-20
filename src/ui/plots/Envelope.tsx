@@ -27,7 +27,13 @@ export const Envelope = memo(function Envelope({
   return (
     <svg width={width} height={height} className="envelope" aria-hidden>
       <line x1={0} x2={width} y1={height / 2} y2={height / 2} className="plot-zero" />
-      <path d={top + bottom + 'Z'} fill={color} fillOpacity={0.85} stroke={color} strokeWidth={0.6} />
+      <path
+        d={top + bottom + 'Z'}
+        fill={color}
+        fillOpacity={0.85}
+        stroke={color}
+        strokeWidth={0.6}
+      />
     </svg>
   );
 });

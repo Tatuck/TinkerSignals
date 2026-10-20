@@ -15,7 +15,15 @@ export default defineBlock({
       default: 'vowel',
       options: ['sine', 'square', 'chirp', 'noise', 'harmonics', 'vowel'] as const,
     },
-    frequency: { type: 'number', default: 220, min: 20, max: 8000, step: 1, unit: 'Hz', scale: 'log' },
+    frequency: {
+      type: 'number',
+      default: 220,
+      min: 20,
+      max: 8000,
+      step: 1,
+      unit: 'Hz',
+      scale: 'log',
+    },
     amplitude: { type: 'number', default: 0.8, min: 0, max: 1, step: 0.01 },
     duration: { type: 'number', default: 2, min: 0.1, max: 10, step: 0.1, unit: 's' },
     sampleRate: { type: 'select', default: '16000', options: RATES },
@@ -49,7 +57,8 @@ export default defineBlock({
           break;
         case 'harmonics':
           x[i] = 0;
-          for (let k = 1; k <= 6 && k * f < fs / 2; k++) x[i] += Math.sin(2 * Math.PI * k * f * t) / k;
+          for (let k = 1; k <= 6 && k * f < fs / 2; k++)
+            x[i] += Math.sin(2 * Math.PI * k * f * t) / k;
           x[i] /= 2.45;
           break;
         case 'vowel':
@@ -71,7 +80,9 @@ export default defineBlock({
         { key: 'sampleRate', value: fs, unit: 'Hz', highlight: true },
         { key: 'duration', value: params.duration, unit: 's' },
       ],
-      plots: [{ kind: 'line', title: 'wave', series: [{ role: 'out', y: x.slice(win[0], win[1]) }] }],
+      plots: [
+        { kind: 'line', title: 'wave', series: [{ role: 'out', y: x.slice(win[0], win[1]) }] },
+      ],
     };
   },
 });

@@ -46,5 +46,8 @@ export function blockText(id: string): BlockText {
 
 /** Etiqueta de una métrica: primero la del bloque, después la común. */
 export function metricLabel(blockId: string, key: string): string {
-  return blockText(blockId).metrics?.[key] ?? (t(`metrics.${key}`) !== `metrics.${key}` ? t(`metrics.${key}`) : key);
+  return (
+    blockText(blockId).metrics?.[key] ??
+    (t(`metrics.${key}`) !== `metrics.${key}` ? t(`metrics.${key}`) : key)
+  );
 }

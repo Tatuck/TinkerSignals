@@ -4,7 +4,10 @@ import { quantizeUniform } from '@/engine/dsp/quantize';
 
 describe('cuantizador uniforme', () => {
   const fs = 8000;
-  const sine = Float32Array.from({ length: fs }, (_, i) => 0.999 * Math.sin((2 * Math.PI * 101 * i) / fs));
+  const sine = Float32Array.from(
+    { length: fs },
+    (_, i) => 0.999 * Math.sin((2 * Math.PI * 101 * i) / fs),
+  );
 
   it.each([4, 8, 12])('cumple SNR ≈ 6,02·n + 1,76 dB con %i bits', (bits) => {
     const s = snr(sine, quantizeUniform(sine, bits, 'midrise'));

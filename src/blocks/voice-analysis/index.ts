@@ -44,7 +44,12 @@ export default defineBlock({
     return {
       outputs: { out: inputs.in },
       metrics: [
-        { key: 'voicedPct', value: (100 * voicedCount) / Math.max(1, voiced.length), unit: '%', highlight: true },
+        {
+          key: 'voicedPct',
+          value: (100 * voicedCount) / Math.max(1, voiced.length),
+          unit: '%',
+          highlight: true,
+        },
         { key: 'f0', value: voicedCount ? pitchSum / voicedCount : 0, unit: 'Hz', highlight: true },
         { key: 'frames', value: voiced.length },
       ],

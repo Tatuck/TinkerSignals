@@ -14,7 +14,13 @@ interface Props {
 }
 
 const roleColor = (role: PlotRole, color: string) =>
-  role === 'in' ? inputSeriesColor : role === 'error' ? errorSeriesColor : role === 'aux' ? '#C6CFDB' : color;
+  role === 'in'
+    ? inputSeriesColor
+    : role === 'error'
+      ? errorSeriesColor
+      : role === 'aux'
+        ? '#C6CFDB'
+        : color;
 
 /**
  * Gráficas didácticas en SVG: sin rejillas ni cifras en los ejes. Lo
@@ -46,10 +52,11 @@ function LinePlot({
         yMin = Math.min(yMin, s.y[i]);
         yMax = Math.max(yMax, s.y[i]);
       }
-      if (s.x) for (let i = 0; i < s.x.length; i++) {
-        xMin = Math.min(xMin, s.x[i]);
-        xMax = Math.max(xMax, s.x[i]);
-      }
+      if (s.x)
+        for (let i = 0; i < s.x.length; i++) {
+          xMin = Math.min(xMin, s.x[i]);
+          xMax = Math.max(xMax, s.x[i]);
+        }
     }
     if (plot.yRange) [yMin, yMax] = plot.yRange;
     if (!Number.isFinite(yMin) || yMin === yMax) {

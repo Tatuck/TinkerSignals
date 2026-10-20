@@ -20,12 +20,18 @@ describe('voz', () => {
 
   it('el ruido blanco se clasifica como sordo', () => {
     let s = 7;
-    const x = Float64Array.from({ length: 320 }, () => ((s = (s * 16807) % 2147483647) / 2147483647) * 2 - 1);
+    const x = Float64Array.from(
+      { length: 320 },
+      () => ((s = (s * 16807) % 2147483647) / 2147483647) * 2 - 1,
+    );
     expect(detectPitch(x, 8000).voiced).toBe(false);
   });
 
   it('step-up invierte Levinson', () => {
-    const x = Float64Array.from({ length: 500 }, (_, i) => Math.sin(i * 0.3) + 0.5 * Math.sin(i * 1.1));
+    const x = Float64Array.from(
+      { length: 500 },
+      (_, i) => Math.sin(i * 0.3) + 0.5 * Math.sin(i * 1.1),
+    );
     const { a, k } = levinson(autocorrelation(x, 6), 6);
     const back = reflectionToLpc(k);
     back.forEach((v, i) => expect(v).toBeCloseTo(a[i], 10));

@@ -36,8 +36,21 @@ export function Toolbar() {
       <div className="brand">
         <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden>
           <rect x="1" y="1" width="28" height="28" rx="8" fill="var(--ink)" />
-          <path d="M5 15 Q8.5 5 12 15 T19 15" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
-          <path d="M19 15 h2 v-4 h2 v8 h2 v-4" fill="none" stroke="#F2B230" strokeWidth="2.4" strokeLinejoin="round" strokeLinecap="round" />
+          <path
+            d="M5 15 Q8.5 5 12 15 T19 15"
+            fill="none"
+            stroke="#fff"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+          />
+          <path
+            d="M19 15 h2 v-4 h2 v8 h2 v-4"
+            fill="none"
+            stroke="#F2B230"
+            strokeWidth="2.4"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
         </svg>
         <div>
           <h1>{t('app.name')}</h1>

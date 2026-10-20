@@ -24,7 +24,9 @@ export function codeLengths(counts: Map<number, number>): Map<number, number> {
   let i = 0;
   let j = 0;
   const take = (): N =>
-    j >= merged.length || (i < nodes.length && nodes[i].w <= merged[j].w) ? nodes[i++] : merged[j++];
+    j >= merged.length || (i < nodes.length && nodes[i].w <= merged[j].w)
+      ? nodes[i++]
+      : merged[j++];
   while (nodes.length - i + merged.length - j > 1) {
     const a = take();
     const b = take();
@@ -42,7 +44,9 @@ export function codeLengths(counts: Map<number, number>): Map<number, number> {
 }
 
 /** Asigna códigos canónicos: por longitud creciente y, a igual longitud, por símbolo. */
-export function canonicalCodes(lengths: Map<number, number>): Map<number, { code: number; len: number }> {
+export function canonicalCodes(
+  lengths: Map<number, number>,
+): Map<number, { code: number; len: number }> {
   const sorted = [...lengths].sort((a, b) => a[1] - b[1] || a[0] - b[0]);
   const codes = new Map<number, { code: number; len: number }>();
   let code = 0;
@@ -83,7 +87,8 @@ export function huffmanEncode(
 
   const lengths = codeLengths(counts);
   const maxLength = Math.max(0, ...lengths.values());
-  if (maxLength > MAX_LEN) throw new Error('La distribución es demasiado desigual para este Huffman (códigos > 31 bits)');
+  if (maxLength > MAX_LEN)
+    throw new Error('La distribución es demasiado desigual para este Huffman (códigos > 31 bits)');
   const codes = canonicalCodes(lengths);
 
   const w = new BitWriter();
