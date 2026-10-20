@@ -105,7 +105,17 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
         )}
         {status === 'ok' && !firstPlot && firstOut?.summary.kind === 'signal' && (
           <div className="node-plot">
-            <Envelope env={firstOut.summary.preview} width={PLOT_W} height={PLOT_H} color={color} />
+            {/* Las entradas enseñan la grabación entera; el resto, un trozo de forma de onda. */}
+            {def.category === 'entrada' ? (
+              <Envelope env={firstOut.summary.preview} width={PLOT_W} height={PLOT_H} color={color} />
+            ) : (
+              <Plot
+                plot={{ kind: 'line', title: '', series: [{ role: 'out', y: firstOut.summary.snippet }] }}
+                color={color}
+                width={PLOT_W}
+                height={PLOT_H}
+              />
+            )}
           </div>
         )}
 

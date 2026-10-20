@@ -146,3 +146,27 @@ describe('Remuestreo', () => {
     expect(energyAbove(false)).toBeGreaterThan(energyAbove(true) + 20);
   });
 });
+
+describe('Voz', () => {
+  const voice = { sampleRate: '8000', frequency: 120 };
+
+  it('el vocoder LPC baja a pocos kbps y conserva la envolvente', () => {
+    const c = chain([{ type: 'lpc-encoder' }, { type: 'lpc-decoder' }], voice);
+    expect(c.result.nodes.b1.status).toBe('ok');
+    expect(c.metric('b0', 'bitrate')).toBeLessThan(4000);
+    expect(c.result.nodes.b0.ownLatencyMs).toBeGreaterThan(20);
+  });
+
+  it('CELP: el decodificador reproduce la síntesis del codificador', () => {
+    const c = chain([{ type: 'celp-encoder', params: { codebookSize: '64' } }, { type: 'celp-decoder' }], voice);
+    expect(c.result.nodes.b1.status).toBe('ok');
+    expect(snr(c.input.samples, (c.output as Signal).samples)).toBeCloseTo(c.metric('b0', 'snr')!, 3);
+  });
+
+  it('CELP: un codebook mayor no empeora y el libro adaptativo ayuda', () => {
+    const s = (params: Record<string, string | boolean>) =>
+      chain([{ type: 'celp-encoder', params }], voice).metric('b0', 'snrSeg')!;
+    expect(s({ codebookSize: '256' })).toBeGreaterThanOrEqual(s({ codebookSize: '16' }) - 0.5);
+    expect(s({ codebookSize: '64' })).toBeGreaterThan(s({ codebookSize: '64', adaptive: false }));
+  });
+});

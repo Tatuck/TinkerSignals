@@ -276,6 +276,8 @@ export type ValueSummary =
       rms: number;
       /** Envolvente min/max decimada para miniaturas. */
       preview: { min: Float32Array; max: Float32Array };
+      /** Trozo corto (~15 ms) de la zona con más energía: deja ver la forma de onda. */
+      snippet: Float32Array;
     }
   | {
       kind: 'bitstream';

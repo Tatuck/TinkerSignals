@@ -24,7 +24,8 @@ export function Palette() {
             if (!q) return true;
             const tx = blockText(b.id);
             return `${tx.title} ${tx.summary}`.toLowerCase().includes(q);
-          }),
+          })
+          .sort((a, b) => sortKey(a.id).localeCompare(sortKey(b.id), 'es')),
       }))
       .filter((g) => g.blocks.length);
   }, [query]);
@@ -83,4 +84,12 @@ export function Palette() {
       ))}
     </aside>
   );
+}
+
+/** Orden alfabético, pero cada decodificador justo detrás de su codificador. */
+function sortKey(id: string): string {
+  const title = blockText(id).title;
+  return title.startsWith('Decodificador')
+    ? title.replace(/^Decodificador/, 'Codificador') + '~'
+    : title;
 }

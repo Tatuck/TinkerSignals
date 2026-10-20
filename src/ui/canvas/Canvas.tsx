@@ -7,7 +7,7 @@ import {
   type Connection,
   type Edge,
 } from '@xyflow/react';
-import { useCallback, type DragEvent } from 'react';
+import { useCallback, useEffect, type DragEvent } from 'react';
 import { BlockNode } from '../nodes/BlockNode';
 import { useStore } from '../store';
 import { CableEdge } from './CableEdge';
@@ -25,7 +25,15 @@ export function Canvas() {
   const isValid = useStore((s) => s.isValidConnection);
   const select = useStore((s) => s.select);
   const addBlock = useStore((s) => s.addBlock);
-  const { screenToFlowPosition } = useReactFlow();
+  const loadCount = useStore((s) => s.loadCount);
+  const { screenToFlowPosition, fitView } = useReactFlow();
+
+  // Al cargar un ejemplo o un circuito importado, encuádralo entero.
+  useEffect(() => {
+    if (!loadCount) return;
+    const id = requestAnimationFrame(() => void fitView({ padding: 0.2, maxZoom: 1, duration: 300 }));
+    return () => cancelAnimationFrame(id);
+  }, [loadCount, fitView]);
 
   const onDrop = useCallback(
     (e: DragEvent) => {

@@ -1,6 +1,6 @@
 import { bitsToString } from './dsp/bits';
 import { peak, rms } from './dsp/metrics';
-import { envelope } from './dsp/signal';
+import { envelope, interestingWindow } from './dsp/signal';
 import type { PortValue, ValueSummary } from './types';
 
 const PREVIEW_BINS = 160;
@@ -16,6 +16,7 @@ export function summarize(v: PortValue): ValueSummary {
       peak: peak(v.samples),
       rms: rms(v.samples),
       preview: envelope(v.samples, PREVIEW_BINS),
+      snippet: v.samples.slice(...interestingWindow(v.samples, Math.round(0.015 * v.sampleRate))),
     };
   }
   const duration = v.header.numSamples / v.header.sampleRate;

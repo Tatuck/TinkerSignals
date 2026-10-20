@@ -40,6 +40,8 @@ interface State {
   results: RunResult | null;
   running: boolean;
   assets: Record<string, AssetInfo>;
+  /** Se incrementa al cargar un circuito entero: el lienzo lo usa para encuadrarlo. */
+  loadCount: number;
 
   onNodesChange(changes: NodeChange<BlockNode>[]): void;
   onEdgesChange(changes: EdgeChange<CableEdge>[]): void;
@@ -65,6 +67,7 @@ export const useStore = create<State>((set, get) => ({
   results: null,
   running: false,
   assets: {},
+  loadCount: 0,
 
   onNodesChange: (changes) => set({ nodes: applyNodeChanges(changes, get().nodes) }),
   onEdgesChange: (changes) => set({ edges: applyEdgeChanges(changes, get().edges) }),
@@ -140,7 +143,7 @@ export const useStore = create<State>((set, get) => ({
   registerAsset: (id, info) => set({ assets: { ...get().assets, [id]: info } }),
 
   load(nodes, edges) {
-    set({ nodes, edges, selection: null });
+    set({ nodes, edges, selection: null, loadCount: get().loadCount + 1 });
   },
 }));
 
