@@ -1,0 +1,17 @@
+{
+  "title": "Filtro",
+  "summary": "Deja pasar solo las frecuencias graves, las agudas o una banda.",
+  "details": "Es un filtro IIR de segundo orden (biquad) que puedes encadenar varias veces para que corte más fuerte: cada etapa añade 12 dB por octava. La telefonía limita la voz a la banda 300–3400 Hz; prueba a recrearlo con un paso alto y un paso bajo.",
+  "tryThis": "Filtra una canción con un paso bajo a 3400 Hz: así suena por teléfono.",
+  "ref": "Tema 2.1, Ancho de banda",
+  "ports": { "in": "Entrada", "out": "Filtrada" },
+  "params": {
+    "type": { "label": "Tipo" },
+    "cutoff": { "label": "Frecuencia de corte" },
+    "q": { "label": "Factor Q", "help": "0,71 es plano; valores altos crean un pico en la frecuencia de corte." },
+    "stages": { "label": "Etapas", "help": "Más etapas, corte más brusco." }
+  },
+  "options": { "type": { "lowpass": "Paso bajo", "highpass": "Paso alto", "bandpass": "Paso banda" } },
+  "metrics": { "cutoff": "Corte", "slope": "Pendiente" },
+  "plots": { "response": "Respuesta en frecuencia", "wave": "Entrada vs filtrada" }
+}

@@ -1,0 +1,16 @@
+{
+  "title": "Codificador PCM",
+  "summary": "Convierte cada muestra en un código de n bits, con ley lineal, μ o A (G.711).",
+  "details": "PCM es la forma más directa de digitalizar: cada muestra se cuantiza y se escribe como un número binario. Con ley μ (EE. UU., Japón) o A (Europa), la amplitud se comprime con una curva logarítmica antes de cuantizar: las señales débiles, como la voz baja, reciben escalones más finos. G.711 usa 8 bits a 8 kHz = 64 kbps. La entropía indica cuántos bits por muestra harían falta de verdad: si es menor que n, un Huffman detrás puede comprimir más.",
+  "tryThis": "Remuestrea una voz a 8 kHz, codifícala con 8 bits ley μ (como el teléfono) y compárala con 8 bits lineal en la Salida.",
+  "ref": "Tema 2.1, Cuantización no uniforme, G.711",
+  "ports": { "in": "Señal", "out": "Bits" },
+  "params": {
+    "bits": { "label": "Bits por muestra" },
+    "law": { "label": "Ley de compresión" },
+    "mu": { "label": "Valor de μ", "help": "Solo para ley μ. G.711 usa μ = 255." }
+  },
+  "options": { "law": { "linear": "Lineal", "mu": "Ley μ", "a": "Ley A" } },
+  "metrics": { "entropy": "Entropía de los códigos" },
+  "plots": { "curve": "Curva de compresión" }
+}

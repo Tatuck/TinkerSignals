@@ -1,0 +1,19 @@
+{
+  "title": "Codificador por transformada",
+  "summary": "Pasa cada bloque de muestras a frecuencia (DCT), se queda con los coeficientes importantes y los cuantiza.",
+  "details": "En el dominio de la frecuencia la energía del audio se concentra en unos pocos coeficientes, así que se pueden descartar o cuantizar con pocos bits casi todos los demás. El precio es el retardo: para transformar un bloque de N muestras hay que esperar a tenerlas todas, así que el códec retrasa la señal N/fs. Bloques grandes resuelven mejor la frecuencia y comprimen más, pero retrasan más y emborronan los transitorios (pre-eco). Cada bloque envía un factor de escala de 16 bits y, si eliges los coeficientes mayores, también su posición.",
+  "tryThis": "Sube el tamaño de bloque de 64 a 1024 muestras con una voz a 16 kHz y mira el retardo en la Salida: de 4 ms a 64 ms.",
+  "ref": "Tema 3, Codificación por transformada, MPEG-1 Audio",
+  "ports": { "in": "Entrada", "out": "Reconstruida" },
+  "params": {
+    "blockSize": { "label": "Tamaño de bloque", "help": "Muestras por bloque. El retardo es tamaño / fs." },
+    "keep": { "label": "Coeficientes que se conservan" },
+    "selection": { "label": "Qué coeficientes" },
+    "bits": { "label": "Bits por coeficiente" }
+  },
+  "options": {
+    "blockSize": { "16": "16 muestras", "32": "32 muestras", "64": "64 muestras", "128": "128 muestras", "256": "256 muestras", "512": "512 muestras", "1024": "1024 muestras" },
+    "selection": { "low": "Los de baja frecuencia", "largest": "Los de mayor energía" } },
+  "metrics": { "blockSize": "Tamaño de bloque", "kept": "Coeficientes por bloque" },
+  "plots": { "wave": "Entrada vs reconstruida", "energy": "Energía media por coeficiente (resaltados: los que se conservan)" }
+}

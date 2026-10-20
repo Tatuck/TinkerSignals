@@ -1,0 +1,20 @@
+{
+  "title": "Codificador Huffman",
+  "summary": "Comprime sin perder nada: códigos cortos para los símbolos frecuentes y largos para los raros.",
+  "details": "Lee el flujo de entrada en símbolos de n bits (por defecto, los mismos que usó el codificador anterior), cuenta cuántas veces aparece cada uno y construye el árbol de Huffman. La longitud media del código nunca baja de la entropía, pero se queda a menos de 1 bit de ella. Para que el decodificador pueda leerlo, al principio se envía la longitud del código de cada símbolo (Huffman canónico). Funciona mejor cuanto más desigual es la distribución: el error de predicción de un DPCM se comprime mucho más que un PCM.",
+  "tryThis": "Pon Huffman detrás de un PCM y luego detrás de un DPCM con los mismos bits. ¿En cuál gana más? Pasa el ratón por las barras para ver los códigos.",
+  "ref": "Tema 2.2, Codificación Huffman",
+  "ports": { "in": "Bits", "out": "Bits comprimidos" },
+  "params": {
+    "symbolBits": { "label": "Tamaño de símbolo", "help": "«Automático» usa los bits por muestra del codificador anterior." }
+  },
+  "options": { "symbolBits": { "auto": "Automático", "4": "4 bits", "8": "8 bits", "12": "12 bits", "16": "16 bits" } },
+  "metrics": {
+    "gain": "Compresión de Huffman",
+    "avgLength": "Longitud media",
+    "symbolBits": "Bits por símbolo",
+    "distinct": "Símbolos distintos",
+    "maxLength": "Código más largo"
+  },
+  "plots": { "probabilities": "Probabilidad de los símbolos más frecuentes" }
+}

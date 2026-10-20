@@ -2,7 +2,7 @@ import { snr } from '@/engine/dsp/metrics';
 import { compareWaves } from '@/engine/dsp/plots';
 import { makeSignal } from '@/engine/dsp/signal';
 import { defineBlock } from '@/engine/types';
-import { quantizeUniform } from './quantize';
+import { quantizeUniform } from '@/engine/dsp/quantize';
 
 export default defineBlock({
   id: 'quantizer-uniform',

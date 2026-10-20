@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { snr } from '@/engine/dsp/metrics';
-import { quantizeUniform } from './quantize';
+import { quantizeUniform } from '@/engine/dsp/quantize';
 
 describe('cuantizador uniforme', () => {
   const fs = 8000;

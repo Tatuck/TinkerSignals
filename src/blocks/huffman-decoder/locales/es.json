@@ -1,0 +1,10 @@
+{
+  "title": "Decodificador Huffman",
+  "summary": "Recupera exactamente los bits originales a partir de los códigos Huffman.",
+  "details": "Reconstruye los códigos canónicos con las longitudes de la cabecera y lee el flujo bit a bit hasta encontrar un código válido. Como los códigos tienen longitud variable, un solo bit erróneo puede desalinear la lectura de todo lo que viene después: Huffman comprime muy bien pero es frágil ante errores de canal.",
+  "tryThis": "Mete un bloque «Errores de bit» con BER 0,0001 antes de este decodificador y compáralo con PCM sin Huffman.",
+  "ref": "Tema 2.2, Codificación Huffman",
+  "ports": { "in": "Bits comprimidos", "out": "Bits" },
+  "params": {},
+  "metrics": { "expansion": "Expansión" }
+}

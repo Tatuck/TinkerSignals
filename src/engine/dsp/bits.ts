@@ -79,3 +79,17 @@ export function bitsToString(bytes: Uint8Array, bitLength: number, max = 64): st
   }
   return bitLength > max ? s + ' …' : s;
 }
+
+const f32 = new DataView(new ArrayBuffer(4));
+
+/** Escribe un float de 32 bits (para coeficientes y escalas que viajan en el flujo). */
+export function writeFloat32(w: BitWriter, v: number): void {
+  f32.setFloat32(0, v);
+  w.write(f32.getUint32(0), 32);
+}
+
+export function readFloat32(r: BitReader): number {
+  f32.setUint32(0, r.read(32));
+  const v = f32.getFloat32(0);
+  return Number.isFinite(v) ? v : 0; // un error de canal puede convertirlo en NaN
+}

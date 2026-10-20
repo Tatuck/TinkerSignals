@@ -1,0 +1,13 @@
+{
+  "title": "Ruido (AWGN)",
+  "summary": "Suma ruido blanco gaussiano a la señal con la SNR que elijas.",
+  "details": "Modela el ruido de un canal analógico o de un micrófono malo. La potencia del ruido se calcula a partir de la de la señal para que la SNR sea la indicada. Sirve, por ejemplo, para ver cómo un vocoder LPC o un ADPCM se comportan con voz ruidosa.",
+  "tryThis": "Pon ruido a 10 dB antes de un DPCM y mira cómo baja la ganancia de predicción: el ruido no se puede predecir.",
+  "ref": "Tema 1, Canal",
+  "ports": { "in": "Entrada", "out": "Con ruido" },
+  "params": {
+    "snr": { "label": "Relación señal/ruido" },
+    "seed": { "label": "Semilla" }
+  },
+  "plots": { "wave": "Entrada vs con ruido" }
+}

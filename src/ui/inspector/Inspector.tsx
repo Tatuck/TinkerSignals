@@ -51,7 +51,14 @@ function NodeInspector({ id }: { id: string }) {
 
   const text = blockText(def.id);
   const color = categoryColor[def.category];
-  const params = Object.entries(def.params).filter(([, s]) => s.type !== 'audio');
+  const params = Object.entries(def.params).filter(
+    ([, s]) =>
+      s.type !== 'audio' &&
+      (!s.visibleIf ||
+        s.visibleIf.equals.includes(
+          (node.data.params[s.visibleIf.param] ?? def.params[s.visibleIf.param]?.default) as string | boolean,
+        )),
+  );
 
   return (
     <div className="node-inspector" style={{ '--cat': color } as CSSProperties}>

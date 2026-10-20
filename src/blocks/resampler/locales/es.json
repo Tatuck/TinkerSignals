@@ -1,0 +1,14 @@
+{
+  "title": "Remuestreo",
+  "summary": "Cambia la frecuencia de muestreo. Sin filtro antialiasing verás (y oirás) el aliasing.",
+  "details": "Según Nyquist, con fs muestras por segundo solo se pueden representar frecuencias hasta fs/2. Al bajar la frecuencia de muestreo, todo lo que esté por encima de la nueva fs/2 se «dobla» y aparece como frecuencias falsas (aliasing). Por eso se filtra paso bajo antes de diezmar. La gráfica superpone el espectro de entrada (gris) y el de salida (color): con el filtro, la salida se corta limpia en fs/2.",
+  "tryThis": "Conecta un Generador en modo «Barrido» a 16 kHz, baja a 4 kHz y desactiva el filtro: escucha cómo el tono sube, rebota y baja.",
+  "ref": "Tema 2.1, Muestreo y teorema de Nyquist",
+  "ports": { "in": "Entrada", "out": "Remuestreada" },
+  "params": {
+    "sampleRate": { "label": "Nueva frecuencia de muestreo", "help": "En Hz. La telefonía clásica usa 8000." },
+    "antialias": { "label": "Filtro antialiasing", "help": "Paso bajo a 0,45·fs antes de diezmar." }
+  },
+  "metrics": { "nyquist": "Frec. máxima (fs/2)", "ratio": "Relación" },
+  "plots": { "spectrum": "Espectro: entrada vs salida" }
+}

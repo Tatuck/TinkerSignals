@@ -2,7 +2,6 @@ import {
   Background,
   BackgroundVariant,
   Controls,
-  MiniMap,
   ReactFlow,
   useReactFlow,
   type Connection,
@@ -10,9 +9,7 @@ import {
 } from '@xyflow/react';
 import { useCallback, type DragEvent } from 'react';
 import { BlockNode } from '../nodes/BlockNode';
-import { registry } from '../registry';
 import { useStore } from '../store';
-import { categoryColor } from '../theme';
 import { CableEdge } from './CableEdge';
 
 const nodeTypes = { block: BlockNode };
@@ -65,16 +62,6 @@ export function Canvas() {
         <Background id="fine" variant={BackgroundVariant.Lines} gap={10} color="var(--grid-fine)" />
         <Background id="coarse" variant={BackgroundVariant.Lines} gap={50} color="var(--grid)" />
         <Controls showInteractive={false} />
-        <MiniMap
-          pannable
-          zoomable
-          nodeColor={(n) => {
-            const def = registry.get((n.data as { blockType: string }).blockType);
-            return def ? categoryColor[def.category] : '#999';
-          }}
-          maskColor="rgba(238, 242, 246, 0.7)"
-          style={{ width: 150, height: 96 }}
-        />
       </ReactFlow>
     </div>
   );

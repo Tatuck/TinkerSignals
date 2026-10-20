@@ -1,0 +1,13 @@
+{
+  "title": "Errores de bit",
+  "summary": "Simula un canal ruidoso: invierte bits al azar con la probabilidad que elijas (BER).",
+  "details": "La tasa de error de bit (BER) es la probabilidad de que cada bit llegue cambiado. Un canal de radio malo puede tener BER de 10⁻³; una fibra, 10⁻¹². La cabecera que acuerdan codificador y decodificador no se corrompe (en la vida real iría protegida), pero sí todo lo que viaja como bits, incluidos los coeficientes o tablas que el códec mete en el flujo. Cambia la semilla para repetir el experimento con otros errores.",
+  "tryThis": "Compara el mismo BER detrás de PCM, de DPCM, de ADPCM y de PCM + Huffman. ¿Cuál aguanta mejor?",
+  "ref": "Tema 1, Transmisión",
+  "ports": { "in": "Bits", "out": "Bits con errores" },
+  "params": {
+    "ber": { "label": "Tasa de error de bit (BER)", "help": "Probabilidad de error por bit." },
+    "seed": { "label": "Semilla", "help": "Otra semilla, otros errores." }
+  },
+  "metrics": { "flipped": "Bits erróneos", "berReal": "BER real" }
+}

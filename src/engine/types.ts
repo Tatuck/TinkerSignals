@@ -46,7 +46,12 @@ export type PortType = PortValue['kind'];
 
 // ─── Parámetros configurables de un bloque ──────────────────────────────────
 
-export interface NumberParam {
+/** Muestra el parámetro solo cuando otro tiene ciertos valores (p. ej. μ solo con ley μ). */
+interface ParamBase {
+  visibleIf?: { param: string; equals: readonly (string | boolean)[] };
+}
+
+export interface NumberParam extends ParamBase {
   type: 'number';
   default: number;
   min: number;
@@ -57,13 +62,13 @@ export interface NumberParam {
   scale?: 'linear' | 'log';
 }
 
-export interface SelectParam<T extends string = string> {
+export interface SelectParam<T extends string = string> extends ParamBase {
   type: 'select';
   default: T;
   options: readonly T[];
 }
 
-export interface BooleanParam {
+export interface BooleanParam extends ParamBase {
   type: 'boolean';
   default: boolean;
 }
@@ -72,7 +77,7 @@ export interface BooleanParam {
  * Referencia a un audio guardado fuera del grafo (archivo cargado o
  * grabación). El valor es un id de asset o null.
  */
-export interface AudioParam {
+export interface AudioParam extends ParamBase {
   type: 'audio';
   default: null;
   /** Cómo lo presenta la UI. */

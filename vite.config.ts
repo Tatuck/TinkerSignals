@@ -12,5 +12,8 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],
+    // Los bloques se autodescubren con import.meta.glob; la caché en disco de
+    // Vitest no se entera de carpetas nuevas, así que se desactiva.
+    fsModuleCache: false,
   },
 });
