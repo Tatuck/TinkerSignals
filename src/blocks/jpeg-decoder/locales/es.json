@@ -1,0 +1,11 @@
+{
+  "title": "Decodificador JPEG",
+  "summary": "Lee los bits JPEG y reconstruye la imagen: Huffman, zigzag inverso, descuantización, DCT inversa y vuelta a RGB.",
+  "details": "Hace los pasos del codificador al revés. Lee de la cabecera el tamaño, el color, el submuestreo y la calidad (con la que rehace las tablas), decodifica en cada bloque la DC diferencial y las parejas (racha, categoría) de los AC, multiplica cada coeficiente por su paso, aplica la DCT inversa y amplía el color. Si el flujo llega con errores, un código que no existe termina el bloque y sigue: como la DC es diferencial, un error se arrastra al resto de la fila y los colores se desplazan.",
+  "tryThis": "Pon errores de bit con una BER de 0,0001 antes del decodificador y mira cómo se rompe la imagen a partir de un punto.",
+  "concepts": ["JPEG", "Codificación DC y AC"],
+  "ports": { "in": "JPEG", "out": "Imagen" },
+  "params": {},
+  "metrics": { "quality": "Calidad leída", "badCodes": "Códigos ilegibles" },
+  "plots": {}
+}

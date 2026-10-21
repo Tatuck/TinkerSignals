@@ -555,6 +555,145 @@ export const concepts: Concept[] = [
     related: ['aliasing'],
   },
   {
+    id: 'imagen-digital',
+    title: 'Imagen digital',
+    aliases: ['Imagen digital', 'Píxel', 'Niveles de gris'],
+    body: [
+      'Una cámara proyecta la escena sobre una matriz de sensores. Digitalizar la imagen es, como con el sonido, muestrear y cuantizar: muestrear es dividir el plano en una rejilla de píxeles (la resolución) y cuantizar es dar a cada píxel uno de L niveles de gris.',
+      'Con b bits por píxel hay L = 2^b niveles; lo habitual son 8 bits (256 niveles, de 0 = negro a 255 = blanco). En color se guardan tres planos (rojo, verde y azul), así que una imagen sin comprimir ocupa ancho × alto × 3 bytes. Con pocos niveles aparecen escalones en las zonas suaves (falso contorno).',
+      'Las imágenes tienen tres tipos de redundancia que la compresión aprovecha: de código (unos niveles se repiten más que otros: Huffman), entre píxeles (los vecinos se parecen: predicción, DCT) y psicovisual (hay detalles que el ojo no aprecia: cuantización).',
+    ],
+    formulas: [
+      { tex: 'L = 2^{b}', caption: 'Niveles de gris con b bits por píxel.' },
+      {
+        tex: '\\text{Tamaño} = M \\cdot N \\cdot c \\cdot b \\ \\text{bits}',
+        caption: 'Imagen de M × N píxeles con c planos de color y b bits por muestra.',
+      },
+      {
+        tex: 'C_R = \\frac{n_1}{n_2}, \\qquad R_D = 1 - \\frac{1}{C_R}',
+        caption: 'Razón de compresión y redundancia relativa de datos.',
+      },
+    ],
+    blocks: ['image-source', 'image-file', 'image-pcm-encoder'],
+    related: ['cuantizacion', 'ycbcr', 'jpeg'],
+  },
+  {
+    id: 'ycbcr',
+    title: 'Color: YCbCr y submuestreo de crominancia',
+    aliases: ['YCbCr', 'Luminancia y crominancia', 'Submuestreo de crominancia'],
+    body: [
+      'El ojo tiene muchos más bastones (sensibles al brillo) que conos (sensibles al color), así que distingue mucho mejor el detalle de la luminancia que el del color. YCbCr separa una cosa de la otra: Y es el brillo y Cb y Cr cuánto se separan del gris el azul y el rojo.',
+      'Una vez separados, los planos de color se pueden guardar con menos resolución. La notación J:a:b cuenta muestras en un bloque de 4 × 2 píxeles: 4:4:4 no reduce nada; 4:2:2 guarda la mitad de color en horizontal; 4:2:0, la mitad en horizontal y en vertical; 4:1:1, la cuarta parte en horizontal. Con 4:2:0 la imagen pasa de 24 a 12 bits por píxel casi sin que se note.',
+    ],
+    formulas: [
+      {
+        tex: '\\begin{aligned} Y &= 0{,}299R + 0{,}587G + 0{,}114B \\\\ C_b &= 128 - 0{,}1687R - 0{,}3313G + 0{,}5B \\\\ C_r &= 128 + 0{,}5R - 0{,}4187G - 0{,}0813B \\end{aligned}',
+        caption: 'Conversión de JPEG (JFIF) para píxeles de 0 a 255.',
+      },
+      {
+        tex: '\\text{bits/píxel} = 8\\left(1 + \\frac{2}{f_x f_y}\\right)',
+        caption: 'Con el color reducido fx veces en horizontal y fy en vertical (4:2:0 → 12).',
+      },
+    ],
+    blocks: ['color-space', 'chroma-subsampling', 'chroma-upsampling'],
+    related: ['imagen-digital', 'jpeg'],
+  },
+  {
+    id: 'dct-2d',
+    title: 'DCT bidimensional',
+    aliases: ['DCT 2D', 'Compactación de energía'],
+    body: [
+      'La DCT 2D de un bloque de N × N píxeles se calcula aplicando la DCT de una dimensión a cada fila y luego a cada columna. Cada coeficiente F(u, v) mide cuánto se parece el bloque a un patrón de cosenos con u medias ondas en vertical y v en horizontal.',
+      'F(0, 0) es la DC: N veces el brillo medio del bloque. Los demás son AC y describen el detalle, más fino cuanto más lejos de la esquina. En las imágenes naturales los píxeles vecinos se parecen, así que casi toda la energía se concentra en unos pocos coeficientes de baja frecuencia (compactación de energía). La transformada no pierde nada; lo que se pierde es al cuantizar.',
+      'Se usa el coseno y no la DFT porque la DCT supone que el bloque se refleja en sus bordes: no hay saltos artificiales al repetirlo, y por eso concentra mejor la energía.',
+    ],
+    formulas: [
+      {
+        tex: 'F(u,v) = \\frac{2}{N} C(u) C(v) \\sum_{x=0}^{N-1} \\sum_{y=0}^{N-1} f(x,y) \\cos\\frac{(2x+1)u\\pi}{2N} \\cos\\frac{(2y+1)v\\pi}{2N}',
+        caption: 'DCT 2D ortonormal, con C(0) = 1/√2 y C(k) = 1 para k > 0. JPEG usa N = 8.',
+      },
+    ],
+    blocks: ['block-dct-2d', 'block-idct-2d'],
+    related: ['dct', 'jpeg'],
+  },
+  {
+    id: 'jpeg',
+    title: 'JPEG',
+    aliases: ['JPEG', 'Tabla de cuantización', 'Zigzag', 'Codificación DC y AC'],
+    body: [
+      'JPEG (1992) comprime fotografías con pérdidas en estos pasos: RGB a YCbCr, submuestreo del color, bloques de 8 × 8 con la DCT 2D, cuantización, recorrido en zigzag y codificación entrópica (Huffman o aritmética).',
+      'La cuantización divide cada coeficiente entre su paso Q(u, v) y redondea. La tabla tiene pasos pequeños en baja frecuencia y grandes en alta, y hay una más agresiva para el color. El factor de calidad escala la tabla entera.',
+      'El zigzag ordena los 64 coeficientes de baja a alta frecuencia para que los ceros queden juntos al final. La DC de cada bloque se codifica como diferencia con la del anterior: su categoría (cuántos bits ocupa) va en Huffman y después esos bits. Los AC se codifican como pares (racha de ceros, categoría) más los bits del valor; EOB indica que solo quedan ceros y ZRL una racha de 16 ceros.',
+      'Además del modo secuencial, JPEG tiene modo progresivo (varias pasadas de lo grueso a lo fino), jerárquico (varias resoluciones) y sin pérdidas (con predicción). JPEG 2000 cambia la DCT por wavelets.',
+    ],
+    formulas: [
+      {
+        tex: 'F_Q(u,v) = \\operatorname{round}\\!\\left(\\frac{F(u,v)}{Q(u,v)}\\right)',
+        caption: 'Cuantización; el decodificador multiplica de nuevo por Q(u, v).',
+      },
+      {
+        tex: 'S = \\begin{cases} 5000/q & q < 50 \\\\ 200 - 2q & q \\ge 50 \\end{cases}, \\quad Q = \\left\\lfloor \\frac{Q_{50} S + 50}{100} \\right\\rfloor',
+        caption: 'Escalado de la tabla con la calidad q (libjpeg del IJG).',
+      },
+      {
+        tex: '\\text{DIFF}_i = DC_i - DC_{i-1}, \\qquad \\text{categoría} = \\lceil \\log_2(|v| + 1) \\rceil',
+        caption: 'DC diferencial y categoría de un valor (los bits que necesita su magnitud).',
+      },
+    ],
+    blocks: ['jpeg-encoder', 'jpeg-decoder', 'dct-quantizer'],
+    related: ['dct-2d', 'ycbcr', 'huffman', 'calidad-imagen'],
+  },
+  {
+    id: 'calidad-imagen',
+    title: 'Calidad de imagen: PSNR y SSIM',
+    aliases: ['PSNR', 'SSIM'],
+    body: [
+      'El PSNR compara el error cuadrático medio con el valor máximo de un píxel (255) y lo expresa en dB. Por encima de unos 40 dB la diferencia no se ve; entre 30 y 40 es buena calidad; por debajo de 25 se notan los defectos.',
+      'El problema del PSNR es que solo suma errores: un leve cambio de brillo en toda la imagen y unos bloques muy visibles pueden dar el mismo valor. El SSIM compara en ventanas pequeñas el brillo medio, el contraste y la estructura, y vale 1 si las imágenes son iguales. Se ajusta mejor a lo que percibimos.',
+    ],
+    formulas: [
+      {
+        tex: '\\text{PSNR} = 10 \\log_{10} \\frac{255^2}{\\text{MSE}}, \\quad \\text{MSE} = \\frac{1}{MN} \\sum_{x,y} \\left(f - \\hat f\\right)^2',
+        caption: 'Relación señal a ruido de pico.',
+      },
+      {
+        tex: '\\text{SSIM}(a,b) = \\frac{(2\\mu_a\\mu_b + C_1)(2\\sigma_{ab} + C_2)}{(\\mu_a^2 + \\mu_b^2 + C_1)(\\sigma_a^2 + \\sigma_b^2 + C_2)}',
+        caption: 'Índice de semejanza estructural (Wang et al., 2004).',
+      },
+    ],
+    blocks: ['image-comparator'],
+    related: ['snr', 'jpeg'],
+  },
+  {
+    id: 'esteganografia',
+    title: 'Esteganografía',
+    aliases: ['Esteganografía', 'Bit menos significativo', 'Codificación de caracteres'],
+    body: [
+      'La criptografía hace que un mensaje no se entienda; la esteganografía hace que nadie sepa que existe. La técnica más sencilla es la LSB: cambiar el bit menos significativo de cada píxel o muestra de audio por un bit del mensaje.',
+      'Un píxel de 8 bits que cambia su último bit varía en ±1 sobre 255; una muestra de audio de 16 bits, en una parte entre 32768. No se ve ni se oye. Con k bits por muestra cabe k veces más, a costa de unos 6 dB menos de SNR por bit.',
+      'Es frágil: cualquier procesado que toque esos bits lo borra. La compresión con pérdidas (JPEG, MP3) elimina justo lo que no se percibe, que es donde estaba el mensaje. Las técnicas robustas esconden la información en los coeficientes de la transformada; las marcas de agua de los vídeos usan esa idea.',
+      'Un texto se convierte en bits con una codificación de caracteres: ASCII usa 7 bits por símbolo y UTF-8 usa 8 para esos mismos símbolos y más bytes para las letras con tilde o la ñ.',
+    ],
+    formulas: [
+      {
+        tex: "x' = (x \\wedge \\lnot(2^k - 1)) \\vee m",
+        caption: 'Se borran los k bits bajos de la muestra x y se ponen los k bits m del mensaje.',
+      },
+      {
+        tex: '\\text{Capacidad} = M \\cdot N \\cdot c \\cdot k \\ \\text{bits}',
+        caption: 'Bits que caben en una imagen de M × N con c canales usando k bits por muestra.',
+      },
+    ],
+    blocks: [
+      'lsb-hide-image',
+      'lsb-reveal-image',
+      'lsb-hide-audio',
+      'lsb-reveal-audio',
+      'text-source',
+    ],
+    related: ['imagen-digital', 'cuantizacion'],
+  },
+  {
     id: 'senales',
     title: 'Señales de prueba',
     aliases: ['Señales de prueba', 'DTMF', 'Concepto clave', 'Norma o algoritmo de referencia'],

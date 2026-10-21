@@ -27,7 +27,7 @@ export default defineBlock({
   category: 'utilidades',
   icon: '🧩',
 
-  // Puertos. Tipos: 'signal' (audio) o 'bitstream' (bits). Solo se pueden
+  // Puertos. Tipos: 'signal' (audio), 'bitstream' (bits), 'packets', 'frames' o 'image'. Solo se pueden
   // conectar puertos del mismo tipo. `optional: true` si puede ir sin conectar.
   inputs: { in: { type: 'signal' } },
   outputs: { out: { type: 'signal' } },

@@ -24,8 +24,18 @@ process({ inputs, params, getAsset }) => {
 
 - **Tipos de cable.** `signal` (muestras en [-1, 1] + frecuencia de muestreo),
   `bitstream` (bytes + longitud en bits + cabecera acordada + bits de referencia
-  PCM de 16 bits para el factor de compresión) y `packets` (el flujo de bits
-  troceado en paquetes con su instante de envío y de llegada).
+  PCM de 16 bits para el factor de compresión), `packets` (el flujo de bits
+  troceado en paquetes con su instante de envío y de llegada), `frames` (señal
+  troceada en tramas) e `image` (planos de píxeles de 0 a 255, o de
+  coeficientes DCT; cada plano con su tamaño, así viaja el color submuestreado).
+  Las matemáticas de imagen están en `src/engine/dsp/image.ts`.
+- **Flujos que no son audio.** Pon `sampleRate: 0` en la cabecera y
+  `unit: { name: 'píxel', count }`: la interfaz enseña bits por píxel (o por
+  carácter) en vez de bits por segundo. Los bits de referencia son los del
+  original sin comprimir (8 por píxel y canal, por ejemplo).
+- **Tipos de parámetro.** `number`, `select`, `boolean`, `text` (texto libre),
+  `audio` e `image` (el nodo enseña el botón de cargar archivo; el bloque lee
+  la imagen con `getExternal(id)`).
 - **Familias.** Si el bloque es parte de una pareja, pon `family` y
   `familyRole` (`encoder`/`decoder`): la paleta los agrupa en una sola tarjeta y
   permite añadir la pareja ya conectada. El nombre de la familia va en
@@ -45,7 +55,9 @@ process({ inputs, params, getAsset }) => {
   (si quieres variedad, ponla como parámetro).
 - **Gráficas.** Pocas y que se entiendan: la entrada en gris (`role: 'in'`) y la
   salida en el color del bloque (`role: 'out'`). `compareWaves` hace la gráfica
-  típica de entrada frente a salida.
+  típica de entrada frente a salida. Además de `line` y `bars` hay `image`
+  (RGBA; `toRgba` y `planeToRgba` la preparan) y `text`. Si un bloque no
+  devuelve gráficas, el nodo enseña una miniatura de su primera salida.
 
 ## Opcional: interior y lupa temporal
 

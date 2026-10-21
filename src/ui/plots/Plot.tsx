@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
 import type { LineSeries, Plot as PlotData, PlotRole } from '@/engine/types';
 import { t } from '@/i18n';
 import { errorSeriesColor, inputSeriesColor } from '../theme';
@@ -27,12 +27,50 @@ const roleColor = (role: PlotRole, color: string) =>
  * importante es ver la forma y comparar entrada (gris) con salida (color).
  */
 export const Plot = memo(function Plot({ plot, color, width, height, detailed }: Props) {
+  if (plot.kind === 'image') return <ImageView image={plot} width={width} height={height} />;
+  if (plot.kind === 'text') return <pre className="plot-text">{plot.text}</pre>;
   return plot.kind === 'line' ? (
     <LinePlot plot={plot} color={color} width={width} height={height} detailed={detailed} />
   ) : (
     <BarsPlot plot={plot} color={color} width={width} height={height} />
   );
 });
+
+/**
+ * Imagen RGBA en un canvas. Cabe en `width` de ancho; de alto se permite
+ * algo más que una gráfica (mín. 120 px), porque una imagen aplastada no se ve.
+ */
+export function ImageView({
+  image,
+  width,
+  height,
+}: {
+  image: { width: number; height: number; rgba: Uint8ClampedArray };
+  width: number;
+  height: number;
+}) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const ctx = ref.current?.getContext('2d');
+    if (!ctx || !image.width || !image.height) return;
+    ctx.putImageData(
+      new ImageData(new Uint8ClampedArray(image.rgba), image.width, image.height),
+      0,
+      0,
+    );
+  }, [image]);
+  const maxH = Math.max(height, 120);
+  const s = Math.min(width / image.width, maxH / image.height);
+  return (
+    <canvas
+      ref={ref}
+      className="plot-image"
+      width={image.width}
+      height={image.height}
+      style={{ width: image.width * s, height: image.height * s }}
+    />
+  );
+}
 
 function LinePlot({
   plot,

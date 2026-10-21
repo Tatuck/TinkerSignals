@@ -1,0 +1,13 @@
+{
+  "title": "Comparador de imágenes",
+  "summary": "Mide cuánto se parece la imagen procesada a la original: PSNR, SSIM, RMSE y la imagen del error.",
+  "details": "El RMSE es la raíz del error cuadrático medio entre píxeles, y el PSNR lo expresa en decibelios respecto al máximo posible (255): PSNR = 10·log10(255² / MSE). Por encima de unos 40 dB la diferencia no se ve; entre 30 y 40 dB es buena calidad; por debajo de 25 dB se notan los defectos. Pero el PSNR solo cuenta errores, no mira cómo son: el SSIM compara brillo, contraste y estructura en ventanas pequeñas y vale 1 si las imágenes son iguales. Se parece más a lo que ve el ojo. La salida es el error ampliado: gris medio donde no hay error, más claro u oscuro donde lo hay.",
+  "tryThis": "Compara un JPEG de calidad 20 con la original y sube la ganancia: verás los bordes de los bloques de 8 × 8 y el «ringing» alrededor de los contornos.",
+  "concepts": ["PSNR", "SSIM", "Medida de calidad"],
+  "ports": { "reference": "Original", "test": "Procesada", "error": "Error" },
+  "params": {
+    "gain": { "label": "Ganancia del error", "help": "Amplía las diferencias para poder verlas." }
+  },
+  "metrics": { "psnr": "PSNR", "ssim": "SSIM", "rmse": "RMSE", "maxError": "Error máximo" },
+  "plots": { "error": "Error ampliado (gris = sin error)" }
+}

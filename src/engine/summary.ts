@@ -1,5 +1,6 @@
 import { bitsToString } from './dsp/bits';
 import { peak, rms } from './dsp/metrics';
+import { toRgba } from './dsp/image';
 import { envelope, interestingWindow } from './dsp/signal';
 import type { PortValue, ValueSummary } from './types';
 
@@ -51,7 +52,26 @@ export function summarize(v: PortValue): ValueSummary {
       networkBitrate: (payloadBits + v.overheadBits) * pps,
     };
   }
-  const duration = v.header.numSamples / v.header.sampleRate;
+  if (v.kind === 'image') {
+    return {
+      kind: 'image',
+      width: v.width,
+      height: v.height,
+      color: v.color,
+      domain: v.domain,
+      planes: v.planes.map((p) => ({
+        width: p.crop?.width ?? p.width,
+        height: p.crop?.height ?? p.height,
+      })),
+      thumb: toRgba(v, 128),
+    };
+  }
+  const duration = v.header.sampleRate > 0 ? v.header.numSamples / v.header.sampleRate : 0;
+  // Los compresores sin pérdidas guardan la cabecera anterior en `inner`: la
+  // unidad (píxel, carácter) se busca también ahí.
+  let unit = v.header.unit;
+  for (let h = v.header.inner as typeof v.header | undefined; !unit && h; h = h.inner as never)
+    unit = h.unit;
   return {
     kind: 'bitstream',
     codec: v.header.codec,
@@ -59,5 +79,8 @@ export function summarize(v: PortValue): ValueSummary {
     bitrate: duration > 0 ? v.bitLength / duration : 0,
     compression: v.bitLength > 0 ? v.referenceBits / v.bitLength : 0,
     firstBits: bitsToString(v.bytes, v.bitLength),
+    ...(unit && unit.count > 0
+      ? { perUnit: { name: unit.name, bits: v.bitLength / unit.count } }
+      : {}),
   };
 }

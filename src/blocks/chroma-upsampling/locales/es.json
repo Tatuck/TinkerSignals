@@ -1,0 +1,11 @@
+{
+  "title": "Reconstruir crominancia",
+  "summary": "Devuelve Cb y Cr al tamaño de la imagen repitiendo cada muestra de color.",
+  "details": "El decodificador no puede inventar el detalle de color que se tiró: amplía los planos Cb y Cr repitiendo cada valor en los píxeles que representaba. Por eso los bordes entre colores quedan algo borrosos, aunque el ojo casi no lo nota porque el brillo (Y) conserva toda su resolución.",
+  "tryThis": "Compara con un Comparador de imágenes la original y la que sale de submuestrear y reconstruir: mira el PSNR con 4:2:0 y con 4:1:1.",
+  "concepts": ["Submuestreo de crominancia"],
+  "ports": { "in": "YCbCr reducida", "out": "YCbCr" },
+  "params": {},
+  "metrics": {},
+  "plots": {}
+}

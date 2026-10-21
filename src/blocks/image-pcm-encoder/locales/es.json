@@ -1,0 +1,16 @@
+{
+  "title": "PCM de imagen",
+  "summary": "Pasa cada píxel a bits con el número de niveles de gris que elijas, sin comprimir nada.",
+  "details": "Es la imagen «en bruto», como un BMP: cada píxel de cada plano se cuantiza a b bits (2^b niveles) y se escriben uno detrás de otro, fila a fila. Tamaño = ancho × alto × planos × b bits. Con pocos niveles aparecen escalones (falso contorno) en las zonas suaves. Este flujo es el punto de partida para los compresores sin pérdidas (Huffman, RLE, LZW, aritmética) y para esconderlo dentro de otra imagen.",
+  "tryThis": "Ejercicio 1 del tema 4: una imagen de 64 × 128 con 128 niveles de gris. Pon el degradado en grises a 64, elige 7 bits y calcula el tamaño a mano para comprobarlo.",
+  "concepts": ["Niveles de gris", "Cuantización", "Imagen digital"],
+  "ports": { "in": "Imagen", "out": "Bits" },
+  "params": {
+    "bits": {
+      "label": "Bits por píxel y plano",
+      "help": "2^bits niveles: 8 bits = 256 niveles, 1 bit = blanco y negro."
+    }
+  },
+  "metrics": { "levels": "Niveles", "size": "Tamaño", "psnr": "PSNR" },
+  "plots": { "preview": "Con estos niveles" }
+}

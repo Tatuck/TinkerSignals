@@ -1,0 +1,11 @@
+{
+  "title": "DCT 2D inversa",
+  "summary": "Vuelve de los coeficientes de cada bloque a los píxeles.",
+  "details": "Suma los patrones de cosenos de cada bloque, cada uno con el peso que dice su coeficiente, y vuelve a sumar 128. Si los coeficientes no se han tocado, la imagen sale idéntica: la DCT no pierde nada por sí sola. Lo que se pierde está en la cuantización de en medio.",
+  "tryThis": "Conecta la DCT directa y la inversa sin nada en medio y compara: el PSNR es enorme (solo errores de redondeo).",
+  "concepts": ["DCT 2D"],
+  "ports": { "in": "Coeficientes", "out": "Píxeles" },
+  "params": {},
+  "metrics": {},
+  "plots": {}
+}

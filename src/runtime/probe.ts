@@ -1,5 +1,6 @@
 import { bitsToString } from '@/engine/dsp/bits';
 import { averageSpectrumDb, spectrogramDb } from '@/engine/dsp/fft';
+import { toRgba, type Rgba } from '@/engine/dsp/image';
 import { envelope } from '@/engine/dsp/signal';
 import type { PortValue } from '@/engine/types';
 
@@ -29,6 +30,15 @@ export type ProbeData =
       loudestIndex: number;
       hop: number;
       sampleRate: number;
+    }
+  | {
+      kind: 'image';
+      /** La imagen a buen tamaño para verla en el panel. */
+      view: Rgba;
+      /** Cada plano por separado (Y, Cb, Cr…), en gris y a su tamaño real. */
+      planes: Rgba[];
+      /** Histograma de 64 grupos de cada plano (solo en píxeles). */
+      histograms: number[][];
     }
   | {
       kind: 'packets';
@@ -92,6 +102,26 @@ export function probe(v: PortValue): ProbeData {
       lostReasons: v.packets.map((p) => p.lostReason ?? null),
       overheadBits: v.overheadBits,
       payloadBits: v.packets[0]?.payloadBits ?? 0,
+    };
+  }
+  if (v.kind === 'image') {
+    return {
+      kind: 'image',
+      view: toRgba(v, 320),
+      planes:
+        v.planes.length > 1
+          ? v.planes.map((p) =>
+              toRgba({ ...v, color: 'gray', planes: [p], width: p.width, height: p.height }, 160),
+            )
+          : [],
+      histograms:
+        v.domain === 'pixels'
+          ? v.planes.map((p) => {
+              const h = new Array<number>(64).fill(0);
+              for (const x of p.data) h[Math.max(0, Math.min(63, Math.floor(x / 4)))]++;
+              return h;
+            })
+          : [],
     };
   }
   let ones = 0;

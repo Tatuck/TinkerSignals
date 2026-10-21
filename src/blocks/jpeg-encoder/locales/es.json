@@ -1,0 +1,22 @@
+{
+  "title": "Codificador JPEG",
+  "summary": "JPEG básico completo: YCbCr, submuestreo, DCT 8 × 8, cuantización, zigzag y Huffman. Salen los bits de verdad.",
+  "details": "Pasos: 1) RGB a YCbCr; 2) submuestreo del color; 3) cada plano en bloques de 8 × 8 con la DCT 2D; 4) cuantización con las tablas del anexo K escaladas por la calidad; 5) los 64 coeficientes se recorren en zigzag, de baja a alta frecuencia, para que los ceros queden juntos al final; 6) el coeficiente DC se codifica como diferencia con el del bloque anterior (DPCM), con su categoría (cuántos bits ocupa) en Huffman y después esos bits; 7) los AC se codifican como pares (racha de ceros, categoría) en Huffman más los bits del valor, con EOB cuando solo quedan ceros y ZRL para rachas de 16 ceros. La cabecera (tamaño, color, submuestreo y calidad) viaja dentro del flujo. La miniatura muestra cuántos coeficientes sobreviven en cada bloque: las zonas lisas son oscuras (casi todo cero) y los bordes, claros.",
+  "tryThis": "Con el paisaje, baja la calidad de 90 a 10 mirando los bits por píxel y la imagen decodificada. Luego mete un bloque de errores de bit entre codificador y decodificador.",
+  "concepts": ["JPEG", "Zigzag", "Codificación DC y AC", "Codificación Huffman"],
+  "ports": { "in": "Imagen", "out": "JPEG" },
+  "params": {
+    "quality": { "label": "Calidad", "help": "Escala las tablas de cuantización (1–100)." },
+    "subsampling": { "label": "Submuestreo del color" }
+  },
+  "metrics": {
+    "bpp": "Bits/píxel",
+    "compression": "Compresión",
+    "size": "Tamaño",
+    "zeros": "AC a cero",
+    "dcShare": "Bits en DC",
+    "acShare": "Bits en AC",
+    "chromaShare": "Bits en color"
+  },
+  "plots": { "detail": "Coeficientes no nulos por bloque (luminancia)" }
+}

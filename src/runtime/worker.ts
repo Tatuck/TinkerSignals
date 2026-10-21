@@ -11,6 +11,7 @@ import * as Comlink from 'comlink';
 import { createRegistry } from '@/blocks';
 import { logSpectralDistance, segmentalSnr, snr } from '@/engine/dsp/metrics';
 import { Engine } from '@/engine/evaluator';
+import { makeImage, makePlane, toRgba } from '@/engine/dsp/image';
 import type { Graph, ParamValue, Signal } from '@/engine/types';
 import { BENCH_FAMILIES, type BenchPoint } from './benchConfigs';
 import { probe } from './probe';
@@ -32,7 +33,19 @@ const api = {
   run: (graph: Graph, scope: Scope = 'main') => engines[scope].run(graph),
   setAsset: (id: string, samples: Float32Array, sampleRate: number) =>
     engines.main.setAsset(id, { kind: 'signal', samples, sampleRate }),
+  /** Registra una imagen cargada (RGBA del navegador) como imagen RGB del motor. */
+  setImageAsset(id: string, width: number, height: number, rgba: Uint8ClampedArray) {
+    const planes = [0, 1, 2].map(() => makePlane(width, height));
+    for (let i = 0; i < width * height; i++)
+      for (let c = 0; c < 3; c++) planes[c].data[i] = rgba[i * 4 + c];
+    engines.main.setExternal(id, makeImage(planes, 'rgb'));
+  },
   deleteAsset: (id: string) => engines.main.deleteAsset(id),
+  /** Imagen completa de una salida, lista para guardarla como PNG. */
+  getImage(nodeId: string, port: string, scope: Scope = 'main') {
+    const v = engines[scope].getValue(nodeId, port);
+    return v?.kind === 'image' ? toRgba(v, Infinity) : null;
+  },
   probeOutput(nodeId: string, port: string, scope: Scope = 'main') {
     const v = engines[scope].getValue(nodeId, port);
     return v ? probe(v) : null;

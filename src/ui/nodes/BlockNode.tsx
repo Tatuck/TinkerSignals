@@ -4,7 +4,7 @@ import type { AudioParam } from '@/engine/types';
 import { blockText, metricLabel, t } from '@/i18n';
 import { formatMetric } from '../lib/format';
 import { Envelope } from '../plots/Envelope';
-import { Plot } from '../plots/Plot';
+import { ImageView, Plot } from '../plots/Plot';
 import { registry } from '../registry';
 import { useGraphStore, type BlockNode as BlockNodeType } from '../store';
 import { categoryColor, outputSeriesColor, portColor } from '../theme';
@@ -12,6 +12,7 @@ import { BlockGlyph } from '../BlockGlyph';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { useLessonTarget } from '../lessons/LessonPanel';
 import { AssetWidget } from './AssetWidget';
+import { ImageWidget } from './ImageWidget';
 import { LibraryLoader } from './LibraryLoader';
 import { useInstant } from '../lib/useInstant';
 import { openInterior } from '../interior/openInterior';
@@ -47,6 +48,7 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
   const firstOut = outputs[0] && result?.outputs[outputs[0][0]];
   const audioParam = Object.entries(def.params).find(([, s]) => s.type === 'audio') as
     [string, AudioParam] | undefined;
+  const imageParam = Object.keys(def.params).find((k) => def.params[k].type === 'image');
 
   return (
     <div
@@ -180,6 +182,12 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
             </div>
           )}
 
+          {status === 'ok' && !instantPlot && !firstPlot && firstOut?.summary.kind === 'image' && (
+            <div className="node-plot">
+              <ImageView image={firstOut.summary.thumb} width={PLOT_W} height={PLOT_H} />
+            </div>
+          )}
+
           {status === 'ok' && highlights.length > 0 && (
             <dl className="node-metrics">
               {highlights.map((m) => {
@@ -209,6 +217,13 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
               paramKey={audioParam[0]}
               widget={audioParam[1].widget}
               assetId={data.params[audioParam[0]] as string | null}
+            />
+          )}
+          {imageParam && (
+            <ImageWidget
+              nodeId={id}
+              paramKey={imageParam}
+              assetId={data.params[imageParam] as string | null}
             />
           )}
           {def.id === 'output' && <OutputControls nodeId={id} />}

@@ -88,7 +88,7 @@ export function AssetWidget({
         <p className="asset-info">
           <strong>{info.name}</strong>
           <span>
-            {formatNumber(info.durationS, 1)} s, {formatRate(info.sampleRate)}
+            {formatNumber(info.durationS ?? 0, 1)} s, {formatRate(info.sampleRate ?? 0)}
           </span>
           {info.trimmedS && <span>{t('node.trimmed', { s: info.trimmedS })}</span>}
         </p>

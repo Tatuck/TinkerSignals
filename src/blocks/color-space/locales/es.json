@@ -1,0 +1,12 @@
+{
+  "title": "Espacio de color",
+  "summary": "Pasa la imagen de RGB a YCbCr (brillo + dos colores), a escala de grises o de vuelta a RGB.",
+  "details": "El ojo es mucho más sensible al brillo que al color. YCbCr separa las dos cosas: Y es la luminancia (Y = 0,299 R + 0,587 G + 0,114 B, una media ponderada que da más peso al verde, al que el ojo es más sensible) y Cb y Cr son las diferencias de azul y de rojo respecto a ella. La conversión no pierde nada por sí misma, pero deja la información de color aparte para poder reducirla sin que se note. Es el primer paso de JPEG y de casi todos los códecs de vídeo. Abre el cable de salida para ver los tres planos por separado.",
+  "tryThis": "Convierte el paisaje a YCbCr y abre el cable: el plano Y parece la foto en blanco y negro; Cb y Cr son casi lisos.",
+  "concepts": ["YCbCr", "Luminancia y crominancia"],
+  "ports": { "in": "Imagen", "out": "Imagen" },
+  "params": { "to": { "label": "Convertir a" } },
+  "options": { "to": { "ycbcr": "YCbCr", "rgb": "RGB", "gray": "Grises" } },
+  "metrics": {},
+  "plots": {}
+}

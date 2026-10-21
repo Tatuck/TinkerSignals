@@ -1,0 +1,15 @@
+{
+  "title": "Esconder en audio (LSB)",
+  "summary": "Esconde un flujo de bits en los bits más bajos de las muestras de audio de 16 bits.",
+  "details": "Cada muestra se pasa a un entero de 16 bits y sus k bits más bajos se cambian por los del mensaje. Con 1 bit, el ruido que se añade está 90 dB por debajo del máximo: inaudible. Cada bit más sube el ruido unos 6 dB, como al quitar un bit de cuantización. En un segundo de audio a 8 kHz caben 8000 bits por bit usado, unos 1000 caracteres.",
+  "tryThis": "Esconde un texto con 1 bit y luego con 8: escucha la salida y mira cómo baja la SNR. Después pasa el audio por un códec G.711 antes de revelar.",
+  "concepts": ["Esteganografía", "Bit menos significativo"],
+  "ports": { "cover": "Portador", "message": "Mensaje", "out": "Audio con mensaje" },
+  "params": { "bits": { "label": "Bits por muestra" } },
+  "metrics": {
+    "used": "Capacidad usada",
+    "snr": "SNR frente al original",
+    "capacity": "Capacidad"
+  },
+  "plots": { "wave": "Original, con mensaje y diferencia" }
+}

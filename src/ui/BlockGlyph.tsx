@@ -23,6 +23,8 @@ const paths: Record<BlockCategory, string> = {
   piezas: 'M10 2.8 16.5 6.4v7.2L10 17.2 3.5 13.6V6.4zM3.5 6.4 10 10l6.5-3.6M10 10v7.2',
   // Dos deslizadores.
   utilidades: 'M3 7h14M3 13h14M7 5v4M13 11v4',
+  // Marco con una montaña y un sol: una foto.
+  imagen: 'M3.5 4.5h13v11h-13zM3.5 13l4-4 3.5 3.5 2-2 3.5 3.5M13 8a1 1 0 1 0 0-.01z',
   // Auriculares.
   salida:
     'M4 13V10a6 6 0 0 1 12 0v3M4 12.5h2.5V17H5a1 1 0 0 1-1-1zM16 12.5h-2.5V17H15a1 1 0 0 0 1-1z',

@@ -1,0 +1,11 @@
+{
+  "title": "Archivo de imagen",
+  "summary": "Carga una foto tuya (PNG, JPEG…). Se reduce a 512 píxeles de lado como mucho.",
+  "details": "El navegador decodifica el archivo y lo convierte en tres matrices de píxeles (rojo, verde y azul) de 0 a 255. Si ya era un JPEG, lo que entra aquí es la imagen ya descomprimida: a partir de aquí la cadena trabaja con los píxeles, no con el archivo. El tamaño se redondea a un múltiplo de 16 para que encajen los bloques de 8 × 8 y el submuestreo 4:2:0.",
+  "tryThis": "Carga una foto con cielo y otra con mucho detalle (hojas, texto) y pásalas por el mismo JPEG: compara los bits por píxel.",
+  "concepts": ["Imagen digital", "Píxel"],
+  "ports": { "out": "Imagen" },
+  "params": { "image": { "label": "Imagen" } },
+  "metrics": { "pixels": "Píxeles", "rawSize": "Sin comprimir" },
+  "plots": {}
+}

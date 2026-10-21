@@ -1,0 +1,11 @@
+{
+  "title": "Revelar de imagen (LSB)",
+  "summary": "Lee los bits bajos de los píxeles y recupera el flujo de bits que se escondió.",
+  "details": "Recorre los píxeles en el mismo orden que el bloque que escondió el mensaje, junta sus k bits bajos y busca la marca del principio. Si la encuentra, lee la cabecera y la longitud y devuelve el flujo tal cual, listo para conectarlo a su decodificador (un Ver texto, un PCM de imagen…). Tiene que usar los mismos bits por muestra que al esconder.",
+  "tryThis": "Cambia los bits por muestra a un valor distinto del que se usó al esconder: no encuentra nada.",
+  "concepts": ["Esteganografía", "Bit menos significativo"],
+  "ports": { "in": "Imagen", "message": "Mensaje" },
+  "params": { "bits": { "label": "Bits por muestra" } },
+  "metrics": { "recovered": "Bits recuperados" },
+  "plots": { "lsb": "Plano de bits bajos (primer canal)" }
+}

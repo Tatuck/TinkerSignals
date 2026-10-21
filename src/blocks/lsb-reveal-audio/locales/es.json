@@ -1,0 +1,11 @@
+{
+  "title": "Revelar de audio (LSB)",
+  "summary": "Lee los bits bajos de las muestras de audio y recupera el mensaje escondido.",
+  "details": "Pasa cada muestra a 16 bits, junta sus k bits bajos y busca la marca con la que empieza el mensaje. Funciona mientras nadie toque las muestras: cualquier procesado (cambiar el volumen, remuestrear, comprimir) mueve esos bits y el mensaje se pierde.",
+  "tryThis": "Pon un bloque de ruido (AWGN) muy débil antes de revelar: aunque no se oiga, el mensaje ya no aparece.",
+  "concepts": ["Esteganografía", "Bit menos significativo"],
+  "ports": { "in": "Audio", "message": "Mensaje" },
+  "params": { "bits": { "label": "Bits por muestra" } },
+  "metrics": { "recovered": "Bits recuperados" },
+  "plots": {}
+}

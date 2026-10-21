@@ -1,0 +1,18 @@
+{
+  "title": "Cuantizador DCT",
+  "summary": "Divide cada coeficiente entre su paso de la tabla de cuantización y redondea: aquí es donde JPEG pierde información.",
+  "details": "Cada coeficiente F(u, v) se convierte en round(F(u, v) / Q(u, v)) y el decodificador lo multiplica otra vez por Q(u, v). La tabla Q de JPEG tiene pasos pequeños arriba a la izquierda (frecuencias bajas, que el ojo nota) y grandes abajo a la derecha (detalle fino, que casi no ve). Hay una tabla para la luminancia y otra, más agresiva, para el color. El factor de calidad escala la tabla entera: con 50 se usa tal cual, con 100 todos los pasos valen 1 y con calidades bajas los pasos crecen y casi todos los coeficientes se quedan en cero, que es lo que luego comprime tan bien la codificación por rachas.",
+  "tryThis": "Baja la calidad a 10 y mira el porcentaje de ceros. Cambia a la tabla uniforme con la misma calidad: los bordes se ven peor, porque trata igual a todas las frecuencias.",
+  "concepts": ["Tabla de cuantización", "JPEG"],
+  "ports": { "in": "Coeficientes", "out": "Coeficientes cuantizados" },
+  "params": {
+    "quality": {
+      "label": "Calidad",
+      "help": "1 = muy comprimida, 100 = casi sin pérdidas. Escala la tabla como la libjpeg."
+    },
+    "table": { "label": "Tabla" }
+  },
+  "options": { "table": { "jpeg": "JPEG (anexo K)", "uniform": "Uniforme" } },
+  "metrics": { "zeros": "Coeficientes a cero", "minStep": "Paso mínimo", "maxStep": "Paso máximo" },
+  "plots": { "table": "Tabla de luminancia (en orden de fila)" }
+}

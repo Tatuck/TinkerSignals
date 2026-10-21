@@ -17,6 +17,8 @@ servicios multimedia:
 - **Transformada y perceptuales**: DCT por bloques, MPEG-1 Layer I con modelo psicoacústico y subbandas tipo G.722.
 - **Sin pérdidas**: Huffman, codificación aritmética, LZW y RLE.
 - **Canal y red**: errores de bit, ruido, paquetes RTP, red IP con pérdidas y jitter, búfer de jitter.
+- **Imagen y JPEG**: espacio de color YCbCr, submuestreo de crominancia, DCT 2D por bloques, cuantizador con las tablas de JPEG, códec JPEG básico completo, PCM de imagen y comparador con PSNR y SSIM.
+- **Esteganografía**: esconder cualquier flujo de bits (un texto, otra imagen) en los bits bajos de una imagen o de un audio.
 
 Hay lecciones guiadas, experimentos ya montados, una biblioteca de sonidos
 (sintéticos y grabaciones de dominio público), enlaces para compartir
@@ -68,7 +70,7 @@ Ideas clave:
 
 - **Bloques atómicos.** Un bloque declara puertos, parámetros y una función
   pura `process`. Un fallo en un bloque solo marca ese nodo en rojo.
-- **Tres tipos de cable**: audio (`signal`), bits (`bitstream`) y paquetes de red (`packets`).
+- **Cinco tipos de cable**: audio (`signal`), bits (`bitstream`), paquetes de red (`packets`), tramas (`frames`) e imágenes (`image`).
 - **Los cables llevan datos reales.** Un codificador produce bits empaquetados
   (`Bitstream`) y el decodificador los lee, igual que un códec de verdad. Por
   eso un bloque de errores de canal estropea lo que estropearía en la realidad.

@@ -1,0 +1,19 @@
+{
+  "title": "Texto",
+  "summary": "Escribe un mensaje y sale como bits: 8 por carácter (UTF-8) o 7 (ASCII).",
+  "details": "Cada carácter se guarda con un código numérico. En ASCII hay 128 símbolos y basta con 7 bits; UTF-8 usa 8 bits para esos mismos símbolos y más bytes para letras como la ñ o las tildes. La entropía dice el mínimo teórico de bits por carácter si se codifica cada símbolo según su frecuencia: en un texto normal ronda los 4 bits, la mitad de los 8 que usa sin comprimir. Sirve para probar los compresores sin pérdidas o para esconder un mensaje con esteganografía.",
+  "tryThis": "Escribe «AAAAAAAAAB» y compara la entropía con la de una frase normal. Luego conéctalo a un Huffman y mira la longitud media.",
+  "concepts": ["Entropía", "Codificación de caracteres", "Esteganografía"],
+  "ports": { "out": "Bits" },
+  "params": {
+    "text": { "label": "Mensaje" },
+    "encoding": { "label": "Codificación" }
+  },
+  "options": { "encoding": { "utf-8": "UTF-8 (8 bits)", "ascii": "ASCII (7 bits)" } },
+  "metrics": {
+    "characters": "Caracteres",
+    "entropy": "Entropía/carácter",
+    "symbols": "Símbolos distintos"
+  },
+  "plots": { "freq": "Caracteres más frecuentes" }
+}

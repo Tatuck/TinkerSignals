@@ -4,8 +4,9 @@ import { engine } from '@/runtime/client';
 import type { ProbeData } from '@/runtime/probe';
 import { onPlaybackChange, play, stop } from '../lib/audio';
 import { formatMetric, formatNumber, formatRate } from '../lib/format';
+import { downloadPng } from '../lib/image';
 import { Envelope } from '../plots/Envelope';
-import { Plot } from '../plots/Plot';
+import { ImageView, Plot } from '../plots/Plot';
 import { Spectrogram, Spectrum } from '../plots/Spectrum';
 import { useGraphStore } from '../store';
 import { portColor } from '../theme';
@@ -111,6 +112,29 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
               />
               <Metric label="Protocolos" text={port.summary.protocol} />
             </>
+          ) : port.summary.kind === 'image' ? (
+            <>
+              <Metric label="Tamaño" text={`${port.summary.width} × ${port.summary.height} px`} />
+              <Metric label="Color" text={COLOR_LABEL[port.summary.color]} />
+              <Metric
+                label="Contenido"
+                text={port.summary.domain === 'dct' ? 'Coeficientes DCT' : 'Píxeles (0–255)'}
+              />
+              <Metric
+                label="Planos"
+                text={port.summary.planes.map((p) => `${p.width}×${p.height}`).join(' · ')}
+              />
+            </>
+          ) : port.summary.perUnit ? (
+            <>
+              <Metric
+                label={`Bits por ${port.summary.perUnit.name}`}
+                text={formatNumber(port.summary.perUnit.bits, 3)}
+              />
+              <Metric label={t('metrics.compression')} text={fmt(port.summary.compression, '×')} />
+              <Metric label="Bits totales" text={formatNumber(port.summary.bitLength, 0)} />
+              <Metric label="Formato" text={port.summary.codec} />
+            </>
           ) : (
             <>
               <Metric label={t('metrics.bitrate')} text={fmt(port.summary.bitrate, 'bps')} />
@@ -161,7 +185,7 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
             Unos: {formatNumber(data.onesRatio * 100, 1)} %. Lo que no viaja por el canal (la
             cabecera acordada) es:{' '}
             {Object.entries(data.header)
-              .map(([k, v]) => `${k} = ${String(v)}`)
+              .map(([k, v]) => `${k} = ${headerValue(v)}`)
               .join(', ')}
             .
           </p>
@@ -234,6 +258,53 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
         </>
       )}
 
+      {data?.kind === 'image' && (
+        <>
+          <section>
+            <ImageView image={data.view} width={W} height={W} />
+          </section>
+          <button
+            className="btn btn-primary btn-block"
+            onClick={async () => {
+              const img = await engine.getImage(edge.source, edge.sourceHandle ?? '', scope);
+              if (img) downloadPng(img, `${srcText?.title ?? 'imagen'}.png`);
+            }}
+          >
+            {t('probe.download')}
+          </button>
+          {data.planes.length > 0 && (
+            <section>
+              <h3>{t('probe.planes')}</h3>
+              <div className="probe-planes">
+                {data.planes.map((p, i) => (
+                  <figure key={i}>
+                    <ImageView image={p} width={W / 3 - 6} height={40} />
+                    <figcaption>
+                      {PLANE_LABEL[port!.summary.kind === 'image' ? port!.summary.color : 'rgb'][i]}
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            </section>
+          )}
+          {data.histograms.length > 0 && (
+            <section>
+              <h3>{t('probe.histogram')}</h3>
+              <Plot
+                plot={{ kind: 'bars', title: '', values: data.histograms[0] }}
+                color={color}
+                width={W}
+                height={70}
+                detailed
+              />
+              <p className="param-help">
+                Cuántos píxeles hay de cada nivel (de 0, negro, a 255, blanco) en el primer plano.
+              </p>
+            </section>
+          )}
+        </>
+      )}
+
       <footer className="insp-actions">
         <button className="btn btn-danger" onClick={() => removeEdge(edgeId)}>
           {t('probe.delete')}
@@ -242,6 +313,24 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
     </div>
   );
 }
+
+const COLOR_LABEL: Record<string, string> = {
+  gray: 'Escala de grises',
+  rgb: 'RGB',
+  ycbcr: 'YCbCr',
+};
+
+const PLANE_LABEL: Record<string, string[]> = {
+  gray: ['Gris'],
+  rgb: ['R', 'G', 'B'],
+  ycbcr: ['Y (luminancia)', 'Cb', 'Cr'],
+};
+
+const headerValue = (v: unknown) => {
+  if (typeof v !== 'object' || v === null) return String(v);
+  const json = JSON.stringify(v);
+  return json.length > 60 ? `${json.slice(0, 57)}…` : json;
+};
 
 const DOMAIN_LABEL: Record<string, string> = {
   time: 'Muestras en el tiempo',

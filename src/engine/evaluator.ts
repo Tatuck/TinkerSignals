@@ -173,7 +173,7 @@ export class Engine {
     const params = resolveParams(def.params, node.params);
     this.lastNodes.set(node.id, { type: node.type, params });
     const assetVersions = Object.entries(def.params)
-      .filter(([, s]) => s.type === 'audio' || s.type === 'external')
+      .filter(([, s]) => s.type === 'audio' || s.type === 'image' || s.type === 'external')
       .map(([k]) => {
         const id = params[k] as string | null;
         return `${k}=${id ? (this.assets.get(id)?.version ?? 'missing') : 'none'}`;

@@ -740,6 +740,10 @@ h4 {
   stroke-width: 5;
   stroke-dasharray: 0.5 4.5;
 }
+.cable-image {
+  stroke-width: 6;
+  stroke-dasharray: 14 3 2 3;
+}
 .cable-packets {
   stroke-dasharray: 10 6;
   stroke-width: 4;
@@ -877,7 +881,7 @@ h4 {
   margin-left: 3px;
 }
 
-/* Conectores: círculo = audio, cuadrado = bits, píldora = tramas, rombo = paquetes. */
+/* Conectores: círculo = audio, cuadrado = bits, píldora = tramas, rombo = paquetes, marco = imagen. */
 .handle.react-flow__handle {
   width: 13px;
   height: 13px;
@@ -896,6 +900,12 @@ h4 {
 }
 .handle.handle-packets.react-flow__handle {
   border-radius: 2px;
+}
+.handle.handle-image.react-flow__handle {
+  width: 16px;
+  height: 13px;
+  border-radius: 2px;
+  border-width: 3.5px;
 }
 .port-in .handle.handle-packets.react-flow__handle {
   transform: translate(-50%, -50%) rotate(45deg);
@@ -2081,4 +2091,54 @@ h4 {
   .node.is-target {
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent);
   }
+}
+
+/* Gráficas de imagen y de texto. */
+.plot-image {
+  display: block;
+  image-rendering: pixelated;
+  border-radius: 4px;
+  background: var(--well);
+}
+.plot-text {
+  margin: 0;
+  max-height: 160px;
+  overflow: auto;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--well);
+  font: 12px/1.45 var(--font-mono);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.param-text {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  border: 1px solid var(--control);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--text);
+  font: 13px/1.4 var(--font-mono);
+  resize: vertical;
+}
+.param-text:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.probe-planes {
+  display: flex;
+  gap: 8px;
+}
+.probe-planes figure {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+.probe-planes figcaption {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--muted);
 }

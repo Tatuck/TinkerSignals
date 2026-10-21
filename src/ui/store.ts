@@ -29,9 +29,13 @@ export type Selection = { kind: 'node'; id: string } | { kind: 'edge'; id: strin
 
 export interface AssetInfo {
   name: string;
-  durationS: number;
-  sampleRate: number;
+  /** Audio: duración y frecuencia de muestreo. */
+  durationS?: number;
+  sampleRate?: number;
   trimmedS?: number;
+  /** Imagen: tamaño en píxeles. */
+  width?: number;
+  height?: number;
 }
 
 export interface State {

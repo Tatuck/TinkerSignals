@@ -23,7 +23,35 @@ export function ParamControl({
   const help = text.params?.[name]?.help;
   const id = `param-${blockId}-${name}`;
 
-  if (spec.type === 'audio' || spec.type === 'external') return null; // se gestionan fuera del panel
+  // Audios e imágenes se cargan en el propio nodo; los valores externos no se tocan.
+  if (spec.type === 'audio' || spec.type === 'image' || spec.type === 'external') return null;
+
+  if (spec.type === 'text') {
+    const v = typeof value === 'string' ? value : spec.default;
+    const common = {
+      id,
+      value: v,
+      maxLength: spec.maxLength,
+      spellCheck: false,
+      onChange: (e: { target: { value: string } }) => onChange(e.target.value),
+    };
+    return (
+      <div className={`param${highlighted ? ' is-target' : ''}`}>
+        <label htmlFor={id}>
+          {label}
+          <output>
+            {v.length}/{spec.maxLength}
+          </output>
+        </label>
+        {spec.multiline ? (
+          <textarea {...common} rows={4} className="param-text" />
+        ) : (
+          <input {...common} type="text" className="param-text" />
+        )}
+        {help && <p className="param-help">{help}</p>}
+      </div>
+    );
+  }
 
   if (spec.type === 'number') {
     const v = typeof value === 'number' ? value : spec.default;

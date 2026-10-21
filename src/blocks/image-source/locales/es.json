@@ -1,0 +1,31 @@
+{
+  "title": "Imagen de prueba",
+  "summary": "Imágenes generadas por código para experimentar: zonas suaves, bordes, color, ruido y las matrices de los ejercicios.",
+  "details": "Una imagen digital es una matriz de píxeles. En escala de grises cada píxel es un número de 0 (negro) a 255 (blanco), es decir, 8 bits. En color hay tres matrices, una por canal (rojo, verde y azul), así que sin comprimir ocupa ancho × alto × 3 bytes. Cada imagen de prueba pone a prueba algo distinto: el paisaje tiene zonas suaves donde la DCT brilla, el tablero tiene bordes que hacen sufrir a JPEG, la placa zonal tiene frecuencias que suben hacia los bordes y delata el aliasing, el ruido no se puede comprimir y las barras enseñan qué pasa con el color al submuestrear la crominancia.",
+  "tryThis": "Elige «Ejercicio 7» y conecta un codificador PCM de imagen con 3 bits y un Huffman: la longitud media que da es la del ejercicio 7 del tema 4.",
+  "concepts": ["Imagen digital", "Píxel", "Niveles de gris"],
+  "ports": { "out": "Imagen" },
+  "params": {
+    "image": { "label": "Imagen" },
+    "size": {
+      "label": "Tamaño",
+      "help": "Lado en píxeles. Más grande = más detalle y más cálculo."
+    },
+    "color": { "label": "En color", "help": "Apagado: escala de grises (un solo plano)." }
+  },
+  "options": {
+    "image": {
+      "paisaje": "Paisaje (zonas suaves)",
+      "degradado": "Degradado de color",
+      "tablero": "Tablero (bordes)",
+      "zona": "Placa zonal (aliasing)",
+      "barras": "Barras de color",
+      "ruido": "Ruido",
+      "ejercicio-3": "Ejercicio 3 (5×5, 8 niveles)",
+      "ejercicio-7": "Ejercicio 7 (8×8, 8 niveles)"
+    },
+    "size": { "64": "64 × 64", "128": "128 × 128", "256": "256 × 256" }
+  },
+  "metrics": { "pixels": "Píxeles", "rawSize": "Sin comprimir" },
+  "plots": {}
+}

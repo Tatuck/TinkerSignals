@@ -47,7 +47,11 @@ export const CableEdge = memo(function CableEdge({
   }
   if (port?.summary.kind === 'bitstream') {
     const r = formatMetric(port.summary.bitrate, 'bps');
-    label = `${r.value} ${r.unit}`;
+    const u = port.summary.perUnit;
+    label = u ? `${formatMetric(u.bits, '').value} bits/${u.name}` : `${r.value} ${r.unit}`;
+  }
+  if (port?.summary.kind === 'image') {
+    label = `${port.summary.width}×${port.summary.height}${port.summary.domain === 'dct' ? ' DCT' : ''}`;
   }
 
   const color = portColor[type];

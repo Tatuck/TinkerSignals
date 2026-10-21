@@ -13,3 +13,13 @@ export async function setAsset(id: string, samples: Float32Array, sampleRate: nu
   const copy = samples.slice();
   await engine.setAsset(id, Comlink.transfer(copy, [copy.buffer]), sampleRate);
 }
+
+export async function setImageAsset(
+  id: string,
+  width: number,
+  height: number,
+  rgba: Uint8ClampedArray,
+) {
+  const copy = rgba.slice();
+  await engine.setImageAsset(id, width, height, Comlink.transfer(copy, [copy.buffer]));
+}

@@ -14,6 +14,7 @@ export const categoryColor: Record<BlockCategory, string> = {
   canal: '#566273',
   piezas: '#9A4777',
   utilidades: '#8A6A12',
+  imagen: '#6A4FC4',
   salida: '#1A1D23',
 };
 
@@ -28,6 +29,7 @@ export const categoryTint: Record<BlockCategory, string> = {
   canal: '#E6E9EE',
   piezas: '#F5E1EC',
   utilidades: '#F6EDCF',
+  imagen: '#ECE6FA',
   salida: '#E4E6EA',
 };
 
@@ -39,6 +41,7 @@ export const categoryOrder: BlockCategory[] = [
   'perceptual',
   'sin-perdidas',
   'canal',
+  'imagen',
   'piezas',
   'utilidades',
   'salida',
@@ -50,6 +53,7 @@ export const portColor: Record<PortType, string> = {
   bitstream: '#C98A00',
   packets: '#16895C',
   frames: '#B8336A',
+  image: '#6A4FC4',
 };
 
 /** El único color de datos: la salida de cada bloque en sus gráficas. */

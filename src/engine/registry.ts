@@ -60,7 +60,11 @@ export function resolveParams(
         out[key] = typeof v === 'boolean' ? v : spec.default;
         break;
       case 'audio':
+      case 'image':
         out[key] = typeof v === 'string' ? v : null;
+        break;
+      case 'text':
+        out[key] = typeof v === 'string' ? v.slice(0, spec.maxLength) : spec.default;
         break;
       case 'external':
         out[key] = typeof v === 'string' ? v : spec.default;

@@ -1,0 +1,16 @@
+{
+  "title": "Submuestreo de crominancia",
+  "summary": "Guarda el color (Cb y Cr) con menos resolución que el brillo: 4:2:2, 4:2:0 o 4:1:1.",
+  "details": "Como el ojo apenas distingue detalle en el color, los planos Cb y Cr se reducen haciendo la media de grupos de píxeles. La notación J:a:b describe un bloque de 4 píxeles de ancho y 2 filas: a es cuántas muestras de color hay en la primera fila y b en la segunda. 4:4:4 no reduce nada; 4:2:2 reduce el color a la mitad en horizontal; 4:2:0 a la mitad en horizontal y en vertical (lo típico en JPEG y en vídeo); 4:1:1 a la cuarta parte en horizontal. Con 4:2:0 la imagen pasa de 24 a 12 bits por píxel antes de comprimir nada, y casi no se nota.",
+  "tryThis": "Pon las barras de color y prueba 4:1:1: los bordes verticales entre colores se emborronan. En el paisaje, en cambio, no ves la diferencia.",
+  "concepts": ["Submuestreo de crominancia", "Luminancia y crominancia"],
+  "ports": { "in": "YCbCr", "out": "YCbCr reducida" },
+  "params": {
+    "scheme": {
+      "label": "Esquema",
+      "help": "Cuántas muestras de color se guardan por cada 4 × 2 píxeles."
+    }
+  },
+  "metrics": { "saved": "Datos ahorrados", "bitsPerPixel": "Bits/píxel" },
+  "plots": { "result": "Cómo se ve (color ampliado de nuevo)" }
+}

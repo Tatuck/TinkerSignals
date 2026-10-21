@@ -1,6 +1,6 @@
 import { ReactFlowProvider } from '@xyflow/react';
 import { useEffect } from 'react';
-import { setAsset } from '@/runtime/client';
+import { setAsset, setImageAsset } from '@/runtime/client';
 import { Canvas } from './canvas/Canvas';
 import { ErrorBoundary } from './ErrorBoundary';
 import { examples, instantiate } from './examples';
@@ -61,12 +61,17 @@ async function restoreAssets(nodes: BlockNode[]) {
     if (!def) continue;
     for (const [k, spec] of Object.entries(def.params)) {
       const v = n.data.params[k];
-      if (spec.type === 'audio' && typeof v === 'string') ids.add(v);
+      if ((spec.type === 'audio' || spec.type === 'image') && typeof v === 'string') ids.add(v);
     }
   }
   for (const id of ids) {
     const a = await loadAsset(id);
     if (!a) continue;
+    if (a.kind === 'image') {
+      await setImageAsset(id, a.width, a.height, a.rgba);
+      useStore.getState().registerAsset(id, { name: a.name, width: a.width, height: a.height });
+      continue;
+    }
     await setAsset(id, a.samples, a.sampleRate);
     useStore.getState().registerAsset(id, {
       name: a.name,

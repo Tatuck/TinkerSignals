@@ -22,8 +22,14 @@ export interface Signal {
 export interface BitstreamHeader {
   /** Identificador del formato, p. ej. 'pcm', 'dpcm', 'huffman'. */
   codec: string;
+  /** 0 si lo que viaja no es audio (una imagen, un texto). */
   sampleRate: number;
   numSamples: number;
+  /**
+   * Para lo que no es audio: qué unidad lleva el flujo y cuántas hay
+   * (p. ej. 'píxel' × 65536). La UI muestra entonces bits por unidad.
+   */
+  unit?: { name: string; count: number };
   [extra: string]: unknown;
 }
 
@@ -88,7 +94,37 @@ export interface Frames {
   window?: 'rect' | 'hann' | 'hamming' | 'sine';
 }
 
-export type PortValue = Signal | Bitstream | PacketStream | Frames;
+/** Un plano de una imagen (luminancia, un color…): valores fila a fila. */
+export interface ImagePlane {
+  width: number;
+  height: number;
+  data: Float32Array;
+  /**
+   * Tamaño útil cuando el plano está rellenado hasta un múltiplo del bloque
+   * (coeficientes DCT): al volver a píxeles se recorta a este tamaño.
+   */
+  crop?: { width: number; height: number };
+}
+
+/**
+ * Imagen. En el dominio de píxeles los valores van de 0 a 255; en el
+ * dominio 'dct' cada bloque guarda sus coeficientes. Cada plano puede tener
+ * su propio tamaño: así viaja la crominancia submuestreada (4:2:0…).
+ */
+export interface Image {
+  kind: 'image';
+  /** Tamaño de la imagen completa (el del primer plano). */
+  width: number;
+  height: number;
+  /** 'gray': 1 plano; 'rgb' y 'ycbcr': 3 planos en ese orden. */
+  color: 'gray' | 'rgb' | 'ycbcr';
+  domain: 'pixels' | 'dct';
+  planes: ImagePlane[];
+  /** Lado de los bloques de la transformada (solo en el dominio 'dct'). */
+  blockSize?: number;
+}
+
+export type PortValue = Signal | Bitstream | PacketStream | Frames | Image;
 export type PortType = PortValue['kind'];
 
 // ─── Parámetros configurables de un bloque ──────────────────────────────────
@@ -142,7 +178,23 @@ export interface ExternalParam extends ParamBase {
   default: string;
 }
 
-export type ParamSpec = NumberParam | SelectParam | BooleanParam | AudioParam | ExternalParam;
+/** Texto libre que escribe el usuario (un mensaje, una secuencia de símbolos). */
+export interface TextParam extends ParamBase {
+  type: 'text';
+  default: string;
+  maxLength: number;
+  /** Área de varias líneas en vez de un campo de una línea. */
+  multiline?: boolean;
+}
+
+/** Referencia a una imagen cargada por el usuario. El valor es un id de asset o null. */
+export interface ImageParam extends ParamBase {
+  type: 'image';
+  default: null;
+}
+
+export type ParamSpec =
+  NumberParam | SelectParam | BooleanParam | AudioParam | ExternalParam | TextParam | ImageParam;
 export type ParamSpecs = Record<string, ParamSpec>;
 
 /** Convierte la especificación de parámetros en el tipo de sus valores. */
@@ -157,7 +209,11 @@ export type ParamValues<P extends ParamSpecs> = {
           ? string | null
           : P[K] extends ExternalParam
             ? string
-            : never;
+            : P[K] extends TextParam
+              ? string
+              : P[K] extends ImageParam
+                ? string | null
+                : never;
 };
 
 // ─── Puertos ────────────────────────────────────────────────────────────────
@@ -238,6 +294,20 @@ export type Plot =
       labels?: string[];
       /** Índices de barras resaltadas (p. ej. coeficientes conservados). */
       highlight?: number[];
+    }
+  | {
+      /** Imagen ya lista para pintar (RGBA, 4 bytes por píxel). */
+      kind: 'image';
+      title: string;
+      width: number;
+      height: number;
+      rgba: Uint8ClampedArray;
+    }
+  | {
+      /** Texto tal cual (un mensaje recuperado, una tabla corta). */
+      kind: 'text';
+      title: string;
+      text: string;
     };
 
 export interface ProcessResult<O extends PortSpecs> {
@@ -259,7 +329,10 @@ export interface ProcessContext<I extends PortSpecs, P extends ParamSpecs> {
   params: ParamValues<P>;
   /** Busca un audio externo (archivo o grabación) por id. */
   getAsset(id: string): Signal | undefined;
-  /** Busca un valor inyectado desde fuera del grafo (cualquier tipo de cable). */
+  /**
+   * Busca un valor inyectado desde fuera del grafo, de cualquier tipo de
+   * cable: una imagen cargada, o las entradas de un circuito interior.
+   */
   getExternal(id: string): PortValue | undefined;
   /** Retardo acumulado (ms) con el que llega cada entrada. */
   inputLatencyMs?: Record<string, number>;
@@ -277,6 +350,7 @@ export type BlockCategory =
   | 'canal'
   | 'piezas'
   | 'utilidades'
+  | 'imagen'
   | 'salida';
 
 export interface BlockDefinition<
@@ -395,6 +469,19 @@ export type ValueSummary =
       compression: number;
       /** Primeros bits, para enseñarlos en el inspector del cable. */
       firstBits: string;
+      /** Bits por unidad cuando el flujo no es audio (bits/píxel, bits/carácter). */
+      perUnit?: { name: string; bits: number };
+    }
+  | {
+      kind: 'image';
+      width: number;
+      height: number;
+      color: Image['color'];
+      domain: Image['domain'];
+      /** Tamaño de cada plano (se ve el submuestreo de crominancia). */
+      planes: { width: number; height: number }[];
+      /** Miniatura RGBA (lado mayor ≤ 128 px). */
+      thumb: { width: number; height: number; rgba: Uint8ClampedArray };
     }
   | {
       kind: 'frames';

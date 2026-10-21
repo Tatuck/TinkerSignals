@@ -1,0 +1,14 @@
+{
+  "title": "DCT 2D por bloques",
+  "summary": "Divide cada plano en bloques (8 × 8 en JPEG) y pasa cada uno al dominio de la frecuencia.",
+  "details": "La DCT bidimensional se hace aplicando la DCT de una dimensión a cada fila del bloque y después a cada columna. El resultado tiene tantos coeficientes como píxeles: el de la esquina superior izquierda (DC) es el brillo medio del bloque y el resto (AC) dicen cuánto hay de cada patrón de cosenos, más finos cuanto más a la derecha (horizontal) y más abajo (vertical). En las imágenes naturales casi toda la energía cae en los coeficientes de arriba a la izquierda, y eso es lo que aprovecha JPEG. Antes de transformar se resta 128 a cada píxel para que la DC quede centrada en cero. Abre el cable de salida: cada bloque se ve como un cuadrado brillante en su esquina.",
+  "tryThis": "Mira la energía en baja frecuencia con el paisaje (alta) y con el ruido (baja). Prueba bloques de 4 y de 16.",
+  "concepts": ["DCT 2D", "Compactación de energía"],
+  "ports": { "in": "Píxeles", "out": "Coeficientes" },
+  "params": {
+    "blockSize": { "label": "Tamaño de bloque", "help": "Lado del bloque en píxeles. JPEG usa 8." }
+  },
+  "options": { "blockSize": { "4": "4 × 4", "8": "8 × 8", "16": "16 × 16" } },
+  "metrics": { "lowEnergy": "Energía AC en baja frec.", "blocks": "Bloques" },
+  "plots": {}
+}

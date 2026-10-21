@@ -1,0 +1,20 @@
+{
+  "title": "Esconder en imagen (LSB)",
+  "summary": "Esconde cualquier flujo de bits (un texto, otra imagen, audio comprimido) en los bits más bajos de los píxeles.",
+  "details": "Cada píxel de 8 bits tiene un bit menos significativo (LSB) que solo cambia su valor en ±1 sobre 255: nadie lo nota. La esteganografía sustituye esos bits por los del mensaje. Con 1 bit por píxel y canal caben ancho × alto × 3 bits; con más bits cabe más, pero empieza a verse. Antes del mensaje se guarda una marca y su cabecera, para que el revelador sepa dónde termina. La gráfica enseña el plano de los bits bajos: en una foto normal parece ruido, y donde está el mensaje cambia de textura. A diferencia del cifrado, aquí no se oculta el contenido sino que existe un mensaje.",
+  "tryThis": "Esconde un Texto y pasa la imagen por un JPEG antes de revelarla: el mensaje desaparece. La compresión con pérdidas borra justo lo que el ojo no ve, que es donde estaba escondido.",
+  "concepts": ["Esteganografía", "Bit menos significativo"],
+  "ports": { "cover": "Portadora", "message": "Mensaje", "out": "Imagen con mensaje" },
+  "params": {
+    "bits": {
+      "label": "Bits por muestra",
+      "help": "Cuántos bits bajos de cada píxel y canal se usan."
+    }
+  },
+  "metrics": {
+    "used": "Capacidad usada",
+    "psnr": "PSNR frente a la original",
+    "capacity": "Capacidad"
+  },
+  "plots": { "lsb": "Plano de bits bajos (primer canal)" }
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Ver texto",
+  "summary": "Convierte los bits otra vez en caracteres y enseña el mensaje.",
+  "details": "Lee los bits de 8 en 8 (o de 7 en 7 en ASCII) y busca el carácter de cada código. Si un error de canal ha cambiado algún bit, aparece otra letra o un símbolo raro; en UTF-8 un byte roto puede estropear el carácter entero.",
+  "tryThis": "Pon un bloque de errores de bit entre el Texto y este visor, y sube la BER poco a poco hasta que el mensaje deje de entenderse.",
+  "concepts": ["Codificación de caracteres"],
+  "ports": { "in": "Bits" },
+  "params": {},
+  "metrics": { "characters": "Caracteres", "unreadable": "Ilegibles" },
+  "plots": { "text": "Mensaje" }
+}

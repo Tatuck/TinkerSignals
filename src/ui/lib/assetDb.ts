@@ -1,5 +1,5 @@
 /**
- * Guarda en IndexedDB los audios cargados o grabados, para que sigan ahí al
+ * Guarda en IndexedDB los audios e imágenes cargados o grabados, para que sigan ahí al
  * recargar la página. Todo queda en el navegador de quien los grabó.
  * Si IndexedDB no está disponible (modo privado, permisos), no pasa nada:
  * simplemente no se guardan.
@@ -7,14 +7,14 @@
 const DB = 'tinkersignals';
 const STORE = 'assets';
 
-export interface StoredAsset {
+export type StoredAsset = {
   id: string;
   name: string;
-  sampleRate: number;
-  samples: Float32Array;
-  trimmedS?: number;
   savedAt: number;
-}
+} & (
+  | { kind?: 'audio'; sampleRate: number; samples: Float32Array; trimmedS?: number }
+  | { kind: 'image'; width: number; height: number; rgba: Uint8ClampedArray }
+);
 
 function open(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {

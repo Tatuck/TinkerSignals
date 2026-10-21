@@ -1,0 +1,11 @@
+{
+  "title": "Leer PCM de imagen",
+  "summary": "Rehace la imagen a partir de los bits: cada grupo de b bits es el nivel de un píxel.",
+  "details": "Lee los niveles en el mismo orden en que se escribieron y pone cada píxel en el centro de su intervalo de cuantización. El tamaño de la imagen y los bits por píxel van en la cabecera acordada, como en un archivo en bruto.",
+  "tryThis": "Conecta PCM de imagen → Huffman → Huffman (decodificador) → aquí: la imagen sale idéntica, porque Huffman no pierde nada.",
+  "concepts": ["Niveles de gris"],
+  "ports": { "in": "Bits", "out": "Imagen" },
+  "params": {},
+  "metrics": {},
+  "plots": {}
+}
