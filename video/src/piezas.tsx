@@ -351,7 +351,7 @@ export function Intro() {
   );
 }
 
-/** Cierre: el enlace al repositorio, con un cable de bits enchufado. */
+/** Cierre: la web, con un cable de bits enchufado, y el repositorio debajo. */
 export function Cierre() {
   const frame = useCurrentFrame();
   const { width: W, height: H } = useVideoConfig();
@@ -359,6 +359,7 @@ export function Cierre() {
   const a = aparece(frame, 4, 16);
   const b = aparece(frame, 12, 16);
   const c = aparece(frame, 20, 16);
+  const d = aparece(frame, 30, 16);
   const cable = interpolate(frame, [24, 46], [0, 1], {
     easing: Easing.inOut(Easing.cubic),
     extrapolateLeft: 'clamp',
@@ -400,21 +401,33 @@ export function Cierre() {
           position: 'absolute',
           left: izq,
           right: 0,
-          top: cuadrado ? 640 : 800,
+          top: cuadrado ? 610 : 720,
           display: 'flex',
           alignItems: 'center',
           opacity: c,
         }}
       >
-        <div style={{ fontSize: cuadrado ? 42 : 58, fontWeight: 500, color: C.ambar, letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>
-          github.com/Tatuck/TinkerSignals
+        <div style={{ fontSize: cuadrado ? 56 : 76, fontWeight: 600, color: C.ambar, letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>
+          tinkersignals.tatuck.com
         </div>
-        <div style={{ position: 'relative', width: cuadrado ? 76 : 96, height: 10, flex: 'none' }}>
-          <Conector forma="cuadrado" color={C.ambar} tam={cuadrado ? 34 : 42} style={{ left: '50%', top: '50%' }} />
+        <div style={{ position: 'relative', width: cuadrado ? 84 : 108, height: 10, flex: 'none' }}>
+          <Conector forma="cuadrado" color={C.ambar} tam={cuadrado ? 38 : 46} style={{ left: '50%', top: '50%' }} />
         </div>
         <div style={{ flex: 1, height: cuadrado ? 8 : 10, display: 'flex', justifyContent: 'flex-end' }}>
           <div style={{ width: `${cable * 100}%`, background: C.ambar }} />
         </div>
+      </div>
+      <div
+        style={{
+          position: 'absolute',
+          left: izq,
+          top: cuadrado ? 700 : 830,
+          fontSize: cuadrado ? 34 : 40,
+          opacity: d,
+          transform: `translateY(${(1 - d) * 16}px)`,
+        }}
+      >
+        Código: github.com/Tatuck/TinkerSignals
       </div>
     </AbsoluteFill>
   );
