@@ -14,7 +14,13 @@ npm run render                      # out/: MP4 16:9 y 1:1, GIF y póster
 ```
 
 - `scripts/capturar.mjs`: guion de cada escena (clics, deslizadores) y las cajas
-  de los elementos que luego encuadra la cámara.
+  de los elementos que luego encuadra la cámara. `taller` (bloques, cables y rayos
+  X de los bits), `dentro` (interior de MPEG-1), `aprender` (Explorar → ficha de
+  teoría → lección con predicción y tarea), `problema` (responder, corregir y ver
+  la solución paso a paso), `voip` y `esteganografia`. En `problema` se fija
+  `Math.random` para que los datos salgan siempre iguales y se calcula antes la
+  solución en una pasada sin grabar. `DPR=1 LENTO=1 OUT_DIR=file:///ruta/` sirve
+  para probar el guion deprisa sin tocar `public/capturas/`.
 - `src/Video.tsx`: capítulos, tramos, tiempos, planos de cámara y audio.
 - `src/piezas.tsx`: la columna de color de cada capítulo (el color y el conector
   de un tipo de cable de la app), la portada y el cierre.

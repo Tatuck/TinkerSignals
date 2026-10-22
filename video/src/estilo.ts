@@ -25,6 +25,9 @@ export const CABLE = {
   // No es un cable: es el color de la categoría «perceptual» (MPEG-1).
   perceptual: { color: '#B25F00', texto: '#ffffff', forma: 'circulo' },
   paquetes: { color: '#16895C', texto: '#ffffff', forma: 'rombo' },
+  // Tampoco son cables: los colores de las categorías «sin pérdidas» y «piezas».
+  sinPerdidas: { color: '#557A17', texto: '#ffffff', forma: 'circulo' },
+  piezas: { color: '#9A4777', texto: '#ffffff', forma: 'circulo' },
 } satisfies Record<string, Cable>;
 
 /** Medidas de la columna (16:9) y de la banda (1:1) donde va el capítulo. */

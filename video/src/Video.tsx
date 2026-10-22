@@ -3,7 +3,8 @@ import { Captura, holgura, union, type Caja, type Escena, type Plano } from './C
 import { BANDA, C, CABLE, COLUMNA } from './estilo';
 import { Campo, Cierre, Intro, type Capitulo } from './piezas';
 import taller from '../public/capturas/taller/escena.json';
-import leccion from '../public/capturas/leccion/escena.json';
+import aprender from '../public/capturas/aprender/escena.json';
+import problema from '../public/capturas/problema/escena.json';
 import voip from '../public/capturas/voip/escena.json';
 import esteganografia from '../public/capturas/esteganografia/escena.json';
 import dentro from '../public/capturas/dentro/escena.json';
@@ -15,8 +16,10 @@ const CAPITULOS: Capitulo[] = [
   { titulo: 'Únelos con cables', cable: CABLE.bits },
   { titulo: 'Mira dentro del cable', cable: CABLE.tramas },
   { titulo: 'Ábrelo por dentro', cable: CABLE.perceptual },
+  { titulo: 'Explora por temas', cable: CABLE.sinPerdidas },
   { titulo: 'Aprende la teoría', cable: CABLE.imagen },
-  { titulo: 'Resuelve ejercicios', cable: CABLE.onda },
+  { titulo: 'Sigue una lección', cable: CABLE.onda },
+  { titulo: 'Resuelve problemas', cable: CABLE.piezas },
   { titulo: 'Prueba lo especial', cable: CABLE.paquetes },
 ];
 
@@ -35,18 +38,24 @@ type Tramo = {
 };
 
 const T = taller as Escena;
-const L = leccion as Escena;
+const A = aprender as Escena;
+const P = problema as Escena;
 const V = voip as Escena;
 const E = esteganografia as Escena;
 const D = dentro as Escena;
 
 // Cajas que no se midieron al grabar (en píxeles CSS de la captura).
 const salidaT: Caja = { x: 1109, y: 436, w: 205, h: 207 };
-const cuantizador: Caja = { x: 750, y: 380, w: 310, h: 270 };
 const textoOculto: Caja = { x: 700, y: 330, w: 800, h: 560 };
 // Gráfica de bits por subbanda en el panel de la pieza de asignación de bits.
-const barras: Caja = { x: 1585, y: 430, w: 310, h: 222 };
-const formula: Caja = { x: 700, y: 190, w: 760, h: 440 };
+const barras: Caja = { x: 1585, y: 516, w: 310, h: 136 };
+// «Primeros bits» y «Qué dicen los bits» en el inspector del cable.
+const primerosBits: Caja = { x: 1568, y: 60, w: 344, h: 560 };
+const rayos: Caja = { x: 1568, y: 640, w: 344, h: 432 };
+// El nodo «Texto» de la lección, con su entropía.
+const nodoTexto: Caja = { x: 334, y: 504, w: 236, h: 214 };
+// La solución del problema cuando ya ha crecido el diálogo.
+const solucion: Caja = { x: 550, y: 560, w: 820, h: 470 };
 
 const TRAMOS: Tramo[] = [
   {
@@ -54,20 +63,20 @@ const TRAMOS: Tramo[] = [
     datos: T,
     capitulo: 0,
     frase: 'Fuentes, codificadores, canales y salidas: cada pieza es un bloque que sacas de la paleta.',
-    segundos: 5.8,
+    segundos: 4.8,
     tiempo: [
-      [0, 1.0],
-      [0.6, 1.75],
-      [1.9, 3.1],
-      [2.3, 4.65],
-      [3.5, 5.95],
-      [4.1, 9.1],
-      [5.4, 10.45],
-      [5.8, 10.9],
+      [0, 1.1],
+      [0.5, 1.75],
+      [1.6, 3.05],
+      [2.0, 4.65],
+      [3.0, 5.95],
+      [3.5, 9.15],
+      [4.6, 10.5],
+      [4.8, 10.8],
     ],
     planos: [
       { t: 0, caja: { x: 0, y: 340, w: 1100, h: 680 } },
-      { t: 4.6, caja: { x: 0, y: 340, w: 1340, h: 680 } },
+      { t: 3.9, caja: { x: 0, y: 340, w: 1340, h: 680 } },
     ],
   },
   {
@@ -75,36 +84,37 @@ const TRAMOS: Tramo[] = [
     datos: T,
     capitulo: 1,
     frase: 'Arrastra de un puerto a otro. Cada color de cable es un tipo de dato: audio, bits, paquetes…',
-    segundos: 5.0,
+    segundos: 4.2,
     tiempo: [
-      [0, 11.2],
-      [1.5, 13.9],
-      [3.0, 17.1],
-      [4.6, 21.7],
-      [5.0, 22.2],
+      [0, 11.1],
+      [1.3, 13.5],
+      [2.6, 16.6],
+      [4.0, 20.3],
+      [4.2, 20.7],
     ],
     planos: [
       { t: 0, caja: holgura(union(T.cajas.fuente, T.cajas.codificador), 40, 50) },
-      { t: 2.0, caja: holgura(union(T.cajas.codificador, T.cajas.decodificador), 40, 80) },
-      { t: 3.6, caja: holgura(union(T.cajas.decodificador, salidaT), 40, 50) },
+      { t: 1.8, caja: holgura(union(T.cajas.codificador, T.cajas.decodificador), 40, 80) },
+      { t: 3.2, caja: holgura(union(T.cajas.decodificador, salidaT), 40, 50) },
     ],
   },
   {
     escena: 'taller',
     datos: T,
     capitulo: 2,
-    frase: 'Pincha un cable y verás lo que lleva: la señal, su espectro o los bits uno a uno.',
+    frase: 'Pincha un cable y verás lo que lleva. Los rayos X te dicen qué significa cada bit.',
     segundos: 4.6,
     tiempo: [
-      [0, 23.6],
-      [1.0, 25.0],
-      [1.8, 26.2],
-      [4.6, 29.6],
+      [0, 22.1],
+      [0.9, 23.3],
+      [2.0, 26.0],
+      [2.6, 28.6],
+      [4.6, 34.6],
     ],
     planos: [
       { t: 0, caja: holgura(union(T.cajas.codificador, T.cajas.decodificador), 40, 90) },
-      { t: 2.4, caja: { x: 760, y: 56, w: 1152, h: 600 } },
-      { t: 3.9, caja: { x: 1560, y: 50, w: 360, h: 560 } },
+      { t: 1.7, caja: primerosBits },
+      { t: 3.2, caja: rayos },
     ],
   },
   {
@@ -112,108 +122,148 @@ const TRAMOS: Tramo[] = [
     datos: D,
     capitulo: 3,
     frase: 'Doble clic en un códec: dentro hay un circuito que también puedes medir y tocar.',
-    segundos: 8.6,
+    segundos: 6.4,
     tiempo: [
-      [0, 1.4],
-      [1.2, 2.7],
-      [2.4, 4.4],
-      [3.4, 7.1],
-      [4.8, 8.6],
-      [5.6, 11.8],
-      [6.6, 13.6],
-      [7.2, 15.2],
-      [8.6, 17.4],
+      [0, 1.6],
+      [0.9, 3.1],
+      [2.0, 5.0],
+      [2.6, 7.0],
+      [3.6, 8.8],
+      [4.2, 11.8],
+      [4.9, 12.8],
+      [5.4, 15.0],
+      [6.4, 17.6],
     ],
     planos: [
       { t: 0, caja: holgura(D.cajas.cadena, 30) },
-      { t: 2.0, caja: holgura(D.cajas.interior, 20) },
-      { t: 4.2, caja: { x: 700, y: 95, w: 1220, h: 800 } },
-      { t: 6.2, caja: holgura(union(D.cajas.asignacion, D.cajas.tasa, barras), 24) },
+      { t: 1.6, caja: holgura(D.cajas.interior, 20) },
+      { t: 3.3, caja: { x: 700, y: 95, w: 1220, h: 800 } },
+      { t: 4.9, caja: holgura(union(D.cajas.asignacion, D.cajas.tasa, barras), 24) },
     ],
   },
   {
-    escena: 'taller',
-    datos: T,
+    escena: 'aprender',
+    datos: A,
     capitulo: 4,
-    frase: 'Cada bloque enlaza con su ficha de teoría, con las fórmulas y los conceptos relacionados.',
+    frase: 'Diez temas, de la señal al JPEG, con teoría, lecciones, ejemplos y problemas en orden de estudio.',
+    segundos: 4.0,
+    tiempo: [
+      [0, 1.5],
+      [0.6, 2.3],
+      [2.0, 5.2],
+      [2.8, 6.6],
+      [4.0, 8.6],
+    ],
+    planos: [
+      { t: 0, caja: holgura(A.cajas.explorar, 24) },
+      { t: 3.0, caja: { x: 470, y: 180, w: 840, h: 540 } },
+    ],
+  },
+  {
+    escena: 'aprender',
+    datos: A,
+    capitulo: 5,
+    frase: 'Cada ficha trae sus fórmulas, los bloques para probarla y qué practicar después.',
+    segundos: 4.2,
+    tiempo: [
+      [0, 8.7],
+      [0.5, 9.4],
+      [2.0, 10.7],
+      [2.9, 12.3],
+      [4.2, 14.2],
+    ],
+    planos: [
+      { t: 0, caja: holgura(A.cajas.ficha, 20) },
+      { t: 1.5, caja: holgura(A.cajas.formula, 30, 50) },
+      { t: 3.2, caja: { x: 730, y: 560, w: 710, h: 340 } },
+    ],
+  },
+  {
+    escena: 'aprender',
+    datos: A,
+    capitulo: 6,
+    frase: 'Antes de tocar, adivina qué pasará. Luego mira el resultado en el circuito de verdad.',
     segundos: 4.6,
     tiempo: [
-      [0, 30.5],
-      [0.9, 32.0],
-      [1.8, 35.4],
-      [2.6, 36.4],
-      [4.6, 39.5],
+      [0, 18.2],
+      [0.6, 18.8],
+      [1.3, 21.6],
+      [1.9, 22.9],
+      [2.8, 25.9],
+      [3.3, 26.7],
+      [4.6, 28.8],
     ],
     planos: [
-      { t: 0, caja: { x: 600, y: 60, w: 1280, h: 960 } },
-      { t: 2.6, caja: holgura(T.cajas.teoria, 20) },
-      { t: 4.0, caja: formula },
+      { t: 0, caja: holgura(union(A.cajas.lecc1, A.cajas.cadena), 24) },
+      { t: 2.2, caja: holgura(union(A.cajas.lecc3, nodoTexto), 24) },
     ],
   },
   {
-    escena: 'leccion',
-    datos: L,
-    capitulo: 5,
-    frase: 'Lecciones guiadas con tareas que se comprueban solas. Aquí: sube a 8 bits y la SNR gana 24 dB.',
-    segundos: 6.0,
+    escena: 'problema',
+    datos: P,
+    capitulo: 7,
+    frase: 'Problemas de examen con números nuevos cada vez: se corrigen solos y la solución sale de los bloques.',
+    segundos: 5.2,
     tiempo: [
-      [0, 2.8],
-      [0.9, 3.8],
-      [1.5, 7.2],
-      [2.0, 12.6],
-      [4.0, 16.5],
-      [4.8, 17.6],
-      [5.2, 19.2],
-      [6.0, 20.4],
+      [0, 4.6],
+      [0.5, 5.3],
+      [1.4, 12.3],
+      [2.0, 14.0],
+      [2.5, 16.6],
+      [3.1, 18.6],
+      [3.6, 19.5],
+      [4.1, 21.3],
+      [5.2, 24.6],
     ],
     planos: [
-      { t: 0, caja: holgura(union(L.cajas.leccion, L.cajas.cadena), 30) },
-      { t: 2.2, caja: holgura(union(cuantizador, L.cajas.ajuste), 30) },
-      { t: 4.7, caja: holgura(union(L.cajas.leccion, cuantizador), 30) },
+      { t: 0, caja: holgura(P.cajas.problema, 30) },
+      { t: 1.1, caja: holgura(P.cajas.respuestas, 24) },
+      { t: 3.4, caja: holgura(P.cajas.bien, 24) },
+      { t: 4.6, caja: solucion },
     ],
   },
   {
     escena: 'voip',
     datos: V,
-    capitulo: 6,
+    capitulo: 8,
     frase: 'Paquetes por una red IP. Escucha la voz con un 1 % de pérdidas… y con un 20 %.',
-    segundos: 4.6,
+    segundos: 4.2,
     tiempo: [
-      [0, 2.6],
-      [0.8, 3.5],
-      [3.4, 9.9],
-      [4.6, 11.4],
+      [0, 2.7],
+      [0.7, 3.5],
+      [3.1, 10.0],
+      [4.2, 11.4],
     ],
     planos: [
       { t: 0, caja: holgura(V.cajas.tramo, 30) },
-      { t: 1.6, caja: holgura(union(V.cajas.red, V.cajas.ajuste), 30) },
-      { t: 4.0, caja: holgura(V.cajas.red, 50) },
+      { t: 1.4, caja: holgura(union(V.cajas.red, V.cajas.ajuste), 30) },
+      { t: 3.7, caja: holgura(V.cajas.red, 50) },
     ],
     voces: [
-      { archivo: 'voip-1', desde: 0.1, hasta: 1.9, inicio: 0.4 },
-      { archivo: 'voip-20', desde: 1.9, hasta: 4.6, inicio: 2.2 },
+      { archivo: 'voip-1', desde: 0.1, hasta: 1.8, inicio: 0.4 },
+      { archivo: 'voip-20', desde: 1.8, hasta: 4.2, inicio: 2.1 },
     ],
   },
   {
     escena: 'esteganografia',
     datos: E,
-    capitulo: 6,
+    capitulo: 8,
     frase: 'Esconde un texto en el último bit de cada píxel: la foto no cambia y el mensaje sale intacto.',
-    segundos: 4.6,
+    segundos: 3.6,
     tiempo: [
-      [0, 2.4],
-      [1.0, 3.6],
-      [4.6, 8.6],
+      [0, 4.9],
+      [0.9, 6.0],
+      [3.6, 9.9],
     ],
     planos: [
       { t: 0, caja: holgura(E.cajas.circuito, 20) },
-      { t: 4.2, caja: textoOculto },
+      { t: 3.0, caja: textoOculto },
     ],
   },
 ];
 
-const INTRO = Math.round(4.0 * FPS);
-const CIERRE = Math.round(4.6 * FPS);
+const INTRO = Math.round(3.4 * FPS);
+const CIERRE = Math.round(3.8 * FPS);
 /** Fotograma en que empieza cada tramo; el último es el del cierre. */
 const CORTES: number[] = [INTRO];
 for (const t of TRAMOS) CORTES.push(CORTES[CORTES.length - 1] + Math.round(t.segundos * FPS));

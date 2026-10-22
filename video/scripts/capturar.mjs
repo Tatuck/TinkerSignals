@@ -22,7 +22,7 @@ const URL_APP = process.env.APP_URL ?? 'http://localhost:4173/';
 const VIEW = { width: 1920, height: 1080 };
 const DPR = Number(process.env.DPR ?? 3);
 const LENTO = Number(process.env.LENTO ?? 6);
-const OUT = new URL('../public/capturas/', import.meta.url);
+const OUT = new URL(process.env.OUT_DIR ?? '../public/capturas/', import.meta.url);
 
 /** Mismo formato que src/ui/lib/share.ts: JSON compacto, deflate y base64url. */
 function enlace(nodes, edges) {
@@ -221,6 +221,25 @@ const abrir = (nodes, edges) => async (page) => {
   await page.waitForTimeout(2500);
 };
 
+/** Math.random fijo: el problema sale siempre con los mismos datos (la semilla es lo único al azar). */
+const AZAR_FIJO = '{ Math.random = () => 0.4242; }';
+
+/** Abre un problema sin grabar, pide la solución y devuelve las respuestas esperadas. */
+async function solucionDe(browser, titulo) {
+  const context = await browser.newContext({ viewport: VIEW });
+  const page = await context.newPage();
+  await page.addInitScript(AZAR_FIJO);
+  await abrir()(page);
+  await page.getByRole('button', { name: 'Problemas', exact: true }).first().click();
+  await page.locator('.explore-item').filter({ hasText: titulo }).first().click();
+  await page.waitForTimeout(1500);
+  await page.locator('.problem').getByRole('button', { name: 'Ver solución' }).click();
+  const r = await page.locator('.answer-solution strong').allInnerTexts();
+  await context.close();
+  if (!r.length || r.includes('—')) throw new Error(`Sin solución para ${titulo}`);
+  return r;
+}
+
 const block = (page, titulo) =>
   page.locator('.react-flow__node').filter({ hasText: titulo }).first();
 const salida = (nodo) => nodo.locator('.react-flow__handle.source').first();
@@ -316,50 +335,176 @@ const ESCENAS = {
         await ui.caja('sonda', page.locator('.inspector'));
         await ui.rueda(page.locator('.inspector'), 700);
         ui.marca('bits');
-        await ui.espera(1600);
+        await ui.espera(1400);
 
-        // La teoría del codificador.
-        await ui.clic(nEnc.locator('.node-title'), 800);
+        // Rayos X: qué campo es cada bit.
+        const visor = page.locator('.bits-viewer');
+        const arriba = (await page.locator('.inspector').boundingBox()).y;
+        await ui.rueda(page.locator('.inspector'), (await visor.boundingBox()).y - arriba - 12, 8);
+        ui.marca('rayos');
+        await ui.espera(600);
+        await ui.caja('rayos', visor);
+        await ui.ir(visor.locator('.bits-legend li').first(), 700);
         await ui.espera(500);
-        await ui.rueda(page.locator('.inspector'), 900);
-        await ui.espera(300);
-        await ui.clic(page.locator('.concept-link').first(), 700);
-        ui.marca('teoria');
-        await ui.espera(1200);
-        await ui.caja('teoria', page.locator('.theory'));
-        await ui.rueda(page.locator('.theory'), 380, 8);
-        ui.marca('formulas');
-        await ui.espera(2200);
+        await ui.ir(visor.locator('.bits-table tbody tr').nth(1), 700);
+        await ui.espera(500);
+        await ui.clic(visor.getByRole('button', { name: 'Tramas siguientes' }), 800);
+        ui.marca('tramas');
+        await ui.espera(1800);
       },
     );
   },
 
-  /** Una lección guiada: lee el paso, cumple la tarea (8 bits) y sigue. */
-  async leccion(browser) {
-    await grabar(browser, 'leccion', abrir(), async (ui) => {
+  /**
+   * Explorar por temas → la ficha de teoría → «Para practicarlo» → la lección
+   * «Entropía y Huffman»: teoría incrustada, una predicción y una tarea.
+   */
+  async aprender(browser) {
+    await grabar(browser, 'aprender', abrir(), async (ui) => {
       const { page } = ui;
       await ui.espera(300);
-      await ui.clic(page.locator('summary', { hasText: 'Lecciones' }), 700);
-      await ui.espera(300);
-      await ui.clic(page.getByRole('button', { name: /Cuantización: 6 dB/ }).first(), 600);
-      ui.marca('abierta');
-      await ui.espera(1500);
-      await ui.caja('leccion', page.locator('.lesson'));
-      await ui.caja('cadena', page.locator('.react-flow__node'));
-      await ui.clic(page.getByRole('button', { name: 'Siguiente' }), 700);
-      ui.marca('tarea');
-      await ui.espera(1000);
-      const q = block(page, 'Cuantizador uniforme');
-      await ui.clic(q.locator('.node-title'), 700);
-      await ui.espera(400);
-      await ui.caja('ajuste', page.locator('.inspector .param').first());
-      await ui.deslizar(page.locator('.inspector input[type=range]').first(), [6, 8], 1300);
-      ui.marca('hecho');
+      await ui.clic(page.getByRole('button', { name: 'Explorar', exact: true }).first(), 700);
+      ui.marca('explorar');
+      await ui.espera(900);
+      const dialogo = page.locator('.theory.explore');
+      await ui.caja('explorar', dialogo);
+      await ui.caja('temas', dialogo.locator('.theory-index'));
+      await ui.rueda(dialogo.locator('.explore-body'), 900, 8);
+      await ui.espera(500);
+      await ui.clic(dialogo.locator('.theory-index button').filter({ hasText: 'Compresión sin pérdidas' }), 800);
+      ui.marca('tema');
+      await ui.espera(1300);
+      await ui.caja('fichas', dialogo.locator('.explore-items').first());
+      await ui.clic(dialogo.locator('.explore-item').filter({ hasText: 'Codificación Huffman' }).first(), 800);
+      ui.marca('teoria');
+      await ui.espera(1600);
+      await ui.caja('ficha', dialogo.locator('.explore-body'));
+      await ui.caja('formula', dialogo.locator('.formula-card').first());
+      const practica = dialogo.locator('.explore-body h3', { hasText: 'Para practicarlo' });
+      const cuerpo = await dialogo.locator('.explore-body').boundingBox();
+      await ui.rueda(dialogo.locator('.explore-body'), (await practica.boundingBox()).y - cuerpo.y - 140, 10);
+      ui.marca('practicar');
       await ui.espera(1200);
-      await ui.clic(page.getByRole('button', { name: 'Siguiente' }), 700);
-      ui.marca('siguiente');
-      await ui.espera(2000);
+      await ui.caja('practica', dialogo.locator('.explore-body section').last());
+      await ui.clic(dialogo.locator('.explore-item').filter({ hasText: 'Entropía y Huffman' }).first(), 800);
+      ui.marca('leccion');
+      await ui.espera(1800);
+
+      // La lección: teoría incrustada en el paso.
+      const leccion = page.locator('.lesson');
+      await ui.caja('cadena', page.locator('.react-flow__node'));
+      await ui.clic(leccion.locator('.concept-card summary'), 800);
+      ui.marca('incrustada');
+      await ui.espera(1800);
+      await ui.caja('lecc1', leccion);
+      await ui.clic(leccion.getByRole('button', { name: 'Siguiente' }), 700);
+      ui.marca('prediccion');
+      await ui.espera(1600);
+      await ui.caja('lecc2', leccion);
+      await ui.clic(leccion.locator('.predict-option').nth(1), 800);
+      ui.marca('acierto');
+      await ui.espera(2200);
+      await ui.caja('lecc3', leccion);
+      await ui.clic(leccion.getByRole('button', { name: 'Siguiente' }), 700);
+      await ui.espera(900);
+      await ui.clic(leccion.getByRole('button', { name: 'Siguiente' }), 700);
+      ui.marca('tarea');
+      await ui.espera(1200);
+      await ui.caja('lecc4', leccion);
+
+      // La tarea: un mensaje casi sin sorpresa.
+      const texto = page.locator('.inspector textarea').first();
+      await ui.caja('mensaje', texto);
+      await ui.clic(texto, 800);
+      await page.keyboard.press('Control+A');
+      await ui.espera(200);
+      for (const ch of 'AAAAAAAAAB') {
+        await page.keyboard.type(ch);
+        await ui.espera(70);
+      }
+      ui.marca('escrito');
+      await ui.espera(1800);
+      await ui.caja('cumplida', leccion);
+      await ui.clic(leccion.getByRole('button', { name: 'Siguiente' }), 700);
+      ui.marca('prediccion2');
+      await ui.espera(1200);
+      await ui.clic(leccion.locator('.predict-option').nth(1), 800);
+      ui.marca('acierto2');
+      await ui.espera(2200);
+      await ui.caja('lecc5', leccion);
+      await ui.caja('cadena2', page.locator('.react-flow__node'));
     });
+  },
+
+  /** Un problema con datos al azar: responder, corregir y ver la solución con la tabla del bloque real. */
+  async problema(browser) {
+    const respuestas = await solucionDe(browser, 'Códigos PCM de unas muestras');
+    await grabar(
+      browser,
+      'problema',
+      async (page) => {
+        await page.addInitScript(AZAR_FIJO);
+        await abrir()(page);
+      },
+      async (ui) => {
+        const { page } = ui;
+        await ui.espera(300);
+        await ui.clic(page.getByRole('button', { name: 'Problemas', exact: true }).first(), 700);
+        ui.marca('lista');
+        await ui.espera(1200);
+        await ui.caja('lista', page.locator('.theory.explore'));
+        await ui.clic(page.locator('.explore-item').filter({ hasText: 'Códigos PCM de unas muestras' }).first(), 800);
+        ui.marca('enunciado');
+        await ui.espera(1800);
+        const problema = page.locator('.problem');
+        await ui.caja('problema', problema);
+        await ui.caja('enunciadoTexto', problema.locator('.problem-statement'));
+        const campos = problema.locator('.answer input');
+        await ui.caja('respuestas', problema.locator('.problem-answers'));
+        // La última, mal a propósito: la corrección la marca y se arregla.
+        const mal = respuestas[3].replace(/.$/, (c) => (c === '0' ? '1' : '0'));
+        for (const [i, r] of [...respuestas.slice(0, 3), mal].entries()) {
+          await ui.clic(campos.nth(i), 500);
+          for (const ch of r) {
+            await page.keyboard.type(ch);
+            await ui.espera(60);
+          }
+          await ui.espera(150);
+        }
+        ui.marca('escrito');
+        await ui.clic(problema.getByRole('button', { name: 'Corregir' }), 700);
+        ui.marca('corregido');
+        await ui.espera(1700);
+        await ui.clic(campos.nth(3), 600);
+        await page.keyboard.press('Backspace');
+        await ui.espera(150);
+        await page.keyboard.type(respuestas[3].at(-1));
+        await ui.espera(300);
+        await ui.clic(problema.getByRole('button', { name: 'Corregir' }), 700);
+        ui.marca('correcto');
+        await ui.espera(1800);
+        await ui.caja('bien', problema.locator('.problem-answers'));
+        if ((await problema.locator('.answer.is-right').count()) !== 4) throw new Error('El problema no ha salido bien');
+
+        await ui.clic(problema.getByRole('button', { name: 'Ver solución' }), 700);
+        ui.marca('solucion');
+        await ui.espera(900);
+        const solucion = problema.locator('.problem-solution');
+        const caja = await problema.boundingBox();
+        await ui.rueda(problema, (await solucion.boundingBox()).y - caja.y - 160, 8);
+        await ui.espera(400);
+        await ui.clic(solucion.getByRole('button', { name: 'Paso a paso' }), 700);
+        ui.marca('pasos');
+        await ui.espera(700);
+        for (let i = 0; i < 3; i++) {
+          await ui.clic(solucion.getByRole('button', { name: 'Siguiente fila' }), i ? 400 : 700);
+          await ui.espera(700);
+        }
+        ui.marca('tabla');
+        await ui.espera(1200);
+        await ui.caja('solucion', solucion);
+      },
+    );
   },
 
   /** Voz por paquetes RTP y una red IP: subir las pérdidas. */
@@ -412,14 +557,17 @@ const ESCENAS = {
     );
   },
 
-  /** Un texto escondido en los bits bajos de una foto, desde el menú de ejemplos. */
+  /** Un texto escondido en los bits bajos de una foto, desde Explorar. */
   async esteganografia(browser) {
     await grabar(browser, 'esteganografia', abrir(), async (ui) => {
       const { page } = ui;
       await ui.espera(200);
-      await ui.clic(page.locator('summary', { hasText: 'Ejemplos' }), 600);
-      await ui.espera(200);
-      await ui.clic(page.getByRole('button', { name: /Un mensaje escondido en una foto/ }), 700);
+      await ui.clic(page.getByRole('button', { name: 'Explorar', exact: true }).first(), 600);
+      await ui.espera(500);
+      const dialogo = page.locator('.theory.explore');
+      await ui.clic(dialogo.locator('.theory-index button').filter({ hasText: 'Esteganografía' }), 700);
+      await ui.espera(500);
+      await ui.clic(dialogo.locator('.explore-item').filter({ hasText: 'Un mensaje escondido en una foto' }).first(), 700);
       ui.marca('cargado');
       await ui.espera(1400);
       await ui.caja('circuito', page.locator('.react-flow__node'));

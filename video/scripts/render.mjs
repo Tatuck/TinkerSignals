@@ -58,9 +58,9 @@ for (const [id, archivo] of [
   console.log();
 }
 
-// Póster y GIF corto para el README (unir bloques con cables y mirar el cable).
+// Póster y GIF corto para el README (unir bloques con cables y mirar los bits del cable).
 const horizontal = await comp('Horizontal');
-await renderStill({ serveUrl, composition: horizontal, frame: 540, output: out('poster.png') });
+await renderStill({ serveUrl, composition: horizontal, frame: 470, output: out('poster.png') });
 await renderMedia({
   serveUrl,
   composition: horizontal,
@@ -68,7 +68,7 @@ await renderMedia({
   codec: 'gif',
   scale: 0.5,
   everyNthFrame: 3,
-  frameRange: [272, 512],
+  frameRange: [250, 500],
   outputLocation: out('preview.gif'),
   onProgress: progreso('GIF'),
 });

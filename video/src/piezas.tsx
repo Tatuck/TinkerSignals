@@ -152,7 +152,10 @@ export function Campo({
     );
   }
 
-  const yFila = (i: number) => 1016 - (capitulos.length - 1 - i) * 42;
+  // Con muchos capítulos el índice se aprieta y el título sube para dejarle sitio.
+  const paso = capitulos.length > 7 ? 40 : 42;
+  const yFila = (i: number) => 1016 - (capitulos.length - 1 - i) * paso;
+  const yTitulo = capitulos.length > 7 ? 236 : 290;
   return (
     <>
       <div
@@ -184,7 +187,7 @@ export function Campo({
           <Logo size={44} />
           TinkerSignals
         </div>
-        <div style={{ position: 'absolute', left: 64, top: 290, width: COLUMNA - 128 }}>
+        <div style={{ position: 'absolute', left: 64, top: yTitulo, width: COLUMNA - 128 }}>
           <div style={{ fontSize: 82, fontWeight: 600, lineHeight: 1.02, letterSpacing: '-0.025em' }}>
             {capitulos[actual].titulo}
           </div>

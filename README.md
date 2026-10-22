@@ -8,7 +8,7 @@
     <img src="docs/video/preview.gif" alt="TinkerSignals: se unen bloques con cables y se mira qué bits viajan por uno de ellos" width="960">
   </a>
   <br>
-  <sub><a href="docs/video/tinkersignals.mp4">▶ Ver el vídeo completo (52 s, con sonido)</a></sub>
+  <sub><a href="docs/video/tinkersignals.mp4">▶ Ver el vídeo completo (53 s, con sonido)</a></sub>
 </p>
 
 Laboratorio visual para aprender codificación y compresión de audio montando
