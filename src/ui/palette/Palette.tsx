@@ -5,7 +5,7 @@ import { blockText, t } from '@/i18n';
 import { DRAG_MIME } from '../canvas/Canvas';
 import { registry } from '../registry';
 import { useStore } from '../store';
-import { categoryColor, categoryOrder } from '../theme';
+import { categoryColor, categoryOrder, categoryTint } from '../theme';
 import { BlockGlyph } from '../BlockGlyph';
 
 const OPEN_KEY = 'tinkersignals:palette-open';
@@ -135,7 +135,9 @@ export function Palette() {
           <section
             key={cat}
             className={`folder${isOpen ? ' is-open' : ''}`}
-            style={{ '--cat': categoryColor[cat] } as CSSProperties}
+            style={
+              { '--cat': categoryColor[cat], '--cat-tint': categoryTint[cat] } as CSSProperties
+            }
           >
             <button className="folder-head" aria-expanded={isOpen} onClick={() => toggle(cat)}>
               <svg
@@ -147,7 +149,6 @@ export function Palette() {
               >
                 <path d="M3 1.5 6.5 5 3 8.5" fill="none" stroke="currentColor" strokeWidth="1.8" />
               </svg>
-              <span className="folder-dot" aria-hidden />
               <span className="folder-name">
                 {t(`categories.${cat}`)}
                 <small>{t(`categoryHints.${cat}`)}</small>
