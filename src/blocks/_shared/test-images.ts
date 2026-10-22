@@ -20,7 +20,7 @@ export const TEST_IMAGES = [
 export type TestImage = (typeof TEST_IMAGES)[number];
 
 /**
- * Matrices de los ejercicios del tema 4. Sus valores son niveles (8 niveles,
+ * Matrices pequeñas para hacer las cuentas a mano. Sus valores son niveles (8 niveles,
  * 3 bits); se guardan como el centro de cada nivel en 0–255 para que una
  * cuantización a 3 bits los recupere exactos.
  */

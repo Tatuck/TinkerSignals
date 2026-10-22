@@ -1,0 +1,20 @@
+{
+  "name": "tinkersignals-video",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "audios": "cd .. && VIDEO=1 npx vitest run --config video/vitest.config.ts",
+    "musica": "node scripts/musica.mjs",
+    "capturar": "node scripts/capturar.mjs",
+    "estudio": "remotion studio src/index.ts",
+    "render": "node scripts/render.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.537",
+    "@remotion/google-fonts": "4.0.537",
+    "playwright": "1.64.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.537"
+  }
+}

@@ -3,3 +3,12 @@ dist
 *.log
 .DS_Store
 .taste-skill
+# Skills de diseño locales (de terceros, no se redistribuyen)
+.agents
+.claude/skills
+skills-lock.json
+# Vídeo: capturas, audios y renders se regeneran (ver video/README.md)
+video/out
+video/public/capturas
+video/public/audio
+video/.tmp

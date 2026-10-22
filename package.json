@@ -2,6 +2,12 @@
   "name": "tinkersignals",
   "private": true,
   "version": "0.1.0",
+  "description": "Laboratorio visual para aprender codificación y compresión de audio e imagen montando bloques.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tatuck/TinkerSignals.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,7 +17,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "bench": "BENCH=1 vitest run src/blocks/_shared/celp.bench.test.ts"
+    "bench": "BENCH=1 vitest run src/blocks/_shared/celp.bench.test.ts",
+    "deploy": "npm run build && npx wrangler deploy"
   },
   "dependencies": {
     "@xyflow/react": "^12.12.0",

@@ -1,5 +1,16 @@
 # TinkerSignals
 
+[![CI](https://github.com/Tatuck/TinkerSignals/actions/workflows/ci.yml/badge.svg)](https://github.com/Tatuck/TinkerSignals/actions/workflows/ci.yml)
+[![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-blue.svg)](LICENSE)
+
+<p align="center">
+  <a href="docs/video/tinkersignals.mp4">
+    <img src="docs/video/preview.gif" alt="TinkerSignals: se unen bloques con cables y se mira qué bits viajan por uno de ellos" width="960">
+  </a>
+  <br>
+  <sub><a href="docs/video/tinkersignals.mp4">▶ Ver el vídeo completo (52 s, con sonido)</a></sub>
+</p>
+
 Laboratorio visual para aprender codificación y compresión de audio montando
 bloques, como en TinkerCad. Entra audio real (archivo, micrófono o generador),
 pasa por cuantizadores, codificadores, canales con errores y decodificadores, y
@@ -8,8 +19,8 @@ enseña sus números (SNR, bps, factor de compresión, retardo) y una gráfica
 sencilla de entrada frente a salida. Cada cable se puede abrir para ver qué pasa
 por él.
 
-Los bloques cubren lo que se ve en una asignatura de codificación de audio y
-servicios multimedia:
+Los bloques cubren lo que se suele ver en un curso de codificación de audio,
+imagen y servicios multimedia:
 
 - **Digitalización**: muestreo con filtro antialiasing, cuantización uniforme y no uniforme, PCM y G.711.
 - **Códecs de forma de onda**: DPCM y ADPCM.
@@ -33,6 +44,9 @@ circuitos y deshacer/rehacer. Además:
 - **Calidad de la llamada**: MOS con el modelo E (ITU-T G.107).
 
 ## Uso
+
+Funciona entero en el navegador: no hay servidor ni cuentas, y lo que montas se
+guarda en tu equipo. Para ejecutarlo en local hace falta Node 22 o superior:
 
 ```bash
 npm install
@@ -89,3 +103,27 @@ Los fragmentos de `public/sounds/` se generan con
 `node scripts/make-sound-clips.mjs <carpeta-con-los-mp3>` a partir de
 grabaciones de dominio público; los créditos están en
 [public/sounds/CREDITS.md](public/sounds/CREDITS.md).
+
+## Despliegue
+
+`npm run build` genera en `dist/` un sitio estático. Está preparado para
+Cloudflare Workers (`wrangler.jsonc` y `public/_headers`): conectando el
+repositorio en Cloudflare cada push a `main` se publica solo, o a mano con
+`npm run deploy`. Sirve también cualquier hosting estático (GitHub Pages,
+Netlify…) siempre que use HTTPS, que el micrófono lo necesita.
+
+## Contribuir
+
+Las ideas y correcciones son bienvenidas por issues o pull requests. Para
+añadir un bloque sigue [docs/como-crear-un-bloque.md](docs/como-crear-un-bloque.md);
+antes de enviar nada, `npm test`, `npm run typecheck` y `npm run lint` deben
+pasar (la integración continua los lanza en cada pull request). Los textos de
+la interfaz y la documentación están en español.
+
+El vídeo de presentación se genera desde la propia app; los pasos están en
+[video/README.md](video/README.md).
+
+## Licencia
+
+El código está bajo licencia [MIT](LICENSE). Las grabaciones de
+`public/sounds/` son de dominio público (ver [CREDITS.md](public/sounds/CREDITS.md)).

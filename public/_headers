@@ -1,0 +1,9 @@
+# Cabeceras para Cloudflare. Los archivos de /assets llevan un hash en el nombre,
+# así que pueden quedarse en caché para siempre.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*
+  Permissions-Policy: microphone=(self), camera=(), geolocation=()
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Content-Type-Options: nosniff

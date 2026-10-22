@@ -34,6 +34,8 @@ export function Inspector() {
   );
 }
 
+const REPO = 'https://github.com/Tatuck/TinkerSignals';
+
 function Welcome() {
   const scope = useGraphStore()((s) => s.scope);
   const startLesson = useLesson((l) => l.start);
@@ -68,6 +70,19 @@ function Welcome() {
           </ol>
         </section>
       )}
+      <footer className="welcome-foot">
+        <a href={REPO} target="_blank" rel="noreferrer">
+          Código en GitHub
+        </a>
+        <span aria-hidden>·</span>
+        <a href={`${REPO}/blob/main/LICENSE`} target="_blank" rel="noreferrer">
+          Licencia MIT
+        </a>
+        <span aria-hidden>·</span>
+        <a href={`${REPO}/blob/main/public/sounds/CREDITS.md`} target="_blank" rel="noreferrer">
+          Créditos de los sonidos
+        </a>
+      </footer>
     </div>
   );
 }

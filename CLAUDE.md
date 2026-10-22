@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-TinkerSignals is a visual, TinkerCad-style lab for learning audio coding and compression (course "Servicios Telemáticos Multimedia", 4º GITT). Users wire blocks (sources → quantizers/encoders → channel/network → decoders → output) on a React Flow canvas; real audio runs through them. All UI text, comments, docs and commit messages are in **Spanish** — keep it that way.
+TinkerSignals is a visual, TinkerCad-style lab for learning audio coding and compression. Users wire blocks (sources → quantizers/encoders → channel/network → decoders → output) on a React Flow canvas; real audio runs through them. All UI text, comments, docs and commit messages are in **Spanish** — keep it that way.
 
 ## Commands
 
@@ -47,4 +47,6 @@ One block = one folder `src/blocks/<id>/` with `index.ts` (`export default defin
 
 ## Repo-local tooling
 
-`.agents/skills/` (symlinked from `.claude/skills/`) contains the `design-taste-frontend` and `frontend-design` skills used for UI design reviews; `.taste-skill/` is their gitignored scratch output.
+`video/` is a separate npm project (Playwright + Remotion) that records the real app and renders the promo video in `docs/video/`; it has its own `package.json` and is excluded from the root ESLint, tsconfig and Vitest. See `video/README.md`.
+
+`.agents/skills/` (symlinked from `.claude/skills/`) contains the `design-taste-frontend` and `frontend-design` skills used for UI design reviews. They are third-party and local only: `.agents/`, `.claude/skills/`, `skills-lock.json` and their scratch output `.taste-skill/` are gitignored, so a fresh clone does not have them.

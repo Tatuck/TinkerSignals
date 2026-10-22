@@ -417,9 +417,9 @@ export const examples: Example[] = [
   },
   {
     id: 'huffman-imagen',
-    title: 'Huffman de una imagen (ejercicio 7)',
+    title: 'Huffman de una imagen pequeña',
     description:
-      'La matriz 8×8 del ejercicio 7 del tema 4 a 3 bits por píxel, comprimida con Huffman y RLE.',
+      'Una matriz 8×8 de 8 niveles a 3 bits por píxel, comprimida con Huffman y RLE.',
     nodes: [
       { id: 'src', type: 'image-source', x: 0, y: 140, params: { image: 'ejercicio-7' } },
       { id: 'pcm', type: 'image-pcm-encoder', x: 320, y: 140, params: { bits: 3 } },
