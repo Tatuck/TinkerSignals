@@ -2,9 +2,8 @@ import { useEffect, useReducer, useRef, useState, type ReactNode } from 'react';
 import { t } from '@/i18n';
 import { engine } from '@/runtime/client';
 import { formatNumber } from './lib/format';
-import { examples, instantiate } from './examples';
+import { explore } from './explore/open';
 import { canRedo, canUndo, onHistoryChange, redo, undo } from './history';
-import { lessons } from './lessons/lessons';
 import { useLesson } from './lessons/lessonStore';
 import { onPlaybackChange, play, stop } from './lib/audio';
 import { encodeCircuit } from './lib/share';
@@ -113,7 +112,6 @@ export function Toolbar() {
   const totalMs = useStore((s) => s.results?.totalMs);
   const graphErrors = useStore((s) => s.results?.graphErrors) ?? NO_ERRORS;
   const load = useStore((s) => s.load);
-  const startLesson = useLesson((l) => l.start);
   const fileRef = useRef<HTMLInputElement>(null);
   const [, refresh] = useReducer((x: number) => x + 1, 0);
   useEffect(() => onHistoryChange(refresh), []);
@@ -188,48 +186,13 @@ export function Toolbar() {
       </div>
 
       <nav className="toolbar-nav" aria-label="Aprender">
-        <Menu label="Lecciones" wide>
-          {
-            <ol className="menu-rich">
-              {lessons.map((l) => (
-                <li key={l.id}>
-                  <button
-                    onClick={() => {
-                      startLesson(l.id);
-                    }}
-                  >
-                    <strong>{l.title}</strong>
-                    <span>{l.summary}</span>
-                    <small>
-                      {l.steps.length} pasos · unos {l.minutes} min
-                    </small>
-                  </button>
-                </li>
-              ))}
-            </ol>
-          }
-        </Menu>
-        <Menu label={t('toolbar.examples')} wide>
-          {
-            <ul className="menu-rich">
-              {examples.map((ex) => (
-                <li key={ex.id}>
-                  <button
-                    onClick={() => {
-                      const g = instantiate(ex);
-                      load(g.nodes, g.edges);
-                      useLesson.getState().exit();
-                    }}
-                  >
-                    <strong>{ex.title}</strong>
-                    <span>{ex.description}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          }
-        </Menu>
-        <button className="btn btn-quiet" onClick={() => useStore.setState({ theory: 'muestreo' })}>
+        <button className="btn btn-quiet" onClick={() => explore.open()}>
+          Explorar
+        </button>
+        <button className="btn btn-quiet" onClick={() => explore.open('problema')}>
+          Problemas
+        </button>
+        <button className="btn btn-quiet" onClick={() => explore.open('teoria')}>
           Teoría
         </button>
         <button className="btn btn-quiet" onClick={() => useStore.setState({ bench: true })}>

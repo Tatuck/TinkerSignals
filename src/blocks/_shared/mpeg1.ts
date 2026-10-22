@@ -241,21 +241,23 @@ export function mpeg1Encode(
     }
 
     const alloc = allocate(smr, bitsPerFrame - HEADER_BITS - BANDS * ALLOC_BITS);
-    w.write(0xfff, 12); // sincronismo
-    w.write(Math.round(bitrate / 1000), 20); // resto de la cabecera (tasa en kbps)
-    alloc.forEach((b) => w.write(b === 0 ? 0 : b - 1, ALLOC_BITS));
-    alloc.forEach((b, sb) => b && w.write(scf[sb], SCF_BITS));
+    w.frame();
+    w.write(0xfff, 12, 'sync'); // sincronismo
+    w.write(Math.round(bitrate / 1000), 20, 'header'); // resto de la cabecera (tasa en kbps)
+    alloc.forEach((b) => w.write(b === 0 ? 0 : b - 1, ALLOC_BITS, 'alloc'));
+    alloc.forEach((b, sb) => b && w.write(scf[sb], SCF_BITS, 'scalefactor'));
     for (let j = 0; j < SAMPLES_PER_BAND; j++) {
       for (let sb = 0; sb < BANDS; sb++) {
         const b = alloc[sb];
         if (!b) continue;
         const levels = 2 ** b - 1;
         const v = Math.max(-1, Math.min(1, sub[sb][j] / SCALE_FACTORS[scf[sb]]));
-        w.write(Math.round(((v + 1) / 2) * (levels - 1)), b);
+        w.write(Math.round(((v + 1) / 2) * (levels - 1)), b, 'sample');
       }
     }
     // Relleno hasta el tamaño de trama (tasa constante).
     const used = w.bitLength - f * bitsPerFrame;
+    if (used < bitsPerFrame) w.label('padding', bitsPerFrame - used);
     for (let i = used; i < bitsPerFrame; i++) w.writeBit(0);
     alloc.forEach((b, sb) => (avgAlloc[sb] += b / frames));
   }
@@ -362,4 +364,21 @@ export function mpeg1Decode(
     }
   }
   return synthesis(blocks, n);
+}
+
+/** Qué significa cada campo de una trama MPEG-1 (para el visor de bits). */
+export function describeMpeg1Field(field: string, v: number): string | undefined {
+  switch (field) {
+    case 'sync':
+      return 'doce unos: aquí empieza una trama';
+    case 'header':
+      return `tasa: ${v} kbps`;
+    case 'alloc':
+      return v === 0 ? 'subbanda sin bits: no se envía' : `${v + 1} bits por muestra`;
+    case 'scalefactor':
+      return `factor de escala ${SCALE_FACTORS[v]?.toPrecision(3).replace('.', ',')}`;
+    case 'padding':
+      return 'relleno hasta el tamaño fijo de trama';
+  }
+  return undefined;
 }

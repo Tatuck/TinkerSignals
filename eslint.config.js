@@ -18,12 +18,12 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/engine/**/*.ts', 'src/blocks/**/*.ts'],
+    files: ['src/engine/**/*.ts', 'src/blocks/**/*.ts', 'src/content/**/*.ts'],
     ignores: ['src/blocks/**/*.tsx'],
     rules: {
       'no-restricted-imports': [
         'error',
-        { patterns: [{ group: ['react', 'react-dom', '@xyflow/*', '**/ui/**'], message: 'El motor y los bloques son TS puro: no pueden importar la UI.' }] },
+        { patterns: [{ group: ['react', 'react-dom', '@xyflow/*', '**/ui/**'], message: 'El motor, los bloques y el contenido son TS puro: no pueden importar la UI.' }] },
       ],
     },
   },

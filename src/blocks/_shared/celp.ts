@@ -187,7 +187,8 @@ export function celpEncode(x: Float32Array, c: CelpConfig) {
   for (let start = 0; start < x.length; start += c.frameLen) {
     const { k } = lpcFrame(frameAt(x, start - look, win), c.order);
     const qk = Array.from(k, quantK);
-    qk.forEach((q) => w.write(q, K_BITS));
+    w.frame();
+    qk.forEach((q) => w.write(q, K_BITS, 'k'));
     const a = reflectionToLpc(qk.map(dequantK));
     const ag = a.map((v, i) => v * c.gamma ** (i + 1));
     const h = impulseResponse(ag, L);
@@ -214,8 +215,8 @@ export function celpEncode(x: Float32Array, c: CelpConfig) {
         const best = searchAdaptive(history, h, target, c.minLag, maxLag, L, search);
         const qa = quantGA(best.energy > 1e-12 ? best.corr / best.energy : 0);
         gA = dequantGA(qa);
-        w.write(best.T - c.minLag, c.pitchBits);
-        w.write(qa, GA_BITS);
+        w.write(best.T - c.minLag, c.pitchBits, 'lag');
+        w.write(qa, GA_BITS, 'ga');
         vA = adaptiveVector(history, best.T, L);
         for (let n = 0; n < L; n++) target[n] -= gA * best.y[n];
       }
@@ -246,8 +247,8 @@ export function celpEncode(x: Float32Array, c: CelpConfig) {
         }
       }
       const qs = quantGS(bestG);
-      w.write(bestI, Math.log2(c.codebookSize));
-      w.write(qs, GS_BITS);
+      w.write(bestI, Math.log2(c.codebookSize), 'index');
+      w.write(qs, GS_BITS, 'gs');
       const gS = dequantGS(qs);
       const cS = sparseToDense(codebook[bestI], L);
 
@@ -418,3 +419,28 @@ export const __test = {
   convolve,
   adaptiveVector,
 };
+
+const dec = (v: number, d: number) => v.toFixed(d).replace('.', ',').replace('-', '−');
+
+/** Qué significa cada campo de una trama CELP (para el visor de bits). */
+export function describeCelpField(
+  field: string,
+  v: number,
+  h: { sampleRate: number; minLag?: unknown },
+): string | undefined {
+  switch (field) {
+    case 'k':
+      return `k = ${dec(dequantK(v), 3)}`;
+    case 'lag': {
+      const lag = v + Number(h.minLag ?? 0);
+      return `retardo de ${lag} muestras → F0 ≈ ${Math.round(h.sampleRate / lag)} Hz`;
+    }
+    case 'ga':
+      return `ganancia adaptativa ${dec(dequantGA(v), 2)}`;
+    case 'index':
+      return `vector nº ${v} del codebook`;
+    case 'gs':
+      return `ganancia estocástica ${dec(dequantGS(v), 4)}`;
+  }
+  return undefined;
+}

@@ -66,7 +66,11 @@ export interface HuffmanStats {
   entropy: number;
   avgLength: number;
   maxLength: number;
+  /** Varianza de la longitud de los códigos: Σ p·(l − L̄)². */
+  variance: number;
   top: { sym: number; p: number; code: string }[];
+  /** Todos los símbolos (hasta 64), del más al menos frecuente. */
+  table: { sym: number; count: number; p: number; code: string; len: number }[];
 }
 
 export function huffmanEncode(
@@ -113,16 +117,28 @@ export function huffmanEncode(
     h -= p * Math.log2(p);
     avg += p * lengths.get(sym)!;
   }
-  const top = [...counts]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 24)
-    .map(([sym, c]) => {
+  let variance = 0;
+  for (const [sym, c] of counts) variance += (c / n) * (lengths.get(sym)! - avg) ** 2;
+  const table = [...counts]
+    .sort((a, b) => b[1] - a[1] || a[0] - b[0])
+    .slice(0, 64)
+    .map(([sym, count]) => {
       const { code, len } = codes.get(sym)!;
-      return { sym, p: c / n, code: code.toString(2).padStart(len, '0') };
+      return { sym, count, p: count / n, code: code.toString(2).padStart(len, '0'), len };
     });
+  const top = table.slice(0, 24).map(({ sym, p, code }) => ({ sym, p, code }));
   return {
     writer: w,
-    stats: { symbols: n, distinct: counts.size, entropy: h, avgLength: avg, maxLength, top },
+    stats: {
+      symbols: n,
+      distinct: counts.size,
+      entropy: h,
+      avgLength: avg,
+      maxLength,
+      variance,
+      top,
+      table,
+    },
   };
 }
 

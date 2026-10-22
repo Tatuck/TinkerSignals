@@ -3,6 +3,7 @@ import { snr } from '@/engine/dsp/metrics';
 import { compareWaves } from '@/engine/dsp/plots';
 import { defineBlock, type Plot } from '@/engine/types';
 import { dpcmEncode } from '../_shared/dpcm';
+import { binary, num } from '../_shared/traces';
 
 export default defineBlock({
   id: 'dpcm-encoder',
@@ -55,7 +56,38 @@ export default defineBlock({
         { key: 'compression', value: out.referenceBits / out.bitLength, unit: '×' },
         { key: 'sideBits', value: enc.sideBits, unit: 'bits' },
       ],
-      plots: [errorPlot(compareWaves(x, enc.error, sampleRate))],
+      plots: [
+        errorPlot(compareWaves(x, enc.error, sampleRate)),
+        {
+          kind: 'table',
+          title: 'trace',
+          columns: [
+            '$n$',
+            '$x(n)$',
+            '$\\hat x(n)$',
+            '$e(n)$',
+            'Código',
+            '$e_q(n)$',
+            '$x_q(n)$',
+            'Error',
+          ],
+          rows: enc.trace.map((t, n) => [
+            n,
+            t.x,
+            t.pred,
+            t.e,
+            `${t.code} (${binary(t.code, params.bits)})`,
+            t.eq,
+            t.xr,
+            t.x - t.xr,
+          ]),
+          notes: [
+            `Predicción con lo ya **reconstruido** (lazo cerrado): $\\hat x(n) = \\sum_k a_k\\,x_q(n-k)$, con $a = (${Array.from(enc.coeffs, (c) => num(c)).join(';\\ ')})$.`,
+            `Se cuantiza $e(n) = x(n) - \\hat x(n)$ con ${params.bits} bits; el decodificador hace $x_q(n) = \\hat x(n) + e_q(n)$ y obtiene lo mismo que el codificador.`,
+          ],
+          stepwise: true,
+        },
+      ],
     };
   },
 });

@@ -18,6 +18,17 @@ import { writeTail } from './symbols';
  */
 const widthFor = (alphabet: number, k: number) => Math.ceil(Math.log2(alphabet + k));
 
+/** Un paso de la traza: lo que se tenía, lo que llega, lo que se envía y la entrada nueva. */
+export interface LzwStep {
+  seq: number[];
+  next: number | null;
+  code: number;
+  width: number;
+  entry: number | null;
+}
+/** Cuántos códigos enviados se guardan en la traza. */
+const TRACE_CODES = 40;
+
 export function lzwEncode(s: Symbols, maxBits: number) {
   const alphabet = 2 ** s.symbolBits;
   const limit = 2 ** Math.max(maxBits, s.symbolBits + 1);
@@ -28,6 +39,8 @@ export function lzwEncode(s: Symbols, maxBits: number) {
   const w = new BitWriter();
   const body = new BitWriter();
   let count = 0;
+  const trace: LzwStep[] = [];
+  let seq: number[] = [];
 
   const emit = (code: number) => {
     body.write(code, widthFor(alphabet, k));
@@ -44,21 +57,37 @@ export function lzwEncode(s: Symbols, maxBits: number) {
 
   let current = -1; // código de la secuencia en curso (-1 = vacía)
   for (const sym of s.symbols) {
+    const tracing = trace.length < TRACE_CODES;
     if (current < 0) {
       current = sym;
+      if (tracing) seq = [sym];
       continue;
     }
     const key = `${current},${sym}`;
     const known = dict.get(key);
     if (known !== undefined) {
       current = known;
+      if (tracing) seq.push(sym);
       continue;
     }
     dict.set(key, alphabet + k);
+    if (tracing)
+      trace.push({
+        seq,
+        next: sym,
+        code: current,
+        width: widthFor(alphabet, k),
+        entry: alphabet + k,
+      });
     emit(current);
     current = sym;
+    seq = [sym];
   }
-  if (current >= 0) emit(current);
+  if (current >= 0) {
+    if (trace.length < TRACE_CODES)
+      trace.push({ seq, next: null, code: current, width: widthFor(alphabet, k), entry: null });
+    emit(current);
+  }
 
   w.write(s.symbolBits, 5);
   w.write(Math.log2(limit), 5);
@@ -67,7 +96,7 @@ export function lzwEncode(s: Symbols, maxBits: number) {
   const br = new BitReader(b.bytes, b.bitLength);
   for (let i = 0; i < b.bitLength; i++) w.writeBit(br.readBit());
   writeTail(w, s);
-  return { writer: w, codes: count, resets, dictionary: largest };
+  return { writer: w, codes: count, resets, dictionary: largest, trace };
 }
 
 export function lzwDecode(bytes: Uint8Array, bitLength: number): BitWriter {

@@ -7,8 +7,8 @@ export function makeBitstream(
   header: BitstreamHeader,
   referenceBits: number,
 ): Bitstream {
-  const { bytes, bitLength } = w.finish();
-  return { kind: 'bitstream', bytes, bitLength, header, referenceBits };
+  const { bytes, bitLength, layout } = w.finish();
+  return { kind: 'bitstream', bytes, bitLength, header, referenceBits, ...(layout && { layout }) };
 }
 
 /** PCM lineal de 16 bits: la referencia para el factor de compresión. */

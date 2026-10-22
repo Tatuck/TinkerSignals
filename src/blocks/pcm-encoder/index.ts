@@ -2,7 +2,8 @@ import { makeBitstream, referenceBitsFor } from '@/engine/dsp/bitstream';
 import { compress } from '@/engine/dsp/companding';
 import { entropy } from '@/engine/dsp/metrics';
 import { defineBlock, type InteriorGraph } from '@/engine/types';
-import { pcmEncode } from '../_shared/pcm';
+import { pcmDecodeValue, pcmEncode } from '../_shared/pcm';
+import { binary } from '../_shared/traces';
 
 export default defineBlock({
   id: 'pcm-encoder',
@@ -99,6 +100,28 @@ export default defineBlock({
           xLabel: 'x',
           yLabel: 'F(x)',
           yRange: [-1, 1],
+        },
+        {
+          kind: 'table',
+          title: 'words',
+          columns:
+            params.law === 'linear'
+              ? ['$n$', '$x(n)$', 'Código', 'Signo | nivel', '$x_q(n)$', 'Error']
+              : ['$n$', '$x(n)$', '$F(x)$', 'Código', 'Signo | nivel', '$x_q(n)$', 'Error'],
+          rows: Array.from(x.subarray(0, 16), (v, n) => {
+            const code = codes[n];
+            const xq = pcmDecodeValue(code, cfg);
+            const word = `${code >> (params.bits - 1)} | ${binary(code & ((1 << (params.bits - 1)) - 1), params.bits - 1)}`;
+            const fx = params.law === 'linear' ? [] : [compress(v, params.law, params.mu)];
+            return [n, v, ...fx, code, word, xq, v - xq];
+          }),
+          notes: [
+            params.law === 'linear'
+              ? `Cuantizador uniforme de $2^{${params.bits}} = ${2 ** params.bits}$ niveles en $[-1, 1]$: escalón $\\Delta = 2/2^{${params.bits}}$.`
+              : `Primero se comprime con la ley ${params.law === 'mu' ? `μ ($\\mu = ${params.mu}$)` : 'A'} y después se cuantiza $F(x)$ con $2^{${params.bits}}$ niveles uniformes: los escalones quedan finos cerca de cero y gruesos en los extremos.`,
+            'El primer bit es el signo (1 = positivo); el resto, el nivel dentro de su mitad.',
+          ],
+          stepwise: true,
         },
       ],
     };

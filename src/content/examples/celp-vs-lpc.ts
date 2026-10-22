@@ -1,0 +1,42 @@
+import { defineExample } from '../types';
+
+export default defineExample({
+  id: 'celp-vs-lpc',
+  title: 'CELP frente a vocoder LPC',
+  description: 'La misma voz por un vocoder LPC y por CELP: tasa, error y cómo suenan.',
+  topic: 'voz',
+  level: 'avanzado',
+  audience: ['estudiar', 'probar'],
+  order: 20,
+  nodes: [
+    {
+      id: 'gen',
+      type: 'generator',
+      x: 0,
+      y: 200,
+      params: { sampleRate: '8000', frequency: 120 },
+    },
+    { id: 'cenc', type: 'celp-encoder', x: 320, y: 0 },
+    { id: 'cdec', type: 'celp-decoder', x: 660, y: 40 },
+    { id: 'lenc', type: 'lpc-encoder', x: 320, y: 440 },
+    { id: 'ldec', type: 'lpc-decoder', x: 660, y: 480 },
+    { id: 'c1', type: 'comparator', x: 980, y: 0 },
+    { id: 'c2', type: 'comparator', x: 980, y: 440 },
+    { id: 'o1', type: 'output', x: 1300, y: 0 },
+    { id: 'o2', type: 'output', x: 1300, y: 440 },
+  ],
+  edges: [
+    ['gen', 'out', 'cenc', 'in'],
+    ['cenc', 'out', 'cdec', 'in'],
+    ['gen', 'out', 'lenc', 'in'],
+    ['lenc', 'out', 'ldec', 'in'],
+    ['gen', 'out', 'c1', 'reference'],
+    ['cdec', 'out', 'c1', 'test'],
+    ['gen', 'out', 'c2', 'reference'],
+    ['ldec', 'out', 'c2', 'test'],
+    ['cdec', 'out', 'o1', 'in'],
+    ['gen', 'out', 'o1', 'reference'],
+    ['ldec', 'out', 'o2', 'in'],
+    ['gen', 'out', 'o2', 'reference'],
+  ],
+});

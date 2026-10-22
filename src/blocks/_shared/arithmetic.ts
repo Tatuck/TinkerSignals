@@ -17,6 +17,8 @@ const FULL = 2 ** PRECISION;
 const HALF = FULL / 2;
 const QUARTER = FULL / 4;
 const MAX_TOTAL = 2 ** 16 - 1;
+/** Pasos de la traza con números reales (después la precisión de un double no da para más). */
+const TRACE_STEPS = 12;
 
 interface Model {
   syms: number[];
@@ -102,7 +104,26 @@ export function arithmeticEncode(s: Symbols) {
     const p = c / s.symbols.length;
     entropy -= p * Math.log2(p);
   }
-  return { writer: w, codeBits, headerBits, entropy, distinct: counts.size };
+  // Versión «de pizarra» con números reales: cómo se estrecha [L, H) con los primeros símbolos.
+  const steps: { sym: number; lo: number; hi: number; L: number; H: number }[] = [];
+  let L = 0;
+  let H = 1;
+  for (const v of s.symbols.subarray(0, TRACE_STEPS)) {
+    const i = model.index.get(v)!;
+    const lo = model.cum[i] / model.total;
+    const hi = model.cum[i + 1] / model.total;
+    const width = H - L;
+    H = L + width * hi;
+    L = L + width * lo;
+    steps.push({ sym: v, lo, hi, L, H });
+  }
+  const intervals = model.syms.map((sym, i) => ({
+    sym,
+    p: (model.cum[i + 1] - model.cum[i]) / model.total,
+    lo: model.cum[i] / model.total,
+    hi: model.cum[i + 1] / model.total,
+  }));
+  return { writer: w, codeBits, headerBits, entropy, distinct: counts.size, steps, intervals };
 }
 
 export function arithmeticDecode(bytes: Uint8Array, bitLength: number): BitWriter {

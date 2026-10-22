@@ -7,7 +7,11 @@
   "ports": { "in": "Imagen", "out": "JPEG" },
   "params": {
     "quality": { "label": "Calidad", "help": "Escala las tablas de cuantización (1–100)." },
-    "subsampling": { "label": "Submuestreo del color" }
+    "subsampling": { "label": "Submuestreo del color" },
+    "traceBlock": {
+      "label": "Bloque a detallar",
+      "help": "Número del bloque 8×8 de la luminancia que se enseña paso a paso (de izquierda a derecha y de arriba abajo)."
+    }
   },
   "metrics": {
     "bpp": "Bits/píxel",
@@ -18,5 +22,58 @@
     "acShare": "Bits en AC",
     "chromaShare": "Bits en color"
   },
-  "plots": { "detail": "Coeficientes no nulos por bloque (luminancia)" }
+  "plots": {
+    "detail": "Coeficientes no nulos por bloque (luminancia)",
+    "blockPixels": "Bloque elegido: píxeles",
+    "blockDct": "Bloque elegido: DCT",
+    "blockTable": "Tabla de cuantización",
+    "blockQuant": "Bloque elegido: cuantizado",
+    "blockBits": "Del bloque a los bits"
+  },
+  "fields": {
+    "width": {
+      "label": "Anchura",
+      "help": "Cabecera: anchura de la imagen en píxeles."
+    },
+    "height": {
+      "label": "Altura",
+      "help": "Cabecera: altura de la imagen en píxeles."
+    },
+    "color": {
+      "label": "Color",
+      "help": "Cabecera: 1 si la imagen es en color (YCbCr), 0 si es en grises."
+    },
+    "subsampling": {
+      "label": "Submuestreo",
+      "help": "Cabecera: submuestreo del color (4:4:4, 4:2:2, 4:2:0…)."
+    },
+    "quality": {
+      "label": "Calidad",
+      "help": "Cabecera: calidad, de la que salen las tablas de cuantización."
+    },
+    "dcSize": {
+      "label": "DC: categoría",
+      "help": "Código Huffman de la categoría (bits) de la diferencia DC con el bloque anterior (tabla A)."
+    },
+    "dcValue": {
+      "label": "DC: amplitud",
+      "help": "Los bits de la diferencia DC (los negativos en complemento a 1)."
+    },
+    "acCode": {
+      "label": "AC: (ceros, categoría)",
+      "help": "Código Huffman del par (ceros delante, categoría) del siguiente coeficiente no nulo (tabla B)."
+    },
+    "acValue": {
+      "label": "AC: amplitud",
+      "help": "Los bits del coeficiente AC (los negativos en complemento a 1)."
+    },
+    "zrl": {
+      "label": "AC: 16 ceros (ZRL)",
+      "help": "Código especial para una racha de 16 ceros."
+    },
+    "eob": {
+      "label": "Fin de bloque (EOB)",
+      "help": "Todos los coeficientes que quedan del bloque son cero."
+    }
+  }
 }

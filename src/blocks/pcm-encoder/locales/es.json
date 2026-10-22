@@ -4,12 +4,7 @@
   "details": "PCM es la forma más directa de digitalizar: cada muestra se cuantiza y se escribe como un número binario. Con ley μ (EE. UU., Japón) o A (Europa), la amplitud se comprime con una curva logarítmica antes de cuantizar: las señales débiles, como la voz baja, reciben escalones más finos. G.711 usa 8 bits a 8 kHz = 64 kbps. La entropía indica cuántos bits por muestra harían falta de verdad: si es menor que n, un Huffman detrás puede comprimir más.",
   "tryThis": "Remuestrea una voz a 8 kHz, codifícala con 8 bits ley μ (como el teléfono) y compárala con 8 bits lineal en la Salida.",
   "interior": "Un codificador PCM comprime la amplitud (si usa ley μ o A), la cuantiza con una escalera uniforme y escribe el número de cada escalón en binario.",
-  "concepts": [
-    "PCM",
-    "ITU-T G.711",
-    "Compansión",
-    "Entropía"
-  ],
+  "concepts": ["PCM", "ITU-T G.711", "Compansión", "Entropía"],
   "ports": {
     "in": "Señal",
     "out": "Bits"
@@ -37,6 +32,17 @@
     "entropy": "Entropía de los códigos"
   },
   "plots": {
-    "curve": "Curva de compresión"
+    "curve": "Curva de compresión",
+    "words": "Muestras y palabras de código"
+  },
+  "fields": {
+    "sign": {
+      "label": "Signo",
+      "help": "Bit más alto del código: 1 para los escalones de la mitad positiva, 0 para la negativa."
+    },
+    "level": {
+      "label": "Nivel",
+      "help": "Escalón dentro de esa mitad. Con ley μ o A los escalones son más finos cerca de cero."
+    }
   }
 }

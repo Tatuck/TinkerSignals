@@ -20,6 +20,8 @@ export default defineBlock({
     const silence = silenceWriter(payload);
     let prev: { start: number; bits: number } | null = null;
     let concealed = 0;
+    // Los bits de los paquetes perdidos son inventados: se apuntan como dañados.
+    const damaged: [number, number][] = [...(payload.damaged ?? [])];
 
     for (const p of packets) {
       if (p.arrivalMs !== null) {
@@ -28,12 +30,13 @@ export default defineBlock({
         continue;
       }
       concealed++;
+      if (damaged.length < 20000) damaged.push([w.bitLength, p.payloadBits]);
       // Ocultación de pérdidas: repetir el último paquete bueno, o rellenar con silencio.
       if (params.concealment === 'repeat' && prev) copyFit(payload, prev, p.payloadBits, w);
       else silence(w, p.payloadBits);
     }
     const { bytes, bitLength } = w.finish();
-    const out: Bitstream = { ...payload, bytes, bitLength };
+    const out: Bitstream = { ...payload, bytes, bitLength, damaged };
     return {
       outputs: { out },
       metrics: [

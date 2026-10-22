@@ -1,4 +1,5 @@
 import { defineBlock } from '@/engine/types';
+import { num, symbolLabel } from '../_shared/traces';
 import { arithmeticEncode } from '../_shared/arithmetic';
 import { SYMBOL_OPTIONS, chooseSymbolBits, readSymbols, wrap } from '../_shared/symbols';
 
@@ -37,6 +38,42 @@ export default defineBlock({
         },
         { key: 'tableBits', value: enc.headerBits, unit: 'bits' },
         { key: 'compression', value: out.referenceBits / Math.max(1, out.bitLength), unit: '×' },
+      ],
+      plots: [
+        {
+          kind: 'table',
+          title: 'model',
+          columns: ['Símbolo', '$p_i$', 'Intervalo'],
+          rows: enc.intervals
+            .slice(0, 64)
+            .map((r) => [
+              symbolLabel(r.sym, s.symbolBits),
+              r.p,
+              `[${num(r.lo, 4)}, ${num(r.hi, 4)})`,
+            ]),
+          notes:
+            enc.intervals.length > 64
+              ? [`Solo se enseñan 64 de los ${enc.intervals.length} símbolos.`]
+              : undefined,
+        },
+        {
+          kind: 'table',
+          title: 'steps',
+          columns: ['Paso', 'Símbolo', 'Su trozo', '$L$', '$H$', '$H - L$'],
+          rows: enc.steps.map((r, i) => [
+            i + 1,
+            symbolLabel(r.sym, s.symbolBits),
+            `[${num(r.lo, 4)}, ${num(r.hi, 4)})`,
+            r.L,
+            r.H,
+            r.H - r.L,
+          ]),
+          notes: [
+            'Cada símbolo se queda con su trozo del intervalo actual: $L \\leftarrow L + (H-L)\\,c_{\\text{inf}}$, $H \\leftarrow L + (H-L)\\,c_{\\text{sup}}$. Al final basta enviar un número cualquiera de $[L, H)$.',
+            'Aquí se ve con números reales; el codificador de verdad hace lo mismo con enteros de 32 bits y va soltando los bits que ya no pueden cambiar.',
+          ],
+          stepwise: true,
+        },
       ],
     };
   },

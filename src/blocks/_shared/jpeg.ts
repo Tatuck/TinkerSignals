@@ -5,12 +5,14 @@ import {
   convertColor,
   makeImage,
   makePlane,
+  readBlock,
   resamplePlane,
   SUBSAMPLING,
   zigzag,
   type Subsampling,
 } from '@/engine/dsp/image';
 import type { Image, ImagePlane } from '@/engine/types';
+import { binary } from './traces';
 
 /**
  * Núcleo de JPEG básico (secuencial, Huffman con las tablas típicas del
@@ -191,10 +193,26 @@ const valueBits = (v: number, size: number) => (v >= 0 ? v : v + (1 << size) - 1
 const bitsToValue = (b: number, size: number) =>
   size === 0 ? 0 : b >> (size - 1) ? b : b - (1 << size) + 1;
 
-function writeSym(w: BitWriter, t: HuffTable, sym: number): number {
+/** Código de Huffman (tablas típicas) de un símbolo DC (categoría) o AC ((ceros << 4) | categoría). */
+export function huffmanCodeOf(kind: 'dc' | 'ac', sym: number, chroma = false): string {
+  const [code, len] = TABLES[kind][chroma ? 1 : 0].enc.get(sym)!;
+  return binary(code, len);
+}
+
+/** Bits de la amplitud de un coeficiente dentro de su categoría (negativos en complemento a 1). */
+export const amplitudeBits = (v: number) => binary(valueBits(v, category(v)), category(v));
+
+function writeSym(w: BitWriter, t: HuffTable, sym: number, field: string): number {
   const [code, len] = t.enc.get(sym)!;
+  w.label(field, len, sym);
   w.write(code, len);
   return len;
+}
+
+/** Escribe la amplitud de un coeficiente; el mapa de bits guarda su valor, no su código. */
+function writeAmplitude(w: BitWriter, v: number, size: number, field: string) {
+  if (size) w.label(field, size, v);
+  w.write(valueBits(v, size), size);
 }
 
 function readSym(r: BitReader, t: HuffTable): number | null {
@@ -222,6 +240,31 @@ export interface JpegStats {
   /** Coeficientes distintos de cero por bloque de la luminancia (mapa). */
   nonZero: ImagePlane;
   zeroRatio: number;
+  /** Un bloque de la luminancia, de los píxeles a los bits (si se ha pedido). */
+  trace?: JpegBlockTrace;
+}
+
+/** Todo lo que pasa con un bloque 8×8, para enseñarlo como se haría a mano. */
+export interface JpegBlockTrace {
+  index: number;
+  bx: number;
+  by: number;
+  /** 64 valores en orden natural (fila a fila). */
+  pixels: number[];
+  dct: number[];
+  table: number[];
+  quantized: number[];
+  /** DC del bloque anterior (la DC se envía como diferencia). */
+  prevDc: number;
+  /** Símbolos que se escriben, en orden. */
+  symbols: {
+    what: string;
+    run: number;
+    value: number;
+    size: number;
+    code: string;
+    amplitude: string;
+  }[];
 }
 
 /**
@@ -234,6 +277,8 @@ export function jpegEncode(
   img: Image,
   quality: number,
   subsampling: Subsampling,
+  /** Bloque de la luminancia que se quiere ver por dentro (-1 = ninguno). */
+  traceBlock = -1,
 ): { writer: BitWriter; stats: JpegStats } {
   const gray = img.color === 'gray';
   const ycc = gray ? img : convertColor(img, 'ycbcr');
@@ -243,11 +288,11 @@ export function jpegEncode(
   );
 
   const w = new BitWriter();
-  w.write(img.width, 16);
-  w.write(img.height, 16);
-  w.write(gray ? 0 : 1, 1);
-  w.write(SUBS.indexOf(subsampling), 2);
-  w.write(Math.round(quality), 7);
+  w.write(img.width, 16, 'width');
+  w.write(img.height, 16, 'height');
+  w.write(gray ? 0 : 1, 1, 'color');
+  w.write(SUBS.indexOf(subsampling), 2, 'subsampling');
+  w.write(Math.round(quality), 7, 'quality');
   const stats: JpegStats = {
     dcBits: 0,
     acBits: 0,
@@ -274,10 +319,38 @@ export function jpegEncode(
           return Math.round(v / table[idx]);
         });
         const dc = Math.max(-2047, Math.min(2047, q[0] - prevDc));
+        const index = by * bw + bx;
+        const tr =
+          c === 0 && index === Math.min(traceBlock, bw * (coefs.height / 8) - 1)
+            ? startTrace(p, coefs, table, q, index, bx, by, prevDc)
+            : undefined;
+        if (tr) stats.trace = tr;
+        // Apunta en la traza el símbolo que se va a escribir (código de Huffman + amplitud).
+        const note = (
+          what: string,
+          t: HuffTable,
+          sym: number,
+          run: number,
+          value: number,
+          size: number,
+        ) => {
+          if (!tr) return;
+          const [code, len] = t.enc.get(sym)!;
+          tr.symbols.push({
+            what,
+            run,
+            value,
+            size,
+            code: binary(code, len),
+            amplitude: binary(valueBits(value, size), size),
+          });
+        };
         prevDc += dc;
         const ds = category(dc);
-        stats.dcBits += writeSym(w, TABLES.dc[chroma], ds) + ds;
-        w.write(valueBits(dc, ds), ds);
+        w.frame();
+        note('DC', TABLES.dc[chroma], ds, 0, dc, ds);
+        stats.dcBits += writeSym(w, TABLES.dc[chroma], ds, 'dcSize') + ds;
+        writeAmplitude(w, dc, ds, 'dcValue');
         let run = 0;
         let nz = 0;
         let last = 63;
@@ -290,15 +363,18 @@ export function jpegEncode(
           }
           nz++;
           while (run > 15) {
-            stats.acBits += writeSym(w, TABLES.ac[chroma], 0xf0);
+            note('ZRL', TABLES.ac[chroma], 0xf0, 16, 0, 0);
+            stats.acBits += writeSym(w, TABLES.ac[chroma], 0xf0, 'zrl');
             run -= 16;
           }
           const s = category(v);
-          stats.acBits += writeSym(w, TABLES.ac[chroma], (run << 4) | s) + s;
-          w.write(valueBits(v, s), s);
+          note(`AC ${k}`, TABLES.ac[chroma], (run << 4) | s, run, v, s);
+          stats.acBits += writeSym(w, TABLES.ac[chroma], (run << 4) | s, 'acCode') + s;
+          writeAmplitude(w, v, s, 'acValue');
           run = 0;
         }
-        if (last < 63) stats.acBits += writeSym(w, TABLES.ac[chroma], 0x00);
+        if (last < 63) note('EOB', TABLES.ac[chroma], 0x00, 0, 0, 0);
+        if (last < 63) stats.acBits += writeSym(w, TABLES.ac[chroma], 0x00, 'eob');
         zeros += 63 - nz;
         total += 63;
         if (c === 0 && by < stats.nonZero.height && bx < stats.nonZero.width)
@@ -308,6 +384,25 @@ export function jpegEncode(
   });
   stats.zeroRatio = total ? zeros / total : 0;
   return { writer: w, stats };
+}
+
+function startTrace(
+  p: ImagePlane,
+  coefs: ImagePlane,
+  table: number[],
+  zz: number[],
+  index: number,
+  bx: number,
+  by: number,
+  prevDc: number,
+): JpegBlockTrace {
+  const pixels = Array.from(readBlock(p, bx, by, 8), Math.round);
+  const dct = Array.from({ length: 64 }, (_, i) => {
+    return coefs.data[(by * 8 + (i >> 3)) * coefs.width + bx * 8 + (i & 7)];
+  });
+  const quantized = new Array<number>(64).fill(0);
+  ZZ.forEach((idx, k) => (quantized[idx] = zz[k]));
+  return { index, bx, by, pixels, dct, table, quantized, prevDc, symbols: [] };
 }
 
 export interface JpegDecoded {
@@ -383,4 +478,27 @@ export function jpegDecode(bytes: Uint8Array, bitLength: number): JpegDecoded {
     subsampling,
     badCodes,
   };
+}
+
+/** Qué significa cada campo del flujo JPEG (para el visor de bits). */
+export function describeJpegField(field: string, v: number): string | undefined {
+  switch (field) {
+    case 'dcSize':
+      return `categoría ${v}: la diferencia DC ocupa ${v} bits`;
+    case 'dcValue':
+      return `diferencia con el DC del bloque anterior = ${v}`;
+    case 'acCode':
+      return `${v >> 4} ceros y después un coeficiente de categoría ${v & 15}`;
+    case 'acValue':
+      return `coeficiente AC = ${v}`;
+    case 'zrl':
+      return '16 ceros seguidos';
+    case 'eob':
+      return 'fin de bloque: el resto son ceros';
+    case 'color':
+      return v ? 'color (YCbCr)' : 'escala de grises';
+    case 'subsampling':
+      return SUBS[v];
+  }
+  return undefined;
 }

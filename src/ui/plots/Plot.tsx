@@ -1,7 +1,8 @@
-import { memo, useEffect, useMemo, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import type { LineSeries, Plot as PlotData, PlotRole } from '@/engine/types';
 import { t } from '@/i18n';
 import { errorSeriesColor, inputSeriesColor } from '../theme';
+import { RichInline, RichText } from '../text/RichText';
 
 interface Props {
   plot: PlotData;
@@ -29,6 +30,7 @@ const roleColor = (role: PlotRole, color: string) =>
 export const Plot = memo(function Plot({ plot, color, width, height, detailed }: Props) {
   if (plot.kind === 'image') return <ImageView image={plot} width={width} height={height} />;
   if (plot.kind === 'text') return <pre className="plot-text">{plot.text}</pre>;
+  if (plot.kind === 'table') return <TablePlot plot={plot} detailed={detailed} />;
   return plot.kind === 'line' ? (
     <LinePlot plot={plot} color={color} width={width} height={height} detailed={detailed} />
   ) : (
@@ -238,4 +240,123 @@ function BarsPlot({
       </svg>
     </figure>
   );
+}
+
+type TableData = Extract<PlotData, { kind: 'table' }>;
+
+/**
+ * Tabla paso a paso. En el nodo se ven solo las primeras filas; en el
+ * panel, entera o fila a fila (si el bloque la marca `stepwise`), y se
+ * puede ampliar para verla con calma.
+ */
+function TablePlot({ plot, detailed }: { plot: TableData; detailed?: boolean }) {
+  const [shown, setShown] = useState<number | null>(null);
+  const [big, setBig] = useState(false);
+  if (!detailed) return <TableGrid plot={plot} rows={3} mini />;
+  const stepping = plot.stepwise && shown !== null;
+  return (
+    <div className="plot-table">
+      <TableGrid plot={plot} rows={stepping ? shown : undefined} />
+      <div className="plot-table-actions">
+        {plot.stepwise &&
+          (shown === null ? (
+            <button type="button" className="btn btn-small" onClick={() => setShown(1)}>
+              Paso a paso
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="btn btn-small btn-primary"
+                disabled={shown >= plot.rows.length}
+                onClick={() => setShown(shown + 1)}
+              >
+                Siguiente fila
+              </button>
+              <button type="button" className="btn btn-small" onClick={() => setShown(null)}>
+                Ver todo
+              </button>
+            </>
+          ))}
+        <button type="button" className="btn btn-small btn-quiet" onClick={() => setBig(true)}>
+          Ampliar
+        </button>
+      </div>
+      {big && (
+        <div
+          className="table-backdrop"
+          onMouseDown={(e) => e.target === e.currentTarget && setBig(false)}
+          onKeyDown={(e) => e.key === 'Escape' && setBig(false)}
+        >
+          <div className="table-dialog" role="dialog" aria-modal="true" aria-label={plot.title}>
+            <header>
+              <button
+                type="button"
+                className="btn btn-quiet"
+                onClick={() => setBig(false)}
+                autoFocus
+              >
+                Cerrar
+              </button>
+            </header>
+            <TableGrid plot={plot} rows={stepping ? shown : undefined} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** La rejilla de la tabla; `rows` limita cuántas filas se ven. */
+export function TableGrid({
+  plot,
+  rows,
+  mini,
+}: {
+  plot: Pick<TableData, 'columns' | 'rows' | 'notes' | 'highlight'>;
+  rows?: number;
+  mini?: boolean;
+}) {
+  const hl = new Set(plot.highlight ?? []);
+  const visible = rows === undefined ? plot.rows : plot.rows.slice(0, rows);
+  return (
+    <>
+      <div className={`table-wrap${mini ? ' is-mini' : ''}`}>
+        <table className="trace-table">
+          <thead>
+            <tr>
+              {plot.columns.map((c, i) => (
+                <th key={i} scope="col">
+                  <RichInline text={c} />
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {visible.map((r, i) => (
+              <tr key={i} className={hl.has(i) ? 'is-highlight' : undefined}>
+                {r.map((v, j) => (
+                  <td key={j} className={typeof v === 'number' ? 'num' : undefined}>
+                    {typeof v === 'number' ? formatCell(v) : <RichInline text={v} />}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {mini && plot.rows.length > visible.length && (
+        <p className="table-more">… {plot.rows.length - visible.length} filas más</p>
+      )}
+      {!mini &&
+        (rows === undefined || rows >= plot.rows.length) &&
+        plot.notes?.map((n, i) => <RichText key={i} text={n} className="table-note" />)}
+    </>
+  );
+}
+
+/** Números de tabla: enteros tal cual; decimales con coma y sin ceros de más. */
+function formatCell(v: number): string {
+  if (Number.isInteger(v)) return String(v).replace('-', '−');
+  return Number(v.toFixed(4)).toString().replace('.', ',').replace('-', '−');
 }

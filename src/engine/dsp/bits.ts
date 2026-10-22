@@ -1,15 +1,56 @@
+import type { BitLayout } from '../types';
+
+/** Tramos que se guardan como mucho (los totales por campo siguen siendo exactos). */
+const MAX_SPANS = 40000;
+
 /**
  * Lectura y escritura de bits empaquetados (MSB primero).
  * Los codificadores escriben con BitWriter y los decodificadores leen con
  * BitReader, igual que un códec real: por el cable viajan bytes, no números.
+ *
+ * Si al escribir se da el nombre del campo (`write(lag, 7, 'pitch')`), el
+ * escritor apunta qué es cada bit: así la interfaz puede enseñar «estos 7
+ * bits son el pitch de la trama 12». `frame()` marca el inicio de cada trama.
  */
 export class BitWriter {
   private buf = new Uint8Array(1024);
   private bitPos = 0;
+  private map: BitLayout | null = null;
+  private fieldIndex = new Map<string, number>();
+  private currentFrame = -1;
 
-  /** Escribe los `n` bits menos significativos de `value` (n ≤ 32). */
-  write(value: number, n: number): void {
+  /** Escribe los `n` bits menos significativos de `value` (n ≤ 32), opcionalmente etiquetados. */
+  write(value: number, n: number, field?: string): void {
+    if (field !== undefined && n > 0) this.label(field, n, value);
     for (let i = n - 1; i >= 0; i--) this.writeBit((value >>> i) & 1);
+  }
+
+  /** Empieza una trama nueva: los campos que siguen pertenecen a ella. */
+  frame(): void {
+    this.currentFrame++;
+  }
+
+  /** Etiqueta los próximos `n` bits (para códigos que se escriben bit a bit). */
+  label(field: string, n: number, value = 0): void {
+    const m = (this.map ??= {
+      fields: [],
+      bitLength: 0,
+      spans: [],
+      totals: [],
+      frames: 0,
+      truncated: false,
+    });
+    let f = this.fieldIndex.get(field);
+    if (f === undefined) {
+      f = m.fields.length;
+      this.fieldIndex.set(field, f);
+      m.fields.push(field);
+      m.totals.push(0);
+    }
+    m.totals[f] += n;
+    if (m.spans.length < MAX_SPANS)
+      m.spans.push({ field: f, start: this.bitPos, length: n, value, frame: this.currentFrame });
+    else m.truncated = true;
   }
 
   writeBit(bit: number): void {
@@ -27,8 +68,14 @@ export class BitWriter {
     return this.bitPos;
   }
 
-  finish(): { bytes: Uint8Array; bitLength: number } {
-    return { bytes: this.buf.slice(0, Math.ceil(this.bitPos / 8)), bitLength: this.bitPos };
+  finish(): { bytes: Uint8Array; bitLength: number; layout?: BitLayout } {
+    const out: { bytes: Uint8Array; bitLength: number; layout?: BitLayout } = {
+      bytes: this.buf.slice(0, Math.ceil(this.bitPos / 8)),
+      bitLength: this.bitPos,
+    };
+    if (this.map)
+      out.layout = { ...this.map, bitLength: this.bitPos, frames: this.currentFrame + 1 };
+    return out;
   }
 }
 
@@ -83,7 +130,8 @@ export function bitsToString(bytes: Uint8Array, bitLength: number, max = 64): st
 const f32 = new DataView(new ArrayBuffer(4));
 
 /** Escribe un float de 32 bits (para coeficientes y escalas que viajan en el flujo). */
-export function writeFloat32(w: BitWriter, v: number): void {
+export function writeFloat32(w: BitWriter, v: number, field?: string): void {
+  if (field !== undefined) w.label(field, 32, v);
   f32.setFloat32(0, v);
   w.write(f32.getUint32(0), 32);
 }

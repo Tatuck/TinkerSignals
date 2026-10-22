@@ -10,7 +10,7 @@ import { useGraphStore, type BlockNode as BlockNodeType } from '../store';
 import { categoryColor, outputSeriesColor, portColor } from '../theme';
 import { BlockGlyph } from '../BlockGlyph';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { useLessonTarget } from '../lessons/LessonPanel';
+import { useHasCanvasFocus, useNodeFocused } from '../focus/focus';
 import { AssetWidget } from './AssetWidget';
 import { ImageWidget } from './ImageWidget';
 import { LibraryLoader } from './LibraryLoader';
@@ -30,8 +30,10 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
   const useS = useGraphStore();
   const def = registry.get(data.blockType);
   const result = useS((s) => s.results?.nodes[id]);
-  const isTarget = useLessonTarget().node === id;
   const scope = useS((s) => s.scope);
+  // El foco (lecciones, enlaces de los textos) solo apunta al circuito principal.
+  const focused = useNodeFocused(id) && scope === 'main';
+  const dimmed = useHasCanvasFocus() && scope === 'main' && !focused;
   const instant = useInstant(id);
   const instantPlot = instant?.data?.mini;
   if (!def) return <div className="node node-unknown">{data.blockType}</div>;
@@ -52,7 +54,7 @@ export const BlockNode = memo(function BlockNode({ id, data, selected }: NodePro
 
   return (
     <div
-      className={`node status-${status}${selected ? ' is-selected' : ''}${isTarget ? ' is-target' : ''}`}
+      className={`node status-${status}${selected ? ' is-selected' : ''}${focused ? ' is-target' : ''}${dimmed ? ' is-dim' : ''}`}
       style={{ '--cat': cat } as CSSProperties}
     >
       <header className="node-head">

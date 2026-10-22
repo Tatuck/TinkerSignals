@@ -1,0 +1,35 @@
+import { defineExample } from '../types';
+
+export default defineExample({
+  id: 'voip',
+  title: 'Llamada por Internet (VoIP)',
+  description: 'G.711 en paquetes RTP por una red con pérdidas y jitter.',
+  topic: 'red',
+  level: 'intermedio',
+  audience: ['estudiar', 'curiosear'],
+  order: 10,
+  nodes: [
+    { id: 'lib', type: 'sound-library', x: 0, y: 100, params: { sound: 'voz-femenina' } },
+    { id: 'rs', type: 'resampler', x: 300, y: 80, params: { sampleRate: '8000' } },
+    { id: 'enc', type: 'pcm-encoder', x: 600, y: 60, params: { bits: 8, law: 'a' } },
+    { id: 'pk', type: 'packetizer', x: 900, y: 40 },
+    { id: 'net', type: 'ip-network', x: 1200, y: 20, params: { lossPct: 5, jitterMs: 20 } },
+    { id: 'jb', type: 'jitter-buffer', x: 1500, y: 40 },
+    { id: 'dp', type: 'depacketizer', x: 1800, y: 60 },
+    { id: 'dec', type: 'pcm-decoder', x: 2100, y: 80 },
+    { id: 'out', type: 'output', x: 2400, y: 60 },
+    { id: 'mos', type: 'call-quality', x: 1800, y: 420 },
+  ],
+  edges: [
+    ['jb', 'out', 'mos', 'in'],
+    ['lib', 'out', 'rs', 'in'],
+    ['rs', 'out', 'enc', 'in'],
+    ['enc', 'out', 'pk', 'in'],
+    ['pk', 'out', 'net', 'in'],
+    ['net', 'out', 'jb', 'in'],
+    ['jb', 'out', 'dp', 'in'],
+    ['dp', 'out', 'dec', 'in'],
+    ['dec', 'out', 'out', 'in'],
+    ['rs', 'out', 'out', 'reference'],
+  ],
+});

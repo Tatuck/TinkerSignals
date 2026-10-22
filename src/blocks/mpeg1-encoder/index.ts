@@ -1,6 +1,6 @@
 import { makeBitstream, referenceBitsFor } from '@/engine/dsp/bitstream';
 import { defineBlock, type Plot, type InteriorGraph } from '@/engine/types';
-import { BANDS, FRAME, mpeg1Encode, psychoacoustic } from '../_shared/mpeg1';
+import { BANDS, FRAME, mpeg1Encode, psychoacoustic, describeMpeg1Field } from '../_shared/mpeg1';
 
 const RATES = ['32', '64', '96', '128', '192', '256', '384'] as const;
 
@@ -57,6 +57,7 @@ export default defineBlock({
       { kind: 'bars', title: 'smrAt', values: Array.from(pa.smr, (v) => Math.max(0, v)) },
     ];
   },
+  describeField: (field, value) => describeMpeg1Field(field, value),
   process({ inputs, params }) {
     const { samples: x, sampleRate: fs } = inputs.in;
     const bitrate = Number(params.bitrate) * 1000;

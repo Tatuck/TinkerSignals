@@ -118,8 +118,9 @@ export function subbandEncode(x: Float32Array, lowBits: number, highBits: number
   for (let i = 0; i < low.length; i++) {
     const ql = quantizeSample(low[i], lowBits, sl, A_LOW);
     const qh = quantizeSample(high[i], highBits, sh, A_HIGH);
-    w.write(ql.code, lowBits);
-    w.write(qh.code, highBits);
+    w.frame();
+    w.write(ql.code, lowBits, 'low');
+    w.write(qh.code, highBits, 'high');
     recL[i] = ql.rec;
     recH[i] = qh.rec;
     el += low[i] * low[i];

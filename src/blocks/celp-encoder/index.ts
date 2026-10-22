@@ -3,7 +3,7 @@ import { segmentalSnr, snr } from '@/engine/dsp/metrics';
 import { compareWaves } from '@/engine/dsp/plots';
 import { lpcEnvelopeDb } from '@/engine/dsp/voice';
 import { defineBlock } from '@/engine/types';
-import { celpBitsPerFrame, celpConfig, celpEncode } from '../_shared/celp';
+import { celpBitsPerFrame, celpConfig, celpEncode, describeCelpField } from '../_shared/celp';
 
 export default defineBlock({
   id: 'celp-encoder',
@@ -21,6 +21,7 @@ export default defineBlock({
     subframes: { type: 'select', default: '4', options: ['1', '2', '4', '8'] },
     adaptive: { type: 'boolean', default: true },
   },
+  describeField: (field, value, header) => describeCelpField(field, value, header),
   process({ inputs, params }) {
     const { samples: x, sampleRate: fs } = inputs.in;
     const cfg = celpConfig(fs, {

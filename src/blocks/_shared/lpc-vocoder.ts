@@ -24,7 +24,7 @@ export interface LpcConfig {
   pitchBits: number;
 }
 
-const GAIN_BITS = 6;
+export const GAIN_BITS = 6;
 const GAIN_MIN_DB = -80;
 const GAIN_STEP_DB = 80 / (2 ** GAIN_BITS - 1);
 
@@ -74,10 +74,11 @@ export function lpcEncode(x: Float32Array, fs: number, c: LpcConfig) {
       Math.max(0, (20 * Math.log10(gain + 1e-12) - GAIN_MIN_DB) / GAIN_STEP_DB),
     );
 
-    w.write(p.voiced ? 1 : 0, 1);
-    w.write(lagQ, c.pitchBits);
-    w.write(Math.min(2 ** GAIN_BITS - 1, gq), GAIN_BITS);
-    qk.forEach((q) => w.write(q, c.kBits));
+    w.frame();
+    w.write(p.voiced ? 1 : 0, 1, 'voiced');
+    w.write(lagQ, c.pitchBits, 'pitch');
+    w.write(Math.min(2 ** GAIN_BITS - 1, gq), GAIN_BITS, 'gain');
+    qk.forEach((q) => w.write(q, c.kBits, 'k'));
     frames.push({ voiced: p.voiced, lag: lagQ + c.minLag, gain, a });
   }
   return { writer: w, frames, lookaheadSamples: look };
@@ -114,4 +115,27 @@ export function lpcDecode(bytes: Uint8Array, bitLength: number, n: number, c: Lp
     }
   }
   return { y, excitation };
+}
+
+const dec = (v: number, d: number) => v.toFixed(d).replace('.', ',').replace('-', '−');
+
+/** Qué significa cada campo de una trama LPC (para el visor de bits). */
+export function describeLpcField(
+  field: string,
+  v: number,
+  h: { sampleRate: number; minLag?: unknown; kBits?: unknown },
+): string | undefined {
+  switch (field) {
+    case 'voiced':
+      return v ? 'sonora: la excitación es un tren de pulsos' : 'sorda: la excitación es ruido';
+    case 'pitch': {
+      const lag = v + Number(h.minLag ?? 0);
+      return `periodo de ${lag} muestras → F0 ≈ ${Math.round(h.sampleRate / lag)} Hz (si es sonora)`;
+    }
+    case 'gain':
+      return `${dec(v * GAIN_STEP_DB + GAIN_MIN_DB, 1)} dB`;
+    case 'k':
+      return `k = ${dec(dequantK(v, Number(h.kBits ?? 5)), 3)}`;
+  }
+  return undefined;
 }

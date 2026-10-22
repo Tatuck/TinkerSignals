@@ -51,7 +51,12 @@ export interface State {
   loadCount: number;
   /** ¿Está abierto el comparador tasa–calidad? */
   bench: boolean;
-  /** Ficha de teoría abierta (id), '' para el índice, o null si está cerrada. */
+  /** ¿Está abierto el catálogo «Explorar»? (Sus filtros viven en `explore/open.ts`.) */
+  explore: boolean;
+  /**
+   * Ficha de teoría abierta (id) o null. Las fichas se leen dentro de
+   * Explorar: poner un id aquí lo abre en esa ficha.
+   */
   theory: string | null;
   /** Instante elegido con la lupa temporal (s), o null si no hay lupa. */
   cursor: number | null;
@@ -103,6 +108,7 @@ export function createGraphStore(scope: Scope): GraphStore {
     loadCount: 0,
     toast: null,
     bench: false,
+    explore: false,
     theory: null,
     cursor: null,
     setCursor: (cursor) => set({ cursor }),

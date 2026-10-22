@@ -9,9 +9,12 @@ import { conceptFor } from '@/theory/es';
 import { categoryColor, outputSeriesColor } from '../theme';
 import { BlockGlyph } from '../BlockGlyph';
 import { ParamControl } from './ParamControl';
-import { useLessonTarget } from '../lessons/LessonPanel';
-import { lessons } from '../lessons/lessons';
+import { isMetricFocused, isParamFocused, useFocusLayers } from '../focus/focus';
+import { lessons } from '@/content';
 import { useLesson } from '../lessons/lessonStore';
+import { useProgress } from '../lib/progress';
+import { explore } from '../explore/open';
+import { buildTour } from '../lessons/tour';
 import { openInterior } from '../interior/openInterior';
 import { useInstant } from '../lib/useInstant';
 
@@ -40,6 +43,13 @@ function Welcome() {
   const scope = useGraphStore()((s) => s.scope);
   const startLesson = useLesson((l) => l.start);
   const current = useLesson((l) => l.lesson?.id);
+  const done = useProgress((p) => p.lessons);
+  const hasNodes = useStore((s) => s.nodes.length > 0);
+  const startTour = () => {
+    const { nodes, edges } = useStore.getState();
+    const tour = buildTour(nodes, edges);
+    if (tour) startLesson(tour);
+  };
   return (
     <div className="welcome">
       <h2>{t('inspector.emptyTitle')}</h2>
@@ -51,17 +61,29 @@ function Welcome() {
       </ol>
       {scope === 'main' && (
         <section>
-          <h3>Lecciones guiadas</h3>
-          <p className="welcome-lead">Pasos cortos que te dicen qué tocar y en qué fijarte.</p>
+          <h3>Aprender</h3>
+          <p className="welcome-lead">
+            Teoría, lecciones, ejemplos y problemas ordenados por temas.
+          </p>
+          <div className="welcome-actions">
+            <button className="btn btn-primary" onClick={() => explore.open()}>
+              Explorar temas
+            </button>
+            <button className="btn" onClick={startTour} disabled={!hasNodes}>
+              Recorrer este circuito
+            </button>
+          </div>
+          <h4 className="welcome-sub">Lecciones guiadas</h4>
           <ol className="lesson-list">
             {lessons.map((l) => (
               <li key={l.id}>
                 <button
-                  className={l.id === current ? 'is-current' : ''}
+                  className={`${l.id === current ? 'is-current' : ''}${done.includes(l.id) ? ' is-done' : ''}`}
                   onClick={() => startLesson(l.id)}
                 >
                   <strong>{l.title}</strong>
                   <small>
+                    {done.includes(l.id) ? 'Hecha · ' : ''}
                     {l.steps.length} pasos · {l.minutes} min
                   </small>
                 </button>
@@ -94,8 +116,9 @@ function NodeInspector({ id }: { id: string }) {
   const setParam = useS((s) => s.setParam);
   const removeNode = useS((s) => s.removeNode);
   const duplicateNode = useS((s) => s.duplicateNode);
-  const target = useLessonTarget();
   const scope = useS((s) => s.scope);
+  const layers = useFocusLayers();
+  const main = scope === 'main';
   const instant = useInstant(id);
   const def = node && registry.get(node.data.blockType);
   if (!node || !def) return <Welcome />;
@@ -146,7 +169,7 @@ function NodeInspector({ id }: { id: string }) {
               spec={spec}
               value={node.data.params[name] ?? spec.default}
               onChange={(v) => setParam(id, name, v)}
-              highlighted={target.node === id && target.param === name}
+              highlighted={main && isParamFocused(layers, id, name)}
             />
           ))}
         </section>
@@ -159,7 +182,10 @@ function NodeInspector({ id }: { id: string }) {
             {result.metrics.map((m) => {
               const f = formatMetric(m.value, m.unit);
               return (
-                <div key={m.key} className={m.highlight ? 'is-highlight' : ''}>
+                <div
+                  key={m.key}
+                  className={`${m.highlight ? 'is-highlight' : ''}${main && isMetricFocused(layers, id, m.key) ? ' is-target' : ''}`}
+                >
                   <dt>{metricLabel(def.id, m.key)}</dt>
                   <dd>
                     {f.value} <small>{f.unit}</small>

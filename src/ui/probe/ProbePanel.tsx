@@ -10,6 +10,7 @@ import { ImageView, Plot } from '../plots/Plot';
 import { Spectrogram, Spectrum } from '../plots/Spectrum';
 import { useGraphStore } from '../store';
 import { portColor } from '../theme';
+import { BitsViewer } from './BitsViewer';
 
 const W = 292;
 
@@ -190,6 +191,14 @@ export function ProbePanel({ edgeId }: { edgeId: string }) {
             .
           </p>
         </section>
+      )}
+      {data?.kind === 'bitstream' && (
+        <BitsViewer
+          nodeId={edge.source}
+          port={edge.sourceHandle ?? ''}
+          scope={scope}
+          version={port}
+        />
       )}
 
       {data?.kind === 'frames' && (

@@ -4,12 +4,7 @@
   "details": "El modelo fuente-filtro dice que la voz es una excitación (pulsos de las cuerdas vocales si es sonora, ruido si es sorda) filtrada por el tracto vocal. Por cada trama, el codificador calcula con Levinson-Durbin un filtro todo-polos de orden p que imita el tracto vocal (su envolvente espectral), decide si la trama es sonora, mide el tono y la ganancia. Solo eso viaja: unos 50–70 bits por trama. La gráfica superior compara el espectro real de una trama (gris) con la envolvente del filtro LPC (color): los picos son los formantes. Como hay que esperar a tener la trama y un poco más para la ventana de análisis, añade retardo.",
   "tryThis": "Baja el orden a 4 y escucha cómo la voz se vuelve borrosa: el filtro ya no puede seguir los formantes.",
   "interior": "El análisis LPC trocea la voz en tramas con ventana de Hamming, calcula su autocorrelación y, con Levinson-Durbin, los coeficientes del filtro que imita el tracto vocal. Abajo, el espectro de la misma señal para comparar.",
-  "concepts": [
-    "Vocoder LPC",
-    "Modelo fuente-filtro",
-    "Formantes",
-    "LPC-10"
-  ],
+  "concepts": ["Vocoder LPC", "Modelo fuente-filtro", "Formantes", "LPC-10"],
   "ports": {
     "in": "Voz",
     "out": "Parámetros"
@@ -36,5 +31,23 @@
     "pitch": "Tono por trama (0 = sorda)",
     "envelopeVoiced": "Esta trama (sonora): espectro y envolvente LPC",
     "envelopeUnvoiced": "Esta trama (sorda): espectro y envolvente LPC"
+  },
+  "fields": {
+    "voiced": {
+      "label": "Sonora/sorda",
+      "help": "1 bit: 1 si la trama es sonora (las cuerdas vocales vibran) y 0 si es sorda."
+    },
+    "pitch": {
+      "label": "Pitch (periodo)",
+      "help": "Periodo fundamental en muestras, menos el mínimo. En una trama sorda no se usa."
+    },
+    "gain": {
+      "label": "Ganancia",
+      "help": "Energía de la trama (del residuo), cuantizada en dB."
+    },
+    "k": {
+      "label": "Coeficiente k",
+      "help": "Coeficientes de reflexión del filtro del tracto vocal (de k1 a kp), cuantizados en arcoseno."
+    }
   }
 }

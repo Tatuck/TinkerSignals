@@ -14,9 +14,10 @@ import { Engine } from '@/engine/evaluator';
 import { makeImage, makePlane, toRgba } from '@/engine/dsp/image';
 import type { Graph, ParamValue, Signal } from '@/engine/types';
 import { BENCH_FAMILIES, type BenchPoint } from './benchConfigs';
-import { probe } from './probe';
+import { probe, probeBits } from './probe';
 
-export type Scope = 'main' | 'interior';
+/** 'scratch' es un motor de usar y tirar: resuelve los problemas sin tocar el lienzo. */
+export type Scope = 'main' | 'interior' | 'scratch';
 
 /** Motor aparte para el comparador tasa–calidad (no toca los circuitos). */
 const bench = { engine: undefined as unknown as Engine, decoded: new Map<string, Signal>() };
@@ -26,6 +27,7 @@ let benchRate = 16000;
 const engines: Record<Scope, Engine> = {
   main: new Engine(registry),
   interior: new Engine(registry),
+  scratch: new Engine(registry),
 };
 bench.engine = new Engine(registry);
 
@@ -49,6 +51,13 @@ const api = {
   probeOutput(nodeId: string, port: string, scope: Scope = 'main') {
     const v = engines[scope].getValue(nodeId, port);
     return v ? probe(v) : null;
+  },
+  /** Visor de bits: qué significa cada campo de unas tramas del flujo de una salida. */
+  probeBits(nodeId: string, port: string, frame: number, scope: Scope = 'main') {
+    const v = engines[scope].getValue(nodeId, port);
+    if (v?.kind !== 'bitstream') return null;
+    const describe = v.layout?.block ? registry.get(v.layout.block)?.describeField : undefined;
+    return probeBits(v, frame, describe);
   },
   /** Señal completa de una salida o de una entrada (para escuchar o descargar). */
   getSignal(

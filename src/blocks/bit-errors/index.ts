@@ -16,14 +16,17 @@ export default defineBlock({
     const bytes = b.bytes.slice();
     const rand = seededRandom(params.seed);
     let flipped = 0;
+    // Se apunta dónde caen los errores (para el visor de bits), sin pasar de un tope.
+    const damaged: [number, number][] = [...(b.damaged ?? [])];
     // Salta directamente al siguiente error (distribución geométrica): rápido aunque haya millones de bits.
     const next = () => Math.floor(Math.log(1 - rand()) / Math.log(1 - params.ber));
     for (let pos = next(); pos < b.bitLength; pos += 1 + next()) {
       bytes[pos >> 3] ^= 0x80 >> (pos & 7);
       flipped++;
+      if (damaged.length < 20000) damaged.push([pos, 1]);
     }
     return {
-      outputs: { out: { ...b, bytes } },
+      outputs: { out: { ...b, bytes, damaged } },
       metrics: [
         { key: 'flipped', value: flipped, unit: 'bits', highlight: true },
         { key: 'berReal', value: flipped / Math.max(1, b.bitLength), highlight: true },

@@ -1,4 +1,5 @@
 import { makeBitstream } from '@/engine/dsp/bitstream';
+import { num, symbolLabel } from '../_shared/traces';
 import { defineBlock } from '@/engine/types';
 import { huffmanEncode } from '../_shared/huffman';
 
@@ -42,6 +43,7 @@ export default defineBlock({
         { key: 'symbolBits', value: symbolBits, unit: 'bits' },
         { key: 'distinct', value: stats.distinct },
         { key: 'maxLength', value: stats.maxLength, unit: 'bits' },
+        { key: 'variance', value: stats.variance, unit: 'bits²' },
         { key: 'compression', value: out.referenceBits / out.bitLength, unit: '×' },
       ],
       plots: [
@@ -50,6 +52,26 @@ export default defineBlock({
           title: 'probabilities',
           values: stats.top.map((t) => t.p),
           labels: stats.top.map((t) => `Símbolo ${t.sym}: p = ${t.p.toFixed(3)}, código ${t.code}`),
+        },
+        {
+          kind: 'table',
+          title: 'codes',
+          columns: ['Símbolo', 'Veces', '$p_i$', 'Código', '$l_i$'],
+          rows: stats.table.map((r) => [
+            symbolLabel(r.sym, symbolBits),
+            r.count,
+            r.p,
+            r.code,
+            r.len,
+          ]),
+          notes: [
+            `Longitud media: $\\bar L = \\sum p_i l_i =$ **${num(stats.avgLength)}** bits/símbolo. Varianza: $\\sum p_i (l_i - \\bar L)^2 =$ ${num(stats.variance)}.`,
+            `Entropía: $H = -\\sum p_i \\log_2 p_i =$ **${num(stats.entropy)}** bits/símbolo; eficiencia $H/\\bar L =$ ${num((100 * stats.entropy) / Math.max(1e-12, stats.avgLength), 1)} %.`,
+            `Compresión frente a ${symbolBits} bits fijos: $CR = ${symbolBits}/\\bar L =$ ${num(symbolBits / Math.max(1e-12, stats.avgLength))}; redundancia relativa $R_D = 1 - 1/CR =$ ${num(1 - stats.avgLength / symbolBits)}.`,
+            stats.table.length < stats.distinct
+              ? `Solo se enseñan los ${stats.table.length} símbolos más frecuentes de ${stats.distinct}.`
+              : 'Huffman canónico: las longitudes salen del árbol; los códigos se asignan por longitud y, a igual longitud, por símbolo.',
+          ],
         },
       ],
     };

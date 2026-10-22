@@ -207,6 +207,8 @@ export class Engine {
         if (v.kind !== def.outputs[port].type) {
           throw new Error(`La salida "${port}" debía ser ${def.outputs[port].type} y es ${v.kind}`);
         }
+        // Procedencia del mapa de bits: el bloque que lo escribió tiene los textos de sus campos.
+        if (v.kind === 'bitstream' && v.layout && !v.layout.block) v.layout.block = node.type;
         outLatency[port] = upstreamLatency + own;
         outputs[port] = { summary: summarize(v), latencyMs: outLatency[port] };
       }

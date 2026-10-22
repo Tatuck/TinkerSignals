@@ -3,11 +3,7 @@
   "summary": "Aprende un diccionario de secuencias repetidas mientras comprime. La base de GIF y del antiguo compress.",
   "details": "LZW no necesita conocer las probabilidades: empieza con un diccionario que contiene cada símbolo suelto y, cada vez que ve una secuencia nueva, la añade. Lo que envía es el número de la secuencia conocida más larga. El decodificador construye el mismo diccionario a la vez, así que no hace falta transmitirlo. Brilla con texto y datos repetitivos; con audio, cuyas muestras casi nunca se repiten exactas, gana poco. Cuando el diccionario llega a 2^n entradas se vacía y vuelve a empezar.",
   "tryThis": "Compara LZW, Huffman y aritmética detrás del mismo PCM. Luego prueba con la batería de la Biblioteca, que tiene silencios.",
-  "concepts": [
-    "Lempel-Ziv-Welch",
-    "Diccionario adaptativo",
-    "Compresión universal"
-  ],
+  "concepts": ["Lempel-Ziv-Welch", "Diccionario adaptativo", "Compresión universal"],
   "ports": {
     "in": "Bits",
     "out": "Bits comprimidos"
@@ -39,5 +35,8 @@
     "codes": "Códigos enviados",
     "dictionary": "Diccionario",
     "resets": "Vaciados"
+  },
+  "plots": {
+    "dictionary": "El diccionario, paso a paso"
   }
 }

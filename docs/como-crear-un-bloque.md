@@ -17,7 +17,7 @@
 process({ inputs, params, getAsset }) => {
   outputs,      // un valor por cada puerto de salida, del tipo declarado
   metrics?,     // [{ key, value, unit?, highlight? }]
-  plots?,       // gráficas didácticas: 'line' o 'bars'
+  plots?,       // gráficas didácticas: 'line', 'bars', 'image', 'text' o 'table'
   latencyMs?,   // retardo algorítmico propio
 }
 ```
@@ -59,6 +59,41 @@ process({ inputs, params, getAsset }) => {
   (RGBA; `toRgba` y `planeToRgba` la preparan) y `text`. Si un bloque no
   devuelve gráficas, el nodo enseña una miniatura de su primera salida.
 
+## Opcional: tablas paso a paso
+
+La gráfica `table` es la traza de un algoritmo con las mismas columnas que se
+usarían al hacerlo a mano: `{ kind: 'table', title, columns, rows, notes?,
+stepwise?, highlight? }`. Las cabeceras y las notas admiten fórmulas `$…$` y
+**negritas**. Con `stepwise: true` la interfaz enseña la tabla fila a fila,
+como en la pizarra. Los problemas leen sus celdas para corregir, así que
+guarda en `rows` números de verdad (no texto ya formateado) siempre que se
+pueda. `src/blocks/_shared/traces.ts` tiene ayudas para escribir símbolos,
+secuencias y códigos binarios. Ejemplos: la tabla de códigos de
+`huffman-encoder`, el diccionario de `lzw-encoder` o el bloque 8 × 8 de
+`jpeg-encoder`. El título va en `plots` del `es.json`.
+
+## Opcional: qué significa cada bit
+
+Si el codificador etiqueta lo que escribe, el inspector de cables enseña
+«Qué dicen los bits»: cada campo con su color, sus bits, su valor y su
+significado, trama a trama, y los bits que haya dañado el canal.
+
+- Escribe con `w.write(valor, nBits, 'campo')` (o `writeFloat32(w, v, 'campo')`)
+  y llama a `w.frame()` al empezar cada trama. Si el código ocupa unos bits pero
+  el valor que interesa es otro (un código de Huffman que representa una
+  categoría), usa `w.label('campo', nBits, valor)` justo antes de escribirlo.
+  Sin etiqueta todo funciona igual: es opcional.
+- Pon el texto de cada campo en `fields` del `es.json`:
+  `"pitch": { "label": "Pitch", "help": "Periodo de la voz sonora…" }`.
+  `bitlayout.test.ts` comprueba que no falta ninguno.
+- Si el valor crudo no dice nada (un índice de 7 bits), añade
+  `describeField(campo, valor, cabecera)` al bloque y devuelve el valor
+  traducido («F0 ≈ 120 Hz»). La interfaz no sabe nada de ningún códec.
+- El mapa viaja fuera de banda (`Bitstream.layout`): no cuenta como bits ni se
+  corrompe. Un bloque que solo cambia bits sin moverlos de sitio (como el canal
+  con errores) lo deja pasar y anota lo que ha dañado en `damaged`. Uno que los
+  reordena o los vuelve a codificar no debe propagarlo.
+
 ## Opcional: interior y lupa temporal
 
 - `interior(params, inputs)` devuelve un circuito de piezas básicas que hace
@@ -76,7 +111,10 @@ process({ inputs, params, getAsset }) => {
 
 - Los bloques se prueban llamando a `process` en un test de Vitest, sin
   navegador. `src/blocks/codecs.test.ts` tiene una función `chain` para montar
-  una cadena de bloques en una línea.
+  una cadena de bloques en una línea, y `src/blocks/traces.test.ts`
+  comprueba las tablas paso a paso contra ejercicios hechos a mano.
+- Para meter unas pocas muestras escritas a mano (las de un ejercicio), usa el
+  bloque «Lista de números» (`number-list`).
 - En la app, cada nodo muestra su tiempo de cálculo y si se reutilizó de la
   caché. Exporta el circuito (barra superior) para reproducir un fallo.
 - Si un bloque nuevo no aparece en los tests, comprueba que la carpeta no

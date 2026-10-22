@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { setAsset, setImageAsset } from '@/runtime/client';
 import { Canvas } from './canvas/Canvas';
 import { ErrorBoundary } from './ErrorBoundary';
-import { examples, instantiate } from './examples';
+import { DEFAULT_EXAMPLE, exampleById, instantiate } from './examples';
 import { redo, startHistory, undo } from './history';
 import { Inspector } from './inspector/Inspector';
 import { InteriorView } from './interior/InteriorView';
@@ -13,8 +13,9 @@ import { Palette } from './palette/Palette';
 import { registry } from './registry';
 import { invalidate, useStore, type BlockNode, type CableEdge } from './store';
 import { Toolbar } from './Toolbar';
-import { TheoryPanel } from './theory/TheoryPanel';
 import { BenchPanel } from './bench/BenchPanel';
+import { ExplorePanel } from './explore/ExplorePanel';
+import { ProblemPanel } from './problems/ProblemPanel';
 
 const STORAGE_KEY = 'tinkersignals:circuit';
 
@@ -48,7 +49,7 @@ async function restore(): Promise<boolean> {
   } catch {
     /* almacenamiento no disponible: seguimos con el ejemplo */
   }
-  const g = instantiate(examples[0]);
+  const g = instantiate(exampleById(DEFAULT_EXAMPLE)!);
   load(g.nodes, g.edges);
   return false;
 }
@@ -155,8 +156,9 @@ export function App() {
         </ErrorBoundary>
       </div>
       <InteriorView />
-      <TheoryPanel />
       <BenchPanel />
+      <ExplorePanel />
+      <ProblemPanel />
       <Toast />
     </ReactFlowProvider>
   );

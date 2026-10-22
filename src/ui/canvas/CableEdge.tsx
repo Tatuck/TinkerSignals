@@ -3,6 +3,7 @@ import { memo, type CSSProperties } from 'react';
 import { formatMetric, formatRate } from '../lib/format';
 import { registry } from '../registry';
 import { useGraphStore, type CableEdge as CableEdgeType } from '../store';
+import { useEdgeFocused, useHasCanvasFocus } from '../focus/focus';
 import { portColor } from '../theme';
 
 /**
@@ -13,6 +14,7 @@ import { portColor } from '../theme';
 export const CableEdge = memo(function CableEdge({
   id,
   source,
+  target,
   sourceHandleId,
   sourceX,
   sourceY,
@@ -21,6 +23,9 @@ export const CableEdge = memo(function CableEdge({
   selected,
 }: EdgeProps<CableEdgeType>) {
   const useS = useGraphStore();
+  const main = useS((s) => s.scope) === 'main';
+  const focused = useEdgeFocused(source, target) && main;
+  const dimmed = useHasCanvasFocus() && main && !focused;
   const blockType = useS((s) => s.nodes.find((n) => n.id === source)?.data.blockType);
   const port = useS((s) => s.results?.nodes[source]?.outputs[sourceHandleId ?? '']);
   const type =
@@ -60,14 +65,14 @@ export const CableEdge = memo(function CableEdge({
       <BaseEdge
         id={id}
         path={path}
-        className={`cable cable-${type}${selected ? ' is-selected' : ''}${port ? '' : ' is-idle'}`}
+        className={`cable cable-${type}${selected ? ' is-selected' : ''}${port ? '' : ' is-idle'}${focused ? ' is-focus' : ''}${dimmed ? ' is-dim' : ''}`}
         style={{ '--cable': color } as CSSProperties}
         interactionWidth={18}
       />
       {label && (
         <EdgeLabelRenderer>
           <div
-            className={`cable-label${selected ? ' is-selected' : ''}`}
+            className={`cable-label${selected ? ' is-selected' : ''}${focused ? ' is-focus' : ''}${dimmed ? ' is-dim' : ''}`}
             style={
               {
                 transform: `translate(-50%, -50%) translate(${mx}px, ${my}px)`,

@@ -21,6 +21,8 @@ export interface BlockText {
   options?: Record<string, Record<string, string>>;
   metrics?: Record<string, string>;
   plots?: Record<string, string>;
+  /** Campos del flujo de bits que escribe (visor de bits): nombre y explicación. */
+  fields?: Record<string, { label: string; help?: string }>;
 }
 
 const ui: Dict = es;

@@ -17,7 +17,12 @@ export function pcmEncode(
   const codes = new Uint32Array(x.length);
   for (let i = 0; i < x.length; i++) {
     codes[i] = uniformIndex(compress(x[i], c.law, c.mu), c.bits, 'midrise');
-    w.write(codes[i], c.bits);
+    // El bit alto es el signo (escalones de la mitad de arriba = positivos); el resto, el nivel.
+    w.frame();
+    if (c.bits > 1) {
+      w.write(codes[i] >> (c.bits - 1), 1, 'sign');
+      w.write(codes[i] & ((1 << (c.bits - 1)) - 1), c.bits - 1, 'level');
+    } else w.write(codes[i], 1, 'sign');
   }
   return { writer: w, codes };
 }

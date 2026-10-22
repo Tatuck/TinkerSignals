@@ -5,9 +5,12 @@ import { useStore } from '../store';
 import { CableEdge } from './CableEdge';
 import { Timeline } from './Timeline';
 import { LessonPanel } from '../lessons/LessonPanel';
+import { ProblemChip } from '../problems/ProblemPanel';
+import { ExploreChip } from '../explore/ExploreChip';
+import { setFocus } from '../focus/focus';
 import { openInterior } from '../interior/openInterior';
-import { examples, instantiate } from '../examples';
-import { lessons } from '../lessons/lessons';
+import { DEFAULT_EXAMPLE, exampleById, instantiate } from '../examples';
+import { lessons } from '@/content';
 import { useLesson } from '../lessons/lessonStore';
 
 export const nodeTypes = { block: BlockNode };
@@ -59,7 +62,10 @@ export function Canvas() {
         onNodeClick={(_, n) => select({ kind: 'node', id: n.id })}
         onNodeDoubleClick={(_, n) => void openInterior(n.id)}
         onEdgeClick={(_, e) => select({ kind: 'edge', id: e.id })}
-        onPaneClick={() => select(null)}
+        onPaneClick={() => {
+          select(null);
+          setFocus('theory', null);
+        }}
         defaultEdgeOptions={{ type: 'cable' }}
         fitView
         fitViewOptions={{ padding: 0.12, maxZoom: 1.2 }}
@@ -71,6 +77,8 @@ export function Canvas() {
       </ReactFlow>
       <Timeline />
       <LessonPanel />
+      <ProblemChip />
+      <ExploreChip />
       {nodes.length === 0 && <EmptyCanvas />}
     </div>
   );
@@ -80,6 +88,7 @@ export function Canvas() {
 function EmptyCanvas() {
   const load = useStore((s) => s.load);
   const startLesson = useLesson((l) => l.start);
+  const first = exampleById(DEFAULT_EXAMPLE)!;
   return (
     <div className="canvas-empty">
       <h2>El lienzo está vacío</h2>
@@ -94,11 +103,11 @@ function EmptyCanvas() {
         <button
           className="btn"
           onClick={() => {
-            const g = instantiate(examples[0]);
+            const g = instantiate(first);
             load(g.nodes, g.edges);
           }}
         >
-          Abrir «{examples[0].title}»
+          Abrir «{first.title}»
         </button>
       </div>
     </div>

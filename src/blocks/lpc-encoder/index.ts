@@ -8,7 +8,7 @@ import {
   residualRms,
 } from '@/engine/dsp/voice';
 import { defineBlock, type InteriorGraph } from '@/engine/types';
-import { bitsPerFrame, lpcConfig, lpcEncode } from '../_shared/lpc-vocoder';
+import { bitsPerFrame, lpcConfig, lpcEncode, describeLpcField } from '../_shared/lpc-vocoder';
 
 export default defineBlock({
   id: 'lpc-encoder',
@@ -76,6 +76,7 @@ export default defineBlock({
       },
     ];
   },
+  describeField: (field, value, header) => describeLpcField(field, value, header),
   process({ inputs, params }) {
     const { samples: x, sampleRate: fs } = inputs.in;
     const cfg = lpcConfig(fs, params.frameMs, params.order, params.kBits);

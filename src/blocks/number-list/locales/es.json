@@ -1,0 +1,21 @@
+{
+  "title": "Lista de números",
+  "summary": "Escribe unas pocas muestras a mano, como las de un ejercicio, y salen como señal.",
+  "details": "Sirve para hacer a mano lo mismo que el códec y comparar: escribe las muestras del enunciado (por ejemplo «150, 160, 162, 175» o «4,3 −2,6 5,7») y el fondo de escala, el valor que corresponde a ±1. Las muestras se dividen por él, porque los cuantizadores y códecs trabajan con señales entre −1 y 1. Los valores que se salen del fondo de escala se recortan.",
+  "tryThis": "Escribe «4,3 −2,6 5,7 −6,2» con fondo de escala 8 y conéctalo a un Codificador PCM lineal de 4 bits: la tabla da los mismos códigos que el ejercicio hecho a mano.",
+  "concepts": ["Muestreo", "Cuantización"],
+  "ports": { "out": "Señal" },
+  "params": {
+    "values": {
+      "label": "Muestras",
+      "help": "Separadas por comas o espacios. Con espacios o «;», la coma es decimal."
+    },
+    "fullScale": {
+      "label": "Fondo de escala",
+      "help": "El valor que corresponde a ±1 (p. ej. 8 si la señal va de −8 a 8 V)."
+    },
+    "sampleRate": { "label": "Frecuencia de muestreo" }
+  },
+  "metrics": { "count": "Muestras", "clipped": "Recortadas" },
+  "plots": { "values": "Muestras escritas" }
+}

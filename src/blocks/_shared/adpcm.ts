@@ -60,7 +60,9 @@ export function adpcmEncode(x: Float32Array): {
       diff -= step >> 1;
     }
     if (diff >= step >> 2) code |= 1;
-    w.write(code, 4);
+    w.frame();
+    w.write(code >> 3, 1, 'sign');
+    w.write(code & 7, 3, 'magnitude');
     rec[i] = decodeNibble(code, s) / 32768;
   }
   return { writer: w, reconstructed: rec, steps };

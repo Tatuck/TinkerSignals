@@ -3,11 +3,7 @@
   "summary": "Busca, entre miles de excitaciones posibles, la que mejor reproduce la voz al pasar por el filtro LPC.",
   "details": "CELP mantiene el filtro LPC del vocoder pero cambia la excitación: en vez de pulsos o ruido, prueba los vectores de dos diccionarios (análisis por síntesis). El libro adaptativo copia la excitación de hace T muestras y captura el tono; el estocástico, un diccionario fijo de ruido, aporta el resto. Para cada subtrama se sintetiza cada candidato y se elige el que da menos error ponderado. La ponderación W(z) = A(z)/A(z/γ) relaja el error en los formantes, donde el oído no lo percibe: con γ = 1 no se pondera nada; con γ más bajo se pondera más. La segunda gráfica muestra la envolvente LPC (gris) y la del filtro ponderado 1/A(z/γ) (color). A diferencia del vocoder LPC, la forma de onda sí se parece a la original.",
   "tryThis": "Prueba tres codebooks (16, 256 y 1024), tres órdenes (4, 10 y 16) y tres γ (0,6, 0,85 y 1). Anota tasa y SNR segmental de cada caso.",
-  "concepts": [
-    "CELP",
-    "Análisis por síntesis",
-    "Ponderación perceptual"
-  ],
+  "concepts": ["CELP", "Análisis por síntesis", "Ponderación perceptual"],
   "ports": {
     "in": "Voz",
     "out": "Parámetros"
@@ -57,5 +53,27 @@
   "plots": {
     "wave": "Original vs sintetizada",
     "weighting": "Envolvente LPC vs filtro de ponderación"
+  },
+  "fields": {
+    "k": {
+      "label": "Coeficiente k",
+      "help": "Coeficientes de reflexión del filtro LPC de la trama (de k1 a kp)."
+    },
+    "lag": {
+      "label": "Retardo del libro adaptativo",
+      "help": "Cuántas muestras atrás se copia la excitación: el periodo del tono. Uno por subtrama."
+    },
+    "ga": {
+      "label": "Ganancia adaptativa",
+      "help": "Cuánto pesa la copia del pasado (el tono). Una por subtrama."
+    },
+    "index": {
+      "label": "Índice del codebook",
+      "help": "Qué vector del libro estocástico se ha elegido por análisis por síntesis. log2(tamaño) bits."
+    },
+    "gs": {
+      "label": "Ganancia estocástica",
+      "help": "Signo y nivel del vector elegido."
+    }
   }
 }

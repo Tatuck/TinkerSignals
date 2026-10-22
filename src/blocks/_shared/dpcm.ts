@@ -16,7 +16,12 @@ export interface DpcmEncoded {
   error: Float32Array;
   reconstructed: Float32Array;
   sideBits: number;
+  /** Las primeras muestras, como se haría a mano: x, predicción, e, código, ê, x̂. */
+  trace: { x: number; pred: number; e: number; code: number; eq: number; xr: number }[];
 }
+
+/** Muestras que se guardan en la traza. */
+const TRACE_SAMPLES = 16;
 
 export function dpcmEncode(x: Float32Array, order: number, bits: number): DpcmEncoded {
   const r = autocorrelation(x, order);
@@ -52,21 +57,25 @@ export function dpcmEncode(x: Float32Array, order: number, bits: number): DpcmEn
   const { a, range } = best;
 
   const w = new BitWriter();
-  w.write(order, 4);
-  a.forEach((c) => writeFloat32(w, c));
-  writeFloat32(w, range);
+  w.write(order, 4, 'order');
+  a.forEach((c) => writeFloat32(w, c, 'coef'));
+  writeFloat32(w, range, 'range');
   const sideBits = w.bitLength;
 
   const xr = new Float32Array(x.length);
   const e = new Float32Array(x.length);
+  const trace: DpcmEncoded['trace'] = [];
   for (let n = 0; n < x.length; n++) {
     const pred = predict(xr, n, a);
     e[n] = x[n] - pred;
     const idx = uniformIndex(e[n] / range, bits, 'midrise');
-    w.write(idx, bits);
-    xr[n] = clamp(pred + uniformValue(idx, bits, 'midrise') * range);
+    w.frame();
+    w.write(idx, bits, 'error');
+    const eq = uniformValue(idx, bits, 'midrise') * range;
+    xr[n] = clamp(pred + eq);
+    if (n < TRACE_SAMPLES) trace.push({ x: x[n], pred, e: e[n], code: idx, eq, xr: xr[n] });
   }
-  return { writer: w, coeffs: a, error: e, reconstructed: xr, sideBits };
+  return { writer: w, coeffs: a, error: e, reconstructed: xr, sideBits, trace };
 }
 
 export function dpcmDecode(

@@ -45,6 +45,44 @@ export interface Bitstream {
    * compresión a lo largo de toda la cadena.
    */
   referenceBits: number;
+  /**
+   * Qué significa cada bit (pitch, ganancia, coeficiente DC…), para
+   * enseñarlo. Es solo un metadato para la interfaz: no cuenta como bits
+   * ni lo corrompen los bloques de canal. Lo rellena `BitWriter` cuando el
+   * codificador etiqueta lo que escribe.
+   */
+  layout?: BitLayout;
+  /** Tramos de bits que ha estropeado el canal: [inicio, longitud]. Metadato para la interfaz. */
+  damaged?: [number, number][];
+}
+
+/** Un trozo etiquetado del flujo de bits. */
+export interface BitSpan {
+  /** Índice en `BitLayout.fields`. */
+  field: number;
+  start: number;
+  length: number;
+  value: number;
+  /** Trama a la que pertenece (−1: cabecera, antes de la primera trama). */
+  frame: number;
+}
+
+/** Mapa de los campos de un flujo de bits (ver `BitWriter.write(valor, n, campo)`). */
+export interface BitLayout {
+  /** Claves de los campos; sus textos están en `fields` del es.json del bloque. */
+  fields: string[];
+  /** Bloque que escribió el flujo (lo anota el motor): de ahí salen los textos. */
+  block?: string;
+  /** Longitud del flujo descrito: si un bloque cambia los bits de sitio, el mapa deja de valer. */
+  bitLength: number;
+  /** Tramos, en orden, hasta un tope (ver `truncated`). */
+  spans: BitSpan[];
+  /** Bits de cada campo en todo el flujo (exactos aunque se llegue al tope). */
+  totals: number[];
+  /** Número de tramas. */
+  frames: number;
+  /** Se dejaron de guardar tramos al llegar al tope. */
+  truncated: boolean;
 }
 
 /** Un paquete de red: un trozo del flujo de bits más su historia en la red. */
@@ -308,6 +346,23 @@ export type Plot =
       kind: 'text';
       title: string;
       text: string;
+    }
+  | {
+      /**
+       * Tabla: la traza de un algoritmo paso a paso, con las mismas columnas
+       * que se usarían al hacerlo a mano. Los problemas leen sus celdas.
+       */
+      kind: 'table';
+      title: string;
+      /** Cabeceras (notación corta: «x(n)», «código»…). Admiten fórmulas `$…$`. */
+      columns: string[];
+      rows: (string | number)[][];
+      /** Líneas bajo la tabla (totales, fórmulas). Texto enriquecido. */
+      notes?: string[];
+      /** La UI la revela fila a fila, como en la pizarra. */
+      stepwise?: boolean;
+      /** Índices de filas resaltadas. */
+      highlight?: number[];
     };
 
 export interface ProcessResult<O extends PortSpecs> {
@@ -383,6 +438,12 @@ export interface BlockDefinition<
    * solo cuando el usuario elige un instante.
    */
   inspectAt?: (ctx: ProcessContext<I, P> & { timeS: number }) => Plot[];
+  /**
+   * Qué significa el valor de un campo del flujo de bits que escribe este
+   * bloque (ver `BitWriter.write(valor, n, campo)`): por ejemplo, el lag del
+   * pitch → «F0 ≈ 142 Hz». Lo usa el visor de bits; sin ella se enseña el número.
+   */
+  describeField?: (field: string, value: number, header: BitstreamHeader) => string | undefined;
   inputs: I;
   outputs: O;
   params: P;

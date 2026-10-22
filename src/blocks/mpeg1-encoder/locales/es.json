@@ -45,5 +45,31 @@
     "allocation": "Bits por muestra en cada subbanda (media)",
     "maskingAt": "Esta trama: espectro y umbral de enmascaramiento",
     "smrAt": "SMR de cada subbanda en esta trama"
+  },
+  "fields": {
+    "sync": {
+      "label": "Sincronismo",
+      "help": "12 unos al principio de cada trama para encontrarla."
+    },
+    "header": {
+      "label": "Cabecera",
+      "help": "Resto de la cabecera de la trama (aquí, la tasa en kbps)."
+    },
+    "alloc": {
+      "label": "Asignación de bits",
+      "help": "4 bits por subbanda: cuántos bits recibe cada una de sus muestras (según el SMR)."
+    },
+    "scalefactor": {
+      "label": "Factor de escala",
+      "help": "6 bits por subbanda con bits: el nivel de pico de sus 12 muestras."
+    },
+    "sample": {
+      "label": "Muestra de subbanda",
+      "help": "Muestras cuantizadas de las subbandas, con los bits que diga la asignación."
+    },
+    "padding": {
+      "label": "Relleno",
+      "help": "Bits sin información para que todas las tramas midan lo mismo (tasa constante)."
+    }
   }
 }

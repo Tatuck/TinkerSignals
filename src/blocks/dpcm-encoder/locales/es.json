@@ -3,11 +3,7 @@
   "summary": "Predice cada muestra a partir de las anteriores y solo envía el error de predicción.",
   "details": "Las muestras de audio consecutivas se parecen mucho. DPCM aprovecha esa redundancia: un predictor lineal de orden p (calculado con Levinson-Durbin sobre la autocorrelación) estima la siguiente muestra y se cuantiza solo la diferencia, que es mucho más pequeña. Con menos amplitud basta con menos bits para la misma calidad. La ganancia de predicción mide cuánto más pequeña es la potencia del error que la de la señal. Los coeficientes del predictor y el rango del cuantizador (el codificador prueba varios y elige el mejor) viajan al principio del flujo. Aquí se calculan sobre toda la señal para simplificar; un códec real los recalcula por tramas.",
   "tryThis": "Mira la ganancia de predicción con una vocal y con ruido blanco. Con ruido, no hay nada que predecir.",
-  "concepts": [
-    "Predicción lineal",
-    "Levinson-Durbin",
-    "Ganancia de predicción"
-  ],
+  "concepts": ["Predicción lineal", "Levinson-Durbin", "Ganancia de predicción"],
   "ports": {
     "in": "Señal",
     "out": "Bits"
@@ -27,6 +23,25 @@
     "sideBits": "Bits de coeficientes"
   },
   "plots": {
-    "error": "Señal vs error de predicción (lo que se envía)"
+    "error": "Señal vs error de predicción (lo que se envía)",
+    "trace": "Las primeras muestras, paso a paso"
+  },
+  "fields": {
+    "order": {
+      "label": "Orden del predictor",
+      "help": "Cuántas muestras anteriores usa el predictor (4 bits, al principio del flujo)."
+    },
+    "coef": {
+      "label": "Coeficiente del predictor",
+      "help": "Cada coeficiente a_i viaja una sola vez, como número de 32 bits."
+    },
+    "range": {
+      "label": "Rango del cuantizador",
+      "help": "Error máximo que cubre el cuantizador (32 bits, una vez)."
+    },
+    "error": {
+      "label": "Error de predicción",
+      "help": "Escalón del error cuantizado de cada muestra: es lo único que viaja muestra a muestra."
+    }
   }
 }
