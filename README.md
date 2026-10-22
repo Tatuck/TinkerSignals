@@ -3,13 +3,7 @@
 [![CI](https://github.com/Tatuck/TinkerSignals/actions/workflows/ci.yml/badge.svg)](https://github.com/Tatuck/TinkerSignals/actions/workflows/ci.yml)
 [![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-blue.svg)](LICENSE)
 
-<p align="center">
-  <a href="docs/video/tinkersignals.mp4">
-    <img src="docs/video/preview.gif" alt="TinkerSignals: se unen bloques con cables y se mira qué bits viajan por uno de ellos" width="960">
-  </a>
-  <br>
-  <sub><a href="docs/video/tinkersignals.mp4">▶ Ver el vídeo completo (53 s, con sonido)</a></sub>
-</p>
+https://github.com/user-attachments/assets/ccdef1f1-90e6-4027-ad7e-3fd3f333b8b9
 
 Laboratorio visual para aprender codificación y compresión de audio montando
 bloques, como en TinkerCad. Entra audio real (archivo, micrófono o generador),
